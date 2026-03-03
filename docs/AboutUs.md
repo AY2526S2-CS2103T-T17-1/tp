@@ -43,11 +43,12 @@ We are a team based in the [School of Computing, National University of Singapor
 * Role: Developer
 * Responsibilities: Dev Ops + Threading
 
-### James Doe
+### Rajeshprabu Sidharth
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/thesputnikspacecraft.png" width="200px">
 
-[[github](http://github.com/johndoe)]
+[[github](https://github.com/TheSputnikSpacecraft)]
+[[portfolio](https://voluble-tulumba-eca9f6.netlify.app/)]
 
 * Role: Developer
 * Responsibilities: UI
