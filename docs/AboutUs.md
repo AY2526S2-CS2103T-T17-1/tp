@@ -48,12 +48,12 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Dev Ops + Threading
 
-### James Doe
+### Rajeshprabu Sidharth
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/thesputnikspacecraft.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](https://github.com/TheSputnikSpacecraft)]
+[[portfolio](https://voluble-tulumba-eca9f6.netlify.app/)]
 
 * Role: Developer
 * Responsibilities: UI
