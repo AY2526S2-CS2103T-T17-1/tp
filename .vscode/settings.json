@@ -1,0 +1,28 @@
+{
+    // Auto-remove trailing spaces on save.
+    // Note: VS Code trims trailing whitespace for the whole file, not only modified lines.
+    "files.trimTrailingWhitespace": true,
+
+    "java.format.settings.url": "${workspaceFolder}/eclipse-formatter.xml",
+    "java.format.settings.profile": "VSCode",
+
+    // Import order: static imports come first automatically; then the groups below.
+    "java.completion.importOrder": [
+        "java",
+        "javax",
+        "org",
+        "com",
+        ""
+    ],
+
+    // Prevent wildcard imports (equivalent to IntelliJ's high thresholds).
+    "java.sources.organizeImports.starThreshold": 999,
+    "java.sources.organizeImports.staticStarThreshold": 999,
+
+    "[java]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    }
+}
