@@ -16,14 +16,15 @@ We are a team based in the [School of Computing, National University of Singapor
 * Role: Developer
 * Responsibilities: Documentation + Integration
 
-### Jane Doe
+### Prithvi Phanish Bhardwaj
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/prithvibhardwaj.png" width="200px">
 
-[[github](http://github.com/johndoe)]
+[[github](https://github.com/prithvibhardwaj)]
 
-* Role: Team Lead
-* Responsibilities: UI
+* Role: Developer
+* Responsibilities: Documentation + Integration
+
 
 ### Johnny Doe
 
