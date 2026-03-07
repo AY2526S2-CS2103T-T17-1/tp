@@ -1,4 +1,4 @@
-[![CI Status](https://github.com/se-edu/addressbook-level3/workflows/Java%20CI/badge.svg)](https://github.com/se-edu/addressbook-level3/actions)
+[![CI Status](https://github.com/AY2526S2-CS2103T-T17-1/tp/workflows/Java%20CI/badge.svg)](https://github.com/AY2526S2-CS2103T-T17-1/tp/actions)
 [![codecov](https://codecov.io/gh/CS2103T-T17-1/tp/graph/badge.svg?token=DU35S1U7NP)](https://codecov.io/gh/CS2103T-T17-1/tp)
 
 ![Ui](docs/images/Ui.png)
