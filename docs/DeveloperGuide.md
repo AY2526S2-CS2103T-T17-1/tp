@@ -262,13 +262,13 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefer desktop apps over other types
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+* is a gym supervisor/manager overseeing multiple trainers and their respective client bases
+* is tech-savvy, comfortable on desktop, and prefers CLI input over GUI navigation
+* types quickly and values rapid data entry for operational coordination
+* frequently handles trainer substitutions, client reallocations, and handovers across a shifting weekly schedule
+* needs to track high-level client requirements (calorie targets/intake and workout focus) without managing detailed coaching prescriptions
 
-**Value proposition**: manage contacts faster than a typical mouse/GUI driven app
+**Value proposition**: reduce the operational burden of managing trainer–client relationships during frequent schedule changes by enabling fast CLI updates and reassignment, while preserving clients’ workout-relevant details (workout focus and calories) for handover.
 
 
 ### User stories
@@ -277,56 +277,187 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 | Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
 | -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
-
-*{More to be added}*
+| `* * *`  | new supervisor user                        | see usage instructions         | refer to instructions when I forget how to use GymOps                  |
+| `* * *`  | supervisor                                 | add a new trainer              | build and maintain my roster of staff                                  |
+| `* * *`  | supervisor                                 | edit a trainer’s details       | keep trainer contact information accurate                               |
+| `* * *`  | supervisor                                 | list all trainers              | see which trainers are currently employed/registered                    |
+| `* * *`  | supervisor                                 | delete a trainer who has no assigned clients | remove trainers who have left the gym                      |
+| `* * *`  | supervisor                                 | add a client assigned to a trainer | allocate responsibility for that member                             |
+| `* * *`  | supervisor                                 | edit a client’s details        | keep client contact information accurate                                |
+| `* * *`  | supervisor                                 | list all clients (optionally by trainer) | view allocations and a trainer’s current client base            |
+| `* * *`  | supervisor                                 | delete a client                | remove members who have cancelled their membership                      |
+| `* * *`  | supervisor                                 | reassign a client to another trainer | handle trainer unavailability and schedule changes                 |
+| `* * *`  | supervisor                                 | set a calorie target for a client | record their nutritional goal (e.g., 2500 kcal)                     |
+| `* * *`  | supervisor                                 | log a client’s calorie intake  | track whether they are meeting their nutritional goals                  |
+| `* * *`  | supervisor                                 | set a workout focus for a client | preserve the right context during handovers                          |
+| `* * *`  | supervisor                                 | view a client’s progress summary | see target vs consumed calories and workout focus quickly            |
+| `* *`    | supervisor                                 | find trainers/clients by name  | locate their record without scrolling through long lists                |
+| `* *`    | supervisor                                 | add a remark to a client       | keep operational notes (e.g., injuries, payment checks)                 |
+| `* *`    | supervisor                                 | import data from a CSV file    | bulk-load or sync clients/trainers from other tools                     |
+| `* *`    | supervisor                                 | export data to a CSV file      | share or archive data outside of the app                                |
+| `* *`    | supervisor                                 | clear all entries              | reset the system for a new term/season                                  |
+| `*`      | supervisor                                 | undo the last command          | quickly recover from accidental deletions/edits                         |
+| `*`      | supervisor                                 | see a time/day-based handover view | know which clients’ requirements are most relevant right now        |
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `GymOps` and the **Actor** is the `supervisor`, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: Add a client to a trainer**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1.  Supervisor requests to list trainers.
+2.  GymOps shows a list of trainers with index numbers.
+3.  Supervisor issues the command to add a client, specifying a trainer index.
+4.  GymOps validates the input and adds the client assigned to the specified trainer.
 
     Use case ends.
 
 **Extensions**
 
-* 2a. The list is empty.
+* 2a. The trainer list is empty.
 
-  Use case ends.
+   * 2a1. GymOps shows an empty list message.
 
-* 3a. The given index is invalid.
+      Use case resumes at step 1.
 
-    * 3a1. AddressBook shows an error message.
+* 3a. The trainer index is invalid (not a number, missing, or out of bounds).
+
+   * 3a1. GymOps shows an error message.
 
       Use case resumes at step 2.
 
-*{More to be added}*
+* 3b. The client’s phone number already exists in the system.
+
+   * 3b1. GymOps rejects the command and shows an error message.
+
+      Use case resumes at step 2.
+
+
+**Use case: Reassign a client to another trainer**
+
+**MSS**
+
+1.  Supervisor requests to list clients.
+2.  GymOps shows a list of clients with index numbers.
+3.  Supervisor requests to list trainers.
+4.  GymOps shows a list of trainers with index numbers.
+5.  Supervisor issues the command to reassign a client index to a new trainer index.
+6.  GymOps validates the input and updates the client’s assigned trainer.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The client list is empty.
+
+   * 2a1. GymOps shows an empty list message.
+
+      Use case resumes at step 1.
+
+* 5a. The client index is invalid.
+
+   * 5a1. GymOps shows an error message.
+
+      Use case resumes at step 2.
+
+* 5b. The trainer index is invalid.
+
+   * 5b1. GymOps shows an error message.
+
+      Use case resumes at step 4.
+
+* 6a. The client is already assigned to the specified trainer.
+
+   * 6a1. GymOps rejects the command and shows an error message.
+
+      Use case resumes at step 4.
+
+
+**Use case: Update a client’s daily calories (target + intake)**
+
+**MSS**
+
+1.  Supervisor requests to find clients by name.
+2.  GymOps shows a list of matching clients.
+3.  Supervisor identifies the relevant client and issues a command to set the client’s calorie target.
+4.  GymOps updates the client’s calorie target.
+5.  Supervisor issues a command to log calorie intake for the same client.
+6.  GymOps adds the logged intake to the client’s total intake for the day.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. No clients match the search keywords.
+
+   * 2a1. GymOps shows an empty results message.
+
+      Use case ends.
+
+* 3a. The calorie target value is invalid (not a number or out of the accepted range).
+
+   * 3a1. GymOps rejects the command and shows an error message.
+
+      Use case resumes at step 2.
+
+* 5a. The logged intake value is invalid (not a positive integer).
+
+   * 5a1. GymOps rejects the command and shows an error message.
+
+      Use case resumes at step 2.
+
+
+**Use case: Delete a trainer**
+
+**MSS**
+
+1.  Supervisor requests to list trainers.
+2.  GymOps shows a list of trainers with index numbers.
+3.  Supervisor issues the command to delete a trainer by index.
+4.  GymOps deletes the trainer.
+
+   Use case ends.
+
+**Extensions**
+
+* 3a. The given trainer index is invalid.
+
+   * 3a1. GymOps shows an error message.
+
+      Use case resumes at step 2.
+
+* 4a. The trainer still has assigned clients.
+
+   * 4a1. GymOps rejects the deletion and informs the supervisor to reassign or delete those clients first.
+
+      Use case resumes at step 2.
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `17` or above installed.
-2.  Should be able to hold up to 1000 persons without a noticeable sluggishness in performance for typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-
-*{More to be added}*
+1.  Should work on any _mainstream OS_ (Windows, Linux, macOS) as long as it has Java `17` or above installed.
+2.  Should be optimized for a CLI-centric workflow (i.e., common operations are achievable with a small number of commands and without requiring mouse input).
+3.  For a dataset of up to 100 trainers and 1000 clients, typical commands (list, find, reassign, set-cal, log-cal, view-progress) should complete within 1 second on a typical laptop.
+4.  Data should be persisted locally and remain intact after restarting the application.
+5.  The system should not require an internet connection for normal operation.
+6.  The system is single-user (supervisor-only) and does not require multiple logins or role-based access control.
+7.  CSV import/export (if implemented) should preserve all relevant fields needed for operations (trainer/client identities and client tracking fields) without loss.
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, MacOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Supervisor**: The primary (and only) intended user of GymOps; manages allocations and operational coordination.
+* **Trainer**: A staff member who trains clients. In GymOps, trainers are the parent entity that clients are assigned to.
+* **Client**: A gym member assigned to exactly one trainer at any point in time.
+* **Assignment**: The association linking a client to a trainer.
+* **Reassignment**: Moving a client’s assignment from one trainer to another.
+* **Workout focus**: A high-level muscle group emphasis (e.g., Chest, Back, Legs, Core), not specific exercises.
+* **Calorie target**: A client’s intended daily calorie goal (kcal).
+* **Calorie intake**: The calories logged as consumed by a client for the day (kcal).
+* **Remark**: A free-text operational note about a client (e.g., injuries, payment flags).
+* **CSV**: Comma-Separated Values format used for import/export.
+* **Mainstream OS**: Windows, Linux, macOS.
+* **GymOps**: The name of the application.
 
 --------------------------------------------------------------------------------------------------------------------
 
