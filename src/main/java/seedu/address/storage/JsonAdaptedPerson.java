@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
-import seedu.address.model.person.Address;
+import seedu.address.model.person.Client;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
-import seedu.address.model.person.Remark;
+import seedu.address.model.person.Trainer;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -24,27 +24,30 @@ import seedu.address.model.tag.Tag;
 class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
+    public static final String INVALID_TYPE_MESSAGE_FORMAT = "Person's type is invalid!";
 
+    private final String type; // "trainer" or "client"
     private final String name;
     private final String phone;
     private final String email;
-    private final String address;
-    private final String remark;
+    private final String trainerPhone;
+    private final String trainerName;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     @JsonCreator
-    public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
-            @JsonProperty("email") String email, @JsonProperty("address") String address,
-            @JsonProperty("remark") String remark,
+    public JsonAdaptedPerson(@JsonProperty("type") String type, @JsonProperty("name") String name,
+            @JsonProperty("phone") String phone, @JsonProperty("email") String email,
+            @JsonProperty("trainerPhone") String trainerPhone, @JsonProperty("trainerName") String trainerName,
             @JsonProperty("tags") List<JsonAdaptedTag> tags) {
+        this.type = type;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.address = address;
-        this.remark = remark;
+        this.trainerPhone = trainerPhone;
+        this.trainerName = trainerName;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -56,9 +59,23 @@ class JsonAdaptedPerson {
     public JsonAdaptedPerson(Person source) {
         name = source.getName().fullName;
         phone = source.getPhone().value;
-        email = source.getEmail().value;
-        address = source.getAddress().value;
-        remark = source.getRemark().value;
+        if (source instanceof Trainer) {
+            type = "trainer";
+            email = ((Trainer) source).getEmail().value;
+            trainerPhone = null;
+            trainerName = null;
+        } else if (source instanceof Client) {
+            type = "client";
+            email = null;
+            trainerPhone = ((Client) source).getTrainerPhone().value;
+            trainerName = ((Client) source).getTrainerName().fullName;
+        } else {
+            type = "unknown";
+            email = null;
+            trainerPhone = null;
+            trainerName = null;
+        }
+
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -91,26 +108,39 @@ class JsonAdaptedPerson {
         }
         final Phone modelPhone = new Phone(phone);
 
-        if (email == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Email.class.getSimpleName()));
-        }
-        if (!Email.isValidEmail(email)) {
-            throw new IllegalValueException(Email.MESSAGE_CONSTRAINTS);
-        }
-        final Email modelEmail = new Email(email);
-
-        if (address == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName()));
-        }
-        if (!Address.isValidAddress(address)) {
-            throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
-        }
-        final Address modelAddress = new Address(address);
-
-        final Remark modelRemark = new Remark(remark == null ? "" : remark);
-
         final Set<Tag> modelTags = new HashSet<>(personTags);
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelRemark, modelTags);
+
+        if ("trainer".equals(type) || type == null && email != null) { // fallback for existing records without type
+            if (email == null) {
+                throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
+                        Email.class.getSimpleName()));
+            }
+            if (!Email.isValidEmail(email)) {
+                throw new IllegalValueException(Email.MESSAGE_CONSTRAINTS);
+            }
+            final Email modelEmail = new Email(email);
+            return new Trainer(modelName, modelPhone, modelEmail, modelTags);
+        } else if ("client".equals(type) || type == null && trainerPhone != null) {
+            if (trainerPhone == null) {
+                throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "trainerPhone"));
+            }
+            if (!Phone.isValidPhone(trainerPhone)) {
+                throw new IllegalValueException(Phone.MESSAGE_CONSTRAINTS);
+            }
+            final Phone modelTrainerPhone = new Phone(trainerPhone);
+
+            if (trainerName == null) {
+                throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "trainerName"));
+            }
+            if (!Name.isValidName(trainerName)) {
+                throw new IllegalValueException(Name.MESSAGE_CONSTRAINTS);
+            }
+            final Name modelTrainerName = new Name(trainerName);
+
+            return new Client(modelName, modelPhone, modelTrainerPhone, modelTrainerName, modelTags);
+        } else {
+            throw new IllegalValueException(INVALID_TYPE_MESSAGE_FORMAT);
+        }
     }
 
 }
