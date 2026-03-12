@@ -18,7 +18,9 @@ import seedu.address.logic.commands.DeleteTrainerCommand;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
+import seedu.address.logic.commands.ListClientsCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.ListTrainersCommand;
 import seedu.address.logic.commands.LogCalorieIntakeCommand;
 import seedu.address.logic.commands.RemarkCommand;
 import seedu.address.logic.commands.SetCalorieTargetCommand;
@@ -52,60 +54,66 @@ public class AddressBookParser {
         final String commandWord = matcher.group("commandWord");
         final String arguments = matcher.group("arguments");
 
-        // Note to developers: Change the log level in config.json to enable lower level (i.e., FINE, FINER and lower)
+        // Note to developers: Change the log level in config.json to enable lower level
+        // (i.e., FINE, FINER and lower)
         // log messages such as the one below.
         // Lower level log messages are used sparingly to minimize noise in the code.
         logger.fine("Command word: " + commandWord + "; Arguments: " + arguments);
 
         switch (commandWord) {
 
-        case AddTrainerCommand.COMMAND_WORD:
-            return new AddTrainerCommandParser().parse(arguments);
+            case AddTrainerCommand.COMMAND_WORD:
+                return new AddTrainerCommandParser().parse(arguments);
 
-        case AddClientCommand.COMMAND_WORD:
-            return new AddClientCommandParser().parse(arguments);
+            case AddClientCommand.COMMAND_WORD:
+                return new AddClientCommandParser().parse(arguments);
 
-        case DeleteCommand.COMMAND_WORD:
-            return new DeleteCommandParser().parse(arguments);
+            case DeleteCommand.COMMAND_WORD:
+                return new DeleteCommandParser().parse(arguments);
 
-        case DeleteClientCommand.COMMAND_WORD:
-            return new DeleteClientCommandParser().parse(arguments);
+            case DeleteClientCommand.COMMAND_WORD:
+                return new DeleteClientCommandParser().parse(arguments);
 
-        case DeleteTrainerCommand.COMMAND_WORD:
-            return new DeleteTrainerCommandParser().parse(arguments);
+            case DeleteTrainerCommand.COMMAND_WORD:
+                return new DeleteTrainerCommandParser().parse(arguments);
 
-        case SetCalorieTargetCommand.COMMAND_WORD:
-            return new SetCalorieTargetCommandParser().parse(arguments);
+            case SetCalorieTargetCommand.COMMAND_WORD:
+                return new SetCalorieTargetCommandParser().parse(arguments);
 
-        case LogCalorieIntakeCommand.COMMAND_WORD:
-            return new LogCalorieIntakeCommandParser().parse(arguments);
+            case LogCalorieIntakeCommand.COMMAND_WORD:
+                return new LogCalorieIntakeCommandParser().parse(arguments);
 
-        case SetFocusCommand.COMMAND_WORD:
-            return new SetFocusCommandParser().parse(arguments);
+            case SetFocusCommand.COMMAND_WORD:
+                return new SetFocusCommandParser().parse(arguments);
 
-        case RemarkCommand.COMMAND_WORD:
-            return new RemarkCommandParser().parse(arguments);
+            case RemarkCommand.COMMAND_WORD:
+                return new RemarkCommandParser().parse(arguments);
 
-        case ClearCommand.COMMAND_WORD:
-            return new ClearCommand();
+            case ClearCommand.COMMAND_WORD:
+                return new ClearCommand();
 
-        case FindCommand.COMMAND_WORD:
-            return new FindCommandParser().parse(arguments);
+            case FindCommand.COMMAND_WORD:
+                return new FindCommandParser().parse(arguments);
 
-        case ListCommand.COMMAND_WORD:
-            return new ListCommand();
+            case ListCommand.COMMAND_WORD:
+                return new ListCommand();
 
-        case ExitCommand.COMMAND_WORD:
-            return new ExitCommand();
+            case ListTrainersCommand.COMMAND_WORD:
+                return new ListTrainersCommand();
 
-        case HelpCommand.COMMAND_WORD:
-            return new HelpCommand();
+            case ListClientsCommand.COMMAND_WORD:
+                return new ListClientsCommand();
 
-        default:
-            logger.finer("This user input caused a ParseException: " + userInput);
-            throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
+            case ExitCommand.COMMAND_WORD:
+                return new ExitCommand();
+
+            case HelpCommand.COMMAND_WORD:
+                return new HelpCommand();
+
+            default:
+                logger.finer("This user input caused a ParseException: " + userInput);
+                throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
         }
     }
 
 }
-
