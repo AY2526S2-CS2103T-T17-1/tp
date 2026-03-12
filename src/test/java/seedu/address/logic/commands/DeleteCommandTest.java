@@ -10,14 +10,22 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import java.util.HashSet;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.person.Client;
+import seedu.address.model.person.Email;
+import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
+import seedu.address.model.person.Trainer;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for
@@ -77,6 +85,22 @@ public class DeleteCommandTest {
         DeleteCommand deleteCommand = new DeleteCommand(outOfBoundIndex);
 
         assertCommandFailure(deleteCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void execute_deletingTrainerWithActiveClients_throwsCommandException() {
+        AddressBook ab = new AddressBook();
+        Trainer trainer = new Trainer(new Name("John"), new Phone("91234567"),
+                new Email("john@example.com"), new HashSet<>());
+        Client client = new Client(new Name("Alice"), new Phone("81234567"),
+                trainer.getPhone(), trainer.getName(), new HashSet<>());
+        ab.addPerson(trainer);
+        ab.addPerson(client);
+        Model model = new ModelManager(ab, new UserPrefs());
+
+        DeleteCommand deleteCommand = new DeleteCommand(INDEX_FIRST_PERSON);
+
+        assertCommandFailure(deleteCommand, model, DeleteCommand.MESSAGE_TRAINER_HAS_CLIENTS);
     }
 
     @Test

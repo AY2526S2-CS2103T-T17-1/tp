@@ -10,6 +10,7 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Trainer;
 
 /**
  * Deletes a person identified using it's displayed index from the address book.
@@ -24,6 +25,8 @@ public class DeleteCommand extends Command {
             + "Example: " + COMMAND_WORD + " 1";
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted Person: %1$s";
+    public static final String MESSAGE_TRAINER_HAS_CLIENTS =
+            "Cannot delete trainer: they still have active clients.";
 
     private final Index targetIndex;
 
@@ -41,6 +44,14 @@ public class DeleteCommand extends Command {
         }
 
         Person personToDelete = lastShownList.get(targetIndex.getZeroBased());
+
+        if (personToDelete instanceof Trainer) {
+            Trainer trainerToDelete = (Trainer) personToDelete;
+            if (model.hasClientWithTrainer(trainerToDelete)) {
+                throw new CommandException(MESSAGE_TRAINER_HAS_CLIENTS);
+            }
+        }
+
         model.deletePerson(personToDelete);
         return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
     }

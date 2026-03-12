@@ -26,6 +26,9 @@ test {
 }
 
 task coverage(type: JacocoReport) {
+    dependsOn test
+    dependsOn jacocoTestReport
+
     sourceDirectories.from files(sourceSets.main.allSource.srcDirs)
     classDirectories.from files(sourceSets.main.output)
     executionData.from files(jacocoTestReport.executionData)
