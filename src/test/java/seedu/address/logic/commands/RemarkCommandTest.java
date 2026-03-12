@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -109,6 +110,30 @@ public class RemarkCommandTest {
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
         RemarkCommand command = new RemarkCommand(outOfBoundIndex, new Remark("Note"));
         assertCommandFailure(command, model, RemarkCommand.MESSAGE_INVALID_CLIENT_INDEX);
+    }
+
+    @Test
+    public void equals() {
+        RemarkCommand command = new RemarkCommand(INDEX_FIRST_PERSON, new Remark("Note"));
+
+        // same object -> true
+        assertEquals(command, command);
+
+        // same values -> true
+        RemarkCommand commandCopy = new RemarkCommand(INDEX_FIRST_PERSON, new Remark("Note"));
+        assertEquals(command, commandCopy);
+
+        // null -> false
+        assertFalse(command.equals(null));
+
+        // different type -> false
+        assertFalse(command.equals("not a command"));
+
+        // different index -> false
+        assertFalse(command.equals(new RemarkCommand(INDEX_SECOND_PERSON, new Remark("Note"))));
+
+        // different remark -> false
+        assertFalse(command.equals(new RemarkCommand(INDEX_FIRST_PERSON, new Remark("Other"))));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -110,6 +111,30 @@ public class SetFocusCommandTest {
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
         SetFocusCommand command = new SetFocusCommand(outOfBoundIndex, new WorkoutFocus("Chest"));
         assertCommandFailure(command, model, SetFocusCommand.MESSAGE_INVALID_CLIENT_INDEX);
+    }
+
+    @Test
+    public void equals() {
+        SetFocusCommand command = new SetFocusCommand(INDEX_FIRST_PERSON, new WorkoutFocus("Chest"));
+
+        // same object -> true
+        assertEquals(command, command);
+
+        // same values -> true
+        SetFocusCommand commandCopy = new SetFocusCommand(INDEX_FIRST_PERSON, new WorkoutFocus("Chest"));
+        assertEquals(command, commandCopy);
+
+        // null -> false
+        assertFalse(command.equals(null));
+
+        // different type -> false
+        assertFalse(command.equals("not a command"));
+
+        // different index -> false
+        assertFalse(command.equals(new SetFocusCommand(INDEX_SECOND_PERSON, new WorkoutFocus("Chest"))));
+
+        // different focus -> false
+        assertFalse(command.equals(new SetFocusCommand(INDEX_FIRST_PERSON, new WorkoutFocus("Back"))));
     }
 
     @Test
