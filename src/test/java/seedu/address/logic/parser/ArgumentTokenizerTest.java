@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,11 @@ public class ArgumentTokenizerTest {
     private final Prefix pSlash = new Prefix("p/");
     private final Prefix dashT = new Prefix("-t");
     private final Prefix hatQ = new Prefix("^Q");
+
+    @Test
+    public void constructor() {
+        assertNotNull(new ArgumentTokenizer());
+    }
 
     @Test
     public void tokenize_emptyArgsString_noValues() {

@@ -24,7 +24,7 @@ public class LogCalorieIntakeCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Logs calorie intake for the client identified by the index"
-            + " number used in the displayed person list."
+            + " number used in the displayed client list."
             + " The calories are added to the client's existing daily intake.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + PREFIX_CALORIE + "CALORIES (must be a positive integer)\n"
@@ -53,7 +53,7 @@ public class LogCalorieIntakeCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Person> lastShownList = model.getFilteredClientList();
 
         if (targetIndex.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);

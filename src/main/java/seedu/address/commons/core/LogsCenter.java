@@ -25,6 +25,15 @@ public class LogsCenter {
     private static Logger baseLogger; // to be used as the parent of all other loggers created by this class.
     private static Level currentLogLevel = Level.INFO;
 
+    @FunctionalInterface
+    interface FileHandlerFactory {
+        FileHandler create() throws IOException;
+    }
+
+    private static final FileHandlerFactory DEFAULT_FILE_HANDLER_FACTORY = () ->
+            new FileHandler(LOG_FILE, MAX_FILE_SIZE_IN_BYTES, MAX_FILE_COUNT, true);
+    private static FileHandlerFactory fileHandlerFactory = DEFAULT_FILE_HANDLER_FACTORY;
+
     // This static block ensures essential loggers are created early
     static {
         setBaseLogger();
@@ -93,13 +102,30 @@ public class LogsCenter {
 
         // add a FileHandler to log to a file
         try {
-            FileHandler fileHandler = new FileHandler(LOG_FILE, MAX_FILE_SIZE_IN_BYTES, MAX_FILE_COUNT, true);
+            FileHandler fileHandler = fileHandlerFactory.create();
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setLevel(Level.ALL);
             baseLogger.addHandler(fileHandler);
         } catch (IOException e) {
-            logger.warning("Error adding file handler for logger.");
+            Logger.getLogger(LogsCenter.class.getName()).warning("Error adding file handler for logger.");
         }
+    }
+
+    static void setFileHandlerFactoryForTesting(FileHandlerFactory factory) {
+        requireNonNull(factory);
+        fileHandlerFactory = factory;
+    }
+
+    static void resetFileHandlerFactoryForTesting() {
+        fileHandlerFactory = DEFAULT_FILE_HANDLER_FACTORY;
+    }
+
+    static void resetBaseLoggerForTesting() {
+        setBaseLogger();
+    }
+
+    static Logger getBaseLoggerForTesting() {
+        return baseLogger;
     }
 
 

@@ -11,8 +11,11 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
+import java.util.HashSet;
+
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.tag.Tag;
 import seedu.address.testutil.PersonBuilder;
 
 public class PersonTest {
@@ -20,7 +23,7 @@ public class PersonTest {
     @Test
     public void asObservableList_modifyList_throwsUnsupportedOperationException() {
         Person person = new PersonBuilder().build();
-        assertThrows(UnsupportedOperationException.class, () -> person.getTags().remove(0));
+        assertThrows(UnsupportedOperationException.class, () -> person.getTags().add(new Tag("friends")));
     }
 
     @Test
@@ -46,6 +49,25 @@ public class PersonTest {
         // different phone and email, different name -> returns false
         Person editedBob = new PersonBuilder(BOB).withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_BOB).build();
         assertFalse(ALICE.isSamePerson(editedBob));
+    }
+
+    @Test
+    public void isSamePerson_nonTrainerNonClient_usesPhoneOnly() {
+        Person person = new TestPerson(new Name("Alice"), new Phone("81234567"), new HashSet<>());
+
+        // same object
+        assertTrue(person.isSamePerson(person));
+
+        // null
+        assertFalse(person.isSamePerson(null));
+
+        // same phone, different name
+        Person samePhoneDifferentName = new TestPerson(new Name("Bob"), new Phone("81234567"), new HashSet<>());
+        assertTrue(person.isSamePerson(samePhoneDifferentName));
+
+        // different phone
+        Person differentPhone = new TestPerson(new Name("Alice"), new Phone("81230000"), new HashSet<>());
+        assertFalse(person.isSamePerson(differentPhone));
     }
 
     @Test
@@ -84,10 +106,47 @@ public class PersonTest {
     }
 
     @Test
+    public void equals_nonTrainerNonClient_comparesNamePhoneAndTags() {
+        Person person = new TestPerson(new Name("Alice"), new Phone("81234567"), new HashSet<>());
+
+        // same object
+        assertTrue(person.equals(person));
+
+        // non-Person type
+        Object notPerson = "not a person";
+        assertFalse(person.equals(notPerson));
+
+        // different type
+        assertFalse(person.equals(new PersonBuilder().build()));
+
+        // same values
+        Person sameValues = new TestPerson(new Name("Alice"), new Phone("81234567"), new HashSet<>());
+        assertTrue(person.equals(sameValues));
+        assertEquals(person.hashCode(), sameValues.hashCode());
+
+        // different tags
+        HashSet<Tag> tags = new HashSet<>();
+        tags.add(new Tag("friends"));
+        Person differentTags = new TestPerson(new Name("Alice"), new Phone("81234567"), tags);
+        assertFalse(person.equals(differentTags));
+
+        assertTrue(person.toString().contains("Alice"));
+    }
+
+    @Test
     public void toStringMethod() {
         String expected = Trainer.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", email=" + ((Trainer) ALICE).getEmail()
                 + ", tags=" + ALICE.getTags() + "}";
         assertEquals(expected, ALICE.toString());
+
+        Person aliceCopy = new PersonBuilder(ALICE).build();
+        assertEquals(ALICE.hashCode(), aliceCopy.hashCode());
+    }
+
+    private static class TestPerson extends Person {
+        TestPerson(Name name, Phone phone, java.util.Set<Tag> tags) {
+            super(name, phone, tags);
+        }
     }
 }

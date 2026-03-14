@@ -105,4 +105,9 @@ public class CollectionUtilTest {
     private void assertNullPointerExceptionNotThrown(Collection<?> collection) {
         requireAllNonNull(collection);
     }
+
+    @Test
+    public void constructor_coverage() {
+        new CollectionUtil();
+    }
 }

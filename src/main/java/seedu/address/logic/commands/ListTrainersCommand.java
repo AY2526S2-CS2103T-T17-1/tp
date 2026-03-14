@@ -1,16 +1,12 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-
-import java.util.function.Predicate;
+import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import seedu.address.model.Model;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.Trainer;
 
 /**
  * Lists all trainers in the address book to the user.
- * Filters the person list to show only {@code Trainer} instances.
  */
 public class ListTrainersCommand extends Command {
 
@@ -18,18 +14,10 @@ public class ListTrainersCommand extends Command {
 
     public static final String MESSAGE_SUCCESS = "Listed all trainers";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Lists all trainers in the system.\n"
-            + "Example: " + COMMAND_WORD;
-
-    // TODO: Replace with a dedicated trainer list when Trainer model is fully
-    // separated.
-    public static final Predicate<Person> PREDICATE_SHOW_ALL_TRAINERS = person -> person instanceof Trainer;
-
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_TRAINERS);
+        model.updateFilteredTrainerList(PREDICATE_SHOW_ALL_PERSONS);
         return new CommandResult(MESSAGE_SUCCESS);
     }
 }

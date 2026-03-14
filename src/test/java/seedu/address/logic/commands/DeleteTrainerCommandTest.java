@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
+import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 
@@ -12,15 +13,20 @@ import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.ModelStub;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Client;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
 
@@ -76,10 +82,10 @@ public class DeleteTrainerCommandTest {
         ab.addPerson(client);
         Model model = new ModelManager(ab, new UserPrefs());
 
-        // Client is at index 2 (1-based)
+        // Trainer list contains only trainers; index 2 is out of bounds here.
         DeleteTrainerCommand deleteTrainerCommand = new DeleteTrainerCommand(INDEX_SECOND_PERSON);
 
-        assertCommandFailure(deleteTrainerCommand, model, DeleteTrainerCommand.MESSAGE_NOT_A_TRAINER);
+        assertCommandFailure(deleteTrainerCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
     }
 
     @Test
@@ -90,10 +96,27 @@ public class DeleteTrainerCommandTest {
         ab.addPerson(trainer);
         Model model = new ModelManager(ab, new UserPrefs());
 
-        Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
+        Index outOfBoundIndex = Index.fromOneBased(model.getFilteredTrainerList().size() + 1);
         DeleteTrainerCommand deleteTrainerCommand = new DeleteTrainerCommand(outOfBoundIndex);
 
         assertCommandFailure(deleteTrainerCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void execute_indexInListPointsToNonTrainer_throwsCommandException() {
+        Client client = new Client(new Name("Alice"), new Phone("81234567"),
+                new Phone("91234567"), new Name("John"), new HashSet<>());
+
+        ModelStub modelStub = new ModelStub() {
+            @Override
+            public ObservableList<Person> getFilteredTrainerList() {
+                return FXCollections.observableArrayList(client);
+            }
+        };
+
+        DeleteTrainerCommand deleteTrainerCommand = new DeleteTrainerCommand(INDEX_FIRST_PERSON);
+        assertThrows(CommandException.class, DeleteTrainerCommand.MESSAGE_NOT_A_TRAINER, () ->
+            deleteTrainerCommand.execute(modelStub));
     }
 
     @Test

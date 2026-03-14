@@ -26,11 +26,15 @@ GymOps is a **desktop app for managing gym trainers and their clients**, optimiz
 1. Type the command in the command box and press Enter to execute it. e.g. typing **`help`** and pressing Enter will open the help window.<br>
    Some example commands you can try:
 
-  * `list` : Lists all persons (trainers and clients).
+  * `list-trainers` : Lists all trainers.
 
-  * `find alice` : Finds all persons whose names match `alice`.
+  * `list-clients` : Lists all clients.
+
+  * `find-trainers alice` : Finds all trainers whose names match `alice`.
 
   * `add-trainer n/John Doe p/98765432 e/johndoe@example.com` : Adds a trainer.
+
+  * `add-client n/Alice Lim p/81234567 t/1` : Adds a client assigned to trainer #1.
 
   * `clear` : Deletes all persons.
 
@@ -59,6 +63,11 @@ GymOps is a **desktop app for managing gym trainers and their clients**, optimiz
   e.g. if the command specifies `help 123`, it will be interpreted as `help`.
 
 * For commands that use an `INDEX`, the index refers to the index number shown in the **currently displayed person list**.
+
+* GymOps displays **two lists**: **Trainers** (left) and **Clients** (right). When a command takes an index:
+  * Trainer-related indices refer to the **trainer list**.
+  * Client-related indices refer to the **client list**.
+  * The `delete` command is typed (`delete t/...` or `delete c/...`) to make this explicit.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
@@ -94,7 +103,9 @@ Examples:
 
 ### Listing all persons : `list`
 
-Shows a list of all persons in GymOps.
+Shows all persons in GymOps.
+
+This resets both the trainer list and client list to show all entries, and clears any trainer-selection filter applied to the client list.
 
 Format: `list`
 
@@ -113,10 +124,42 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
   e.g. `Hans Bo` will return `Hans Gruber`, `Bo Yang`
 * To return to the full list after a `find`, run `list`.
 
+Alternatively, you can search within a specific list using `find-trainers` or `find-clients`.
+
 Examples:
 * `find John` returns `john` and `John Doe`
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
+
+### Listing all trainers: `list-trainers`
+
+Shows all trainers in GymOps.
+
+Format: `list-trainers`
+
+### Listing all clients: `list-clients`
+
+Shows all clients in GymOps.
+
+Format: `list-clients`
+
+### Filtering clients by trainer selection (GUI)
+
+In the GUI, selecting a trainer in the **Trainers** list will automatically filter the **Clients** list to show only clients assigned to that trainer.
+
+To clear the filter, click the **Showing All** link above the client list (or run `list`).
+
+### Locating trainers by name: `find-trainers`
+
+Finds trainers whose names contain any of the given keywords.
+
+Format: `find-trainers KEYWORD [MORE_KEYWORDS]`
+
+### Locating clients by name: `find-clients`
+
+Finds clients whose names contain any of the given keywords.
+
+Format: `find-clients KEYWORD [MORE_KEYWORDS]`
 
 ### Setting a client's calorie target: `set-calorie-target`
 
@@ -124,7 +167,7 @@ Sets the daily calorie target for a client.
 
 Format: `set-calorie-target INDEX cal/CALORIES`
 
-* `INDEX` must refer to a **client** in the currently displayed list.
+* `INDEX` must refer to a **client** in the client list.
 * `CALORIES` must be a positive integer.
 
 Examples:
@@ -136,7 +179,7 @@ Logs calorie intake for a client. The calories are added to the client's existin
 
 Format: `log-calorie INDEX cal/CALORIES`
 
-* `INDEX` must refer to a **client** in the currently displayed list.
+* `INDEX` must refer to a **client** in the client list.
 * `CALORIES` must be a positive integer.
 
 Examples:
@@ -148,7 +191,7 @@ Sets the current primary workout focus for a client. If a focus already exists, 
 
 Format: `set-focus c/CLIENT_INDEX f/FOCUS`
 
-* `CLIENT_INDEX` must refer to a **client** in the currently displayed list.
+* `CLIENT_INDEX` must refer to a **client** in the client list.
 * `FOCUS` must contain only letters (`A-Z` or `a-z`).
 
 Examples:
@@ -160,7 +203,7 @@ Adds a remark to an existing client. If a remark already exists, it will be over
 
 Format: `remark INDEX r/REMARK`
 
-* `INDEX` must refer to a **client** in the currently displayed list.
+* `INDEX` must refer to a **client** in the client list.
 * `REMARK` must not be empty (after trimming).
 
 Examples:
@@ -170,15 +213,15 @@ Examples:
 
 Deletes the specified person from GymOps.
 
-Format: `delete INDEX`
+Format: `delete t/TRAINER_INDEX` or `delete c/CLIENT_INDEX`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
-* The index **must be a positive integer** 1, 2, 3, …​
+* `t/TRAINER_INDEX` refers to the index number shown in the trainer list.
+* `c/CLIENT_INDEX` refers to the index number shown in the client list.
+* Trainer deletion will be rejected if the trainer still has active clients.
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in GymOps.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `delete t/2` deletes the 2nd trainer in the trainer list.
+* `delete c/1` deletes the 1st client in the client list.
 
 ### Deleting a client : `delete-client`
 
@@ -186,7 +229,7 @@ Deletes the specified client.
 
 Format: `delete-client INDEX`
 
-* `INDEX` must refer to a **client** in the currently displayed list.
+* `INDEX` must refer to a **client** in the client list.
 
 Examples:
 * `delete-client 1`
@@ -197,7 +240,7 @@ Deletes the specified trainer.
 
 Format: `delete-trainer INDEX`
 
-* `INDEX` must refer to a **trainer** in the currently displayed list.
+* `INDEX` must refer to a **trainer** in the trainer list.
 
 Examples:
 * `delete-trainer 1`
@@ -257,9 +300,13 @@ Action | Format, Examples
 **Log calorie intake** | `log-calorie INDEX cal/CALORIES`<br> e.g., `log-calorie 1 cal/500`
 **Set workout focus** | `set-focus c/CLIENT_INDEX f/FOCUS`<br> e.g., `set-focus c/1 f/Chest`
 **Remark** | `remark INDEX r/REMARK`<br> e.g., `remark 1 r/Recovering from ACL surgery`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**List** | `list`
-**Delete person** | `delete INDEX`<br> e.g., `delete 3`
+**Find (both lists)** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Find trainers** | `find-trainers KEYWORD [MORE_KEYWORDS]`<br> e.g., `find-trainers John`
+**Find clients** | `find-clients KEYWORD [MORE_KEYWORDS]`<br> e.g., `find-clients Alice`
+**List (both lists)** | `list`
+**List trainers** | `list-trainers`
+**List clients** | `list-clients`
+**Delete (typed)** | `delete t/TRAINER_INDEX` or `delete c/CLIENT_INDEX`<br> e.g., `delete t/1`
 **Delete client** | `delete-client INDEX`<br> e.g., `delete-client 2`
 **Delete trainer** | `delete-trainer INDEX`<br> e.g., `delete-trainer 1`
 **Clear** | `clear`

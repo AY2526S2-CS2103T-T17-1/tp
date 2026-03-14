@@ -24,9 +24,8 @@ High-speed management of a **hierarchical trainer → client** structure, plus l
 
 ## Key workflows
 
-* **Trainer substitution / handover**: reassign a client from Trainer A to Trainer B, while keeping the client’s plan and latest summary visible for quick handover.
-* **Daily tracking**: set calorie targets, log intake, set workout focus, and view a one-line progress summary.
-* **Data portability**: import/export `.csv` for sharing trainee information between supervisors/trainers or other tools.
+* **Trainer → Client operations**: add clients assigned to trainers, and keep a clear separation between the trainer list and client list.
+* **Daily tracking**: set calorie targets, log intake, set workout focus, and record client remarks.
 
 ## Command prefixes (Trainer vs Client)
 
@@ -36,21 +35,20 @@ Examples:
 
 * Add a trainer: `add-trainer n/John Doe p/98765432 e/johndoe@example.com`
 * Add a client assigned to a trainer: `add-client n/Alice Lim p/81234567 t/1`
-* Reassign a client: `reassign c/1 t/2`
+* Delete a trainer or client (typed delete): `delete t/1` / `delete c/1`
 
 Calorie tracking:
 
-* Set target: `set-cal c/1 target/2500`
-* Log intake: `log-cal c/1 val/500`
-* View summary: `view-progress 1`
+* Set target: `set-calorie-target 1 cal/2500`
+* Log intake: `log-calorie 1 cal/500`
+* Set focus: `set-focus c/1 f/Chest`
 
 ## v1.0 feature list
 
-* Trainer management: add-trainer, edit-trainer, delete-trainer, list-trainers
-* Client management: add-client, edit-client, delete-client, list-clients (optional trainer filter)
-* Assignment management: reassign client between trainers
-* Tracking: set-cal (target), log-cal (intake), set-focus (workout focus), view-progress
-* General: find (by name), remark (client notes), clear, help, exit
+* Trainer management: `add-trainer`, `delete-trainer`, `list-trainers`, `find-trainers`
+* Client management: `add-client`, `delete-client`, `list-clients`, `find-clients`
+* Tracking: `set-calorie-target`, `log-calorie`, `set-focus`, `remark`
+* General: `list`, `find`, `delete` (typed), `clear`, `help`, `exit`
 
 ## Scope
 

@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCombination;
@@ -16,6 +17,8 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.person.Person;
+import seedu.address.model.person.Trainer;
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -31,7 +34,8 @@ public class MainWindow extends UiPart<Stage> {
     private Logic logic;
 
     // Independent Ui parts residing in this Ui container
-    private PersonListPanel personListPanel;
+    private PersonListPanel trainerListPanel;
+    private PersonListPanel clientListPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
 
@@ -42,7 +46,13 @@ public class MainWindow extends UiPart<Stage> {
     private MenuItem helpMenuItem;
 
     @FXML
-    private StackPane personListPanelPlaceholder;
+    private StackPane trainerListPanelPlaceholder;
+
+    @FXML
+    private StackPane clientListPanelPlaceholder;
+
+    @FXML
+    private Hyperlink clientFilterLink;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -110,8 +120,14 @@ public class MainWindow extends UiPart<Stage> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
-        personListPanel = new PersonListPanel(logic.getFilteredPersonList());
-        personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
+        trainerListPanel = new PersonListPanel(logic.getFilteredTrainerList());
+        trainerListPanelPlaceholder.getChildren().add(trainerListPanel.getRoot());
+
+        clientListPanel = new PersonListPanel(logic.getFilteredClientList());
+        clientListPanelPlaceholder.getChildren().add(clientListPanel.getRoot());
+
+        trainerListPanel.setOnSelectedPersonChanged(this::handleSelectedTrainerChanged);
+        updateClientFilterLinkText();
 
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
@@ -164,7 +180,30 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     public PersonListPanel getPersonListPanel() {
-        return personListPanel;
+        return trainerListPanel;
+    }
+
+    @FXML
+    private void handleClearSelectedTrainer() {
+        logic.clearSelectedTrainer();
+        trainerListPanel.clearSelection();
+        updateClientFilterLinkText();
+    }
+
+    private void handleSelectedTrainerChanged(Person selectedPerson) {
+        if (selectedPerson instanceof Trainer) {
+            logic.setSelectedTrainer((Trainer) selectedPerson);
+        } else {
+            logic.clearSelectedTrainer();
+        }
+        updateClientFilterLinkText();
+    }
+
+    private void updateClientFilterLinkText() {
+        String linkText = logic.getSelectedTrainer()
+                .map(trainer -> "Showing: " + trainer.getName().fullName)
+                .orElse("Showing All");
+        clientFilterLink.setText(linkText);
     }
 
     /**
@@ -177,6 +216,8 @@ public class MainWindow extends UiPart<Stage> {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
+
+            updateClientFilterLinkText();
 
             if (commandResult.isShowHelp()) {
                 handleHelp();

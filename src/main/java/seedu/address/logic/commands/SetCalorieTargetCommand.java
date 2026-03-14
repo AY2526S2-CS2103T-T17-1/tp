@@ -23,7 +23,7 @@ public class SetCalorieTargetCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Sets the daily calorie target for the client identified by the index"
-            + " number used in the displayed person list.\n"
+            + " number used in the displayed client list.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + PREFIX_CALORIE + "CALORIES (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_CALORIE + "2000";
@@ -51,7 +51,7 @@ public class SetCalorieTargetCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Person> lastShownList = model.getFilteredClientList();
 
         if (targetIndex.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);

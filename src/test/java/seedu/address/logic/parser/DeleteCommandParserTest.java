@@ -22,11 +22,46 @@ public class DeleteCommandParserTest {
 
     @Test
     public void parse_validArgs_returnsDeleteCommand() {
-        assertParseSuccess(parser, "1", new DeleteCommand(INDEX_FIRST_PERSON));
+        assertParseSuccess(parser, "t/1", new DeleteCommand(DeleteCommand.TargetType.TRAINER, INDEX_FIRST_PERSON));
+    }
+
+    @Test
+    public void parse_validArgsClient_returnsDeleteCommand() {
+        assertParseSuccess(parser, "c/1", new DeleteCommand(DeleteCommand.TargetType.CLIENT, INDEX_FIRST_PERSON));
     }
 
     @Test
     public void parse_invalidArgs_throwsParseException() {
-        assertParseFailure(parser, "a", String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+        assertParseFailure(parser, "1", String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_preamblePresent_throwsParseException() {
+        assertParseFailure(parser, "abc t/1",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_bothPrefixesPresent_throwsParseException() {
+        assertParseFailure(parser, "t/1 c/2",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_repeatedTrainerPrefix_throwsParseException() {
+        assertParseFailure(parser, "t/1 t/2",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_repeatedClientPrefix_throwsParseException() {
+        assertParseFailure(parser, "c/1 c/2",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_invalidIndex_throwsParseException() {
+        assertParseFailure(parser, "t/0",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
     }
 }

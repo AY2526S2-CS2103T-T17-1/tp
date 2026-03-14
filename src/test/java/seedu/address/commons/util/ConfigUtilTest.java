@@ -112,5 +112,10 @@ public class ConfigUtilTest {
                                   : null;
     }
 
+    @Test
+    public void constructor_coverage() {
+        new ConfigUtil();
+    }
+
 
 }

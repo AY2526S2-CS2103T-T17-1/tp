@@ -140,4 +140,9 @@ public class StringUtilTest {
         assertThrows(NullPointerException.class, () -> StringUtil.getDetails(null));
     }
 
+    @Test
+    public void constructor_coverage() {
+        new StringUtil();
+    }
+
 }

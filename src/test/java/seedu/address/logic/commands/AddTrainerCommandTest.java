@@ -6,6 +6,9 @@ import static seedu.address.testutil.Assert.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.ModelStub;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.Trainer;
 import seedu.address.testutil.PersonBuilder;
 
@@ -14,6 +17,22 @@ public class AddTrainerCommandTest {
     @Test
     public void constructor_nullName_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new AddTrainerCommand(null));
+    }
+
+    @Test
+    public void execute_duplicateTrainer_throwsCommandException() {
+        Trainer alice = (Trainer) new PersonBuilder().withName("Alice").withEmail("alice@gmail.com").build();
+        AddTrainerCommand command = new AddTrainerCommand(alice);
+
+        ModelStub modelStub = new ModelStub() {
+            @Override
+            public boolean hasPerson(Person person) {
+                return true;
+            }
+        };
+
+        assertThrows(CommandException.class, AddTrainerCommand.MESSAGE_DUPLICATE_TRAINER, () ->
+            command.execute(modelStub));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package seedu.address.ui;
 
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
@@ -20,6 +21,8 @@ public class PersonListPanel extends UiPart<Region> {
     @FXML
     private ListView<Person> personListView;
 
+    private Consumer<Person> onSelectedPersonChanged;
+
     /**
      * Creates a {@code PersonListPanel} with the given {@code ObservableList}.
      */
@@ -27,6 +30,22 @@ public class PersonListPanel extends UiPart<Region> {
         super(FXML);
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
+
+        personListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (onSelectedPersonChanged != null) {
+                onSelectedPersonChanged.accept(newSelection);
+            }
+        });
+    }
+
+    /** Sets a callback to be invoked whenever the selected person changes. */
+    public void setOnSelectedPersonChanged(Consumer<Person> onSelectedPersonChanged) {
+        this.onSelectedPersonChanged = onSelectedPersonChanged;
+    }
+
+    /** Clears the current selection, if any. */
+    public void clearSelection() {
+        personListView.getSelectionModel().clearSelection();
     }
 
     /**

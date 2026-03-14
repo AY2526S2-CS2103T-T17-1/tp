@@ -168,11 +168,23 @@ These values are stored in the `Client` model as optional fields and are persist
 
 * `set-focus` is handled by `SetFocusCommandParser` and `SetFocusCommand`.
 * `remark` is handled by `RemarkCommandParser` and `RemarkCommand`.
-* Both commands resolve the target client using the index from the current `Model#getFilteredPersonList()`.
+* Both commands resolve the target client using the index from the current `Model#getFilteredClientList()`.
 
 **UI**:
 
 * `PersonCard` displays workout focus and remark labels for clients when present.
+
+### Trainer selection and client list filtering
+
+GymOps displays two lists in the UI: a **trainer list** and a **client list**.
+
+To support “select a trainer → filter clients”, the `Model` exposes:
+
+* `Model#setSelectedTrainer(Trainer)`
+* `Model#clearSelectedTrainer()`
+* `Model#getSelectedTrainer()`
+
+`ModelManager` stores the selected trainer’s phone (as an `Optional<Phone>`) and uses it to refine the client list predicate. This keeps the filtering logic inside `Model`, while allowing `UI` to remain a thin consumer of observable lists.
 
 ### Find keyword validation
 
@@ -182,6 +194,8 @@ These values are stored in the `Client` model as optional fields and are persist
 * rejects any keyword that is not alphanumeric (letters and/or digits only).
 
 The resulting `FindCommand` filters the displayed list using `NameContainsKeywordsPredicate`.
+
+`find-trainers` and `find-clients` follow the same keyword validation rules and filter only their respective lists.
 
 ### \[Proposed\] Undo/redo feature
 

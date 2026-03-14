@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.address.commons.core.GuiSettings;
 import seedu.address.logic.commands.AddTrainerCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ListCommand;
@@ -26,6 +27,9 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.person.Client;
+import seedu.address.model.person.Name;
+import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -59,7 +63,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_commandExecutionError_throwsCommandException() {
-        String deleteCommand = "delete 9";
+        String deleteCommand = "delete t/9";
         assertCommandException(deleteCommand, MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
     }
 
@@ -84,6 +88,43 @@ public class LogicManagerTest {
     @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredPersonList().remove(0));
+    }
+
+    @Test
+    public void getFilteredTrainerList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredTrainerList().remove(0));
+    }
+
+    @Test
+    public void getFilteredClientList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredClientList().remove(0));
+    }
+
+    @Test
+    public void selectedTrainer_setClearGet_delegatesToModel() {
+        Trainer trainer = (Trainer) new PersonBuilder().withName("John").withPhone("91234567")
+                .withEmail("john@example.com").withTags().build();
+        Client client = new Client(new Name("Alice"), new Phone("81234567"),
+                trainer.getPhone(), trainer.getName(), new java.util.HashSet<>());
+        model.addPerson(trainer);
+        model.addPerson(client);
+
+        logic.setSelectedTrainer(trainer);
+        assertEquals(java.util.Optional.of(trainer), logic.getSelectedTrainer());
+
+        logic.clearSelectedTrainer();
+        assertEquals(java.util.Optional.empty(), logic.getSelectedTrainer());
+    }
+
+    @Test
+    public void accessorsAndSettings_delegatesToModel() {
+        assertEquals(model.getAddressBook(), logic.getAddressBook());
+        assertEquals(model.getAddressBookFilePath(), logic.getAddressBookFilePath());
+
+        GuiSettings guiSettings = new GuiSettings(1, 2, 3, 4);
+        logic.setGuiSettings(guiSettings);
+        assertEquals(guiSettings, logic.getGuiSettings());
+        assertEquals(guiSettings, model.getGuiSettings());
     }
 
     /**

@@ -3,7 +3,10 @@ package seedu.address.commons.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.util.logging.Level;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +40,23 @@ public class JsonUtilTest {
         assertEquals(serializableTestClass.getName(), SerializableTestClass.getNameTestValue());
         assertEquals(serializableTestClass.getListOfLocalDateTimes(), SerializableTestClass.getListTestValues());
         assertEquals(serializableTestClass.getMapOfIntegerToString(), SerializableTestClass.getHashMapTestValues());
+    }
+
+    @Test
+    public void constructor_coverage() {
+        new JsonUtil();
+    }
+
+    @Test
+    public void levelDeserializer_handledType_returnsLevelClass() throws Exception {
+        Class<?> clazz = Class.forName("seedu.address.commons.util.JsonUtil$LevelDeserializer");
+        Constructor<?> ctor = clazz.getDeclaredConstructor(Class.class);
+        ctor.setAccessible(true);
+        Object deserializer = ctor.newInstance(Level.class);
+
+        Method handledType = clazz.getDeclaredMethod("handledType");
+        handledType.setAccessible(true);
+        assertEquals(Level.class, handledType.invoke(deserializer));
     }
 
     //TODO: @Test jsonUtil_readJsonStringToObjectInstance_correctObject()

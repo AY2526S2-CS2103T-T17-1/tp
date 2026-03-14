@@ -88,6 +88,20 @@ public class AddressBookTest {
         assertEquals(expected, addressBook.toString());
     }
 
+    @Test
+    public void equalsAndHashCode() {
+        AddressBook ab = getTypicalAddressBook();
+        AddressBook copy = new AddressBook(ab);
+
+        assertTrue(ab.equals(ab));
+        assertTrue(ab.equals(copy));
+        assertEquals(ab.hashCode(), copy.hashCode());
+
+        assertFalse(ab.equals(null));
+        assertFalse(ab.equals(5));
+        assertFalse(ab.equals(new AddressBook()));
+    }
+
     /**
      * A stub ReadOnlyAddressBook whose persons list can violate interface constraints.
      */

@@ -11,11 +11,20 @@ import static seedu.address.testutil.TypicalPersons.BENSON;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.person.Client;
+import seedu.address.model.person.Email;
+import seedu.address.model.person.Name;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
+import seedu.address.model.person.Phone;
+import seedu.address.model.person.Trainer;
 import seedu.address.testutil.AddressBookBuilder;
 
 public class ModelManagerTest {
@@ -128,5 +137,109 @@ public class ModelManagerTest {
         UserPrefs differentUserPrefs = new UserPrefs();
         differentUserPrefs.setAddressBookFilePath(Paths.get("differentFilePath"));
         assertFalse(modelManager.equals(new ModelManager(addressBook, differentUserPrefs)));
+    }
+
+    @Test
+    public void setSelectedTrainer_filtersClientListAndTracksSelection() {
+        AddressBook ab = new AddressBook();
+        Trainer trainerA = new Trainer(new Name("TrainerA"), new Phone("90000001"),
+                new Email("a@example.com"), Set.of());
+        Trainer trainerB = new Trainer(new Name("TrainerB"), new Phone("90000002"),
+                new Email("b@example.com"), Set.of());
+        Client clientA1 = new Client(new Name("ClientA1"), new Phone("80000001"),
+                trainerA.getPhone(), trainerA.getName(), new HashSet<>());
+        Client clientB1 = new Client(new Name("ClientB1"), new Phone("80000002"),
+                trainerB.getPhone(), trainerB.getName(), new HashSet<>());
+        ab.addPerson(trainerA);
+        ab.addPerson(trainerB);
+        ab.addPerson(clientA1);
+        ab.addPerson(clientB1);
+
+        ModelManager model = new ModelManager(ab, new UserPrefs());
+
+        model.setSelectedTrainer(trainerA);
+        assertTrue(model.getSelectedTrainer().isPresent());
+        assertEquals(trainerA.getPhone(), model.getSelectedTrainer().get().getPhone());
+        assertEquals(List.of(clientA1), model.getFilteredClientList());
+
+        model.clearSelectedTrainer();
+        assertTrue(model.getSelectedTrainer().isEmpty());
+        assertEquals(2, model.getFilteredClientList().size());
+    }
+
+    @Test
+    public void setSelectedTrainer_trainerNotInAddressBook_selectionClears() {
+        AddressBook ab = new AddressBook();
+        Trainer existingTrainer = new Trainer(new Name("Existing"), new Phone("90000001"),
+                new Email("e@example.com"), Set.of());
+        ab.addPerson(existingTrainer);
+
+        ModelManager model = new ModelManager(ab, new UserPrefs());
+        Trainer notInBook = new Trainer(new Name("NotInBook"), new Phone("99999999"),
+                new Email("n@example.com"), Set.of());
+
+        model.setSelectedTrainer(notInBook);
+        assertTrue(model.getSelectedTrainer().isEmpty());
+    }
+
+    @Test
+    public void deletePerson_deletingSelectedTrainer_clearsSelection() {
+        AddressBook ab = new AddressBook();
+        Trainer trainer = new Trainer(new Name("Trainer"), new Phone("90000001"),
+                new Email("t@example.com"), Set.of());
+        Client client = new Client(new Name("Client"), new Phone("80000001"),
+                trainer.getPhone(), trainer.getName(), new HashSet<>());
+        ab.addPerson(trainer);
+        ab.addPerson(client);
+
+        ModelManager model = new ModelManager(ab, new UserPrefs());
+        model.setSelectedTrainer(trainer);
+        assertTrue(model.getSelectedTrainer().isPresent());
+
+        model.deletePerson(trainer);
+        assertTrue(model.getSelectedTrainer().isEmpty());
+        assertEquals(1, model.getFilteredClientList().size());
+    }
+
+    @Test
+    public void setPerson_editSelectedTrainer_updatesSelectionAndRefreshesClients() {
+        AddressBook ab = new AddressBook();
+        Trainer trainer = new Trainer(new Name("Trainer"), new Phone("90000001"),
+                new Email("t@example.com"), Set.of());
+        Client client = new Client(new Name("Client"), new Phone("80000001"),
+                trainer.getPhone(), trainer.getName(), new HashSet<>());
+        ab.addPerson(trainer);
+        ab.addPerson(client);
+
+        ModelManager model = new ModelManager(ab, new UserPrefs());
+        model.setSelectedTrainer(trainer);
+
+        Trainer editedTrainer = new Trainer(new Name("Trainer Edited"), new Phone("90000009"),
+                new Email("t@example.com"), Set.of());
+        model.setPerson(trainer, editedTrainer);
+
+        assertEquals(Optional.of(editedTrainer), model.getSelectedTrainer());
+        assertEquals(0, model.getFilteredClientList().size());
+    }
+
+    @Test
+    public void setPerson_editSelectedTrainerToClient_clearsSelectionAndShowsAllClients() {
+        AddressBook ab = new AddressBook();
+        Trainer trainer = new Trainer(new Name("Trainer"), new Phone("90000001"),
+                new Email("t@example.com"), Set.of());
+        Client client = new Client(new Name("Client"), new Phone("80000001"),
+                trainer.getPhone(), trainer.getName(), new HashSet<>());
+        ab.addPerson(trainer);
+        ab.addPerson(client);
+
+        ModelManager model = new ModelManager(ab, new UserPrefs());
+        model.setSelectedTrainer(trainer);
+
+        Client editedToClient = new Client(new Name("Now Client"), trainer.getPhone(),
+                new Phone("91234567"), new Name("Other Trainer"), new HashSet<>());
+        model.setPerson(trainer, editedToClient);
+
+        assertTrue(model.getSelectedTrainer().isEmpty());
+        assertEquals(2, model.getFilteredClientList().size());
     }
 }

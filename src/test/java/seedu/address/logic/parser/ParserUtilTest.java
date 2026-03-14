@@ -169,4 +169,9 @@ public class ParserUtilTest {
 
         assertEquals(expectedTagSet, actualTagSet);
     }
+
+    @Test
+    public void constructor_coverage() {
+        new ParserUtil();
+    }
 }

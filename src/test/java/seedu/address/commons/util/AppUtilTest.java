@@ -33,4 +33,9 @@ public class AppUtilTest {
         String errorMessage = "error message";
         assertThrows(IllegalArgumentException.class, errorMessage, () -> AppUtil.checkArgument(false, errorMessage));
     }
+
+    @Test
+    public void constructor_coverage() {
+        new AppUtil();
+    }
 }

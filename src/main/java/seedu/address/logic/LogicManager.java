@@ -3,6 +3,7 @@ package seedu.address.logic;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
@@ -16,6 +17,7 @@ import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Trainer;
 import seedu.address.storage.Storage;
 
 /**
@@ -69,6 +71,31 @@ public class LogicManager implements Logic {
     @Override
     public ObservableList<Person> getFilteredPersonList() {
         return model.getFilteredPersonList();
+    }
+
+    @Override
+    public ObservableList<Person> getFilteredTrainerList() {
+        return model.getFilteredTrainerList();
+    }
+
+    @Override
+    public ObservableList<Person> getFilteredClientList() {
+        return model.getFilteredClientList();
+    }
+
+    @Override
+    public void setSelectedTrainer(Trainer trainer) {
+        model.setSelectedTrainer(trainer);
+    }
+
+    @Override
+    public void clearSelectedTrainer() {
+        model.clearSelectedTrainer();
+    }
+
+    @Override
+    public Optional<Trainer> getSelectedTrainer() {
+        return model.getSelectedTrainer();
     }
 
     @Override

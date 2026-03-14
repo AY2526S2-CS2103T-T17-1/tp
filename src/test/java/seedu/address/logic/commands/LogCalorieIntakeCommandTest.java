@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
+import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 
@@ -12,15 +13,20 @@ import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.ModelStub;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Client;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
 
@@ -42,8 +48,8 @@ public class LogCalorieIntakeCommandTest {
         Model model = new ModelManager(ab, new UserPrefs());
 
         int loggedCalories = 500;
-        // Client is at index 2 (1-based), trainer at index 1
-        LogCalorieIntakeCommand command = new LogCalorieIntakeCommand(INDEX_SECOND_PERSON, loggedCalories);
+        // Client is at index 1 (1-based) in the client list
+        LogCalorieIntakeCommand command = new LogCalorieIntakeCommand(INDEX_FIRST_PERSON, loggedCalories);
 
         Client updatedClient = new Client(client.getName(), client.getPhone(),
                 client.getTrainerPhone(), client.getTrainerName(), client.getTags(),
@@ -71,7 +77,7 @@ public class LogCalorieIntakeCommandTest {
         Model model = new ModelManager(ab, new UserPrefs());
 
         int additionalCalories = 500;
-        LogCalorieIntakeCommand command = new LogCalorieIntakeCommand(INDEX_SECOND_PERSON, additionalCalories);
+        LogCalorieIntakeCommand command = new LogCalorieIntakeCommand(INDEX_FIRST_PERSON, additionalCalories);
 
         int expectedTotal = 800;
         Client updatedClient = new Client(client.getName(), client.getPhone(),
@@ -98,7 +104,7 @@ public class LogCalorieIntakeCommandTest {
 
         LogCalorieIntakeCommand command = new LogCalorieIntakeCommand(INDEX_FIRST_PERSON, 500);
 
-        assertCommandFailure(command, model, LogCalorieIntakeCommand.MESSAGE_NOT_A_CLIENT);
+        assertCommandFailure(command, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
     }
 
     @Test
@@ -109,10 +115,27 @@ public class LogCalorieIntakeCommandTest {
         ab.addPerson(trainer);
         Model model = new ModelManager(ab, new UserPrefs());
 
-        Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
+        Index outOfBoundIndex = Index.fromOneBased(model.getFilteredClientList().size() + 1);
         LogCalorieIntakeCommand command = new LogCalorieIntakeCommand(outOfBoundIndex, 500);
 
         assertCommandFailure(command, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void execute_indexInListPointsToNonClient_throwsCommandException() {
+        Trainer trainer = new Trainer(new Name("John"), new Phone("91234567"),
+                new Email("john@example.com"), new HashSet<>());
+
+        ModelStub modelStub = new ModelStub() {
+            @Override
+            public ObservableList<Person> getFilteredClientList() {
+                return FXCollections.observableArrayList(trainer);
+            }
+        };
+
+        LogCalorieIntakeCommand command = new LogCalorieIntakeCommand(INDEX_FIRST_PERSON, 500);
+        assertThrows(CommandException.class, LogCalorieIntakeCommand.MESSAGE_NOT_A_CLIENT, () ->
+                command.execute(modelStub));
     }
 
     @Test

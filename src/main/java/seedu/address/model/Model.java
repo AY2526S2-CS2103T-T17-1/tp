@@ -1,6 +1,7 @@
 package seedu.address.model;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -85,9 +86,38 @@ public interface Model {
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();
 
+    /** Returns an unmodifiable view of the filtered trainer list (contains only {@code Trainer}s). */
+    ObservableList<Person> getFilteredTrainerList();
+
+    /** Returns an unmodifiable view of the filtered client list (contains only {@code Client}s). */
+    ObservableList<Person> getFilteredClientList();
+
     /**
      * Updates the filter of the filtered person list to filter by the given {@code predicate}.
      * @throws NullPointerException if {@code predicate} is null.
      */
     void updateFilteredPersonList(Predicate<Person> predicate);
+
+    /**
+     * Updates the filter of the filtered trainer list to filter by the given {@code predicate}.
+     * The resulting list will still only contain {@code Trainer}s.
+     */
+    void updateFilteredTrainerList(Predicate<Person> predicate);
+
+    /**
+     * Updates the filter of the filtered client list to filter by the given {@code predicate}.
+     * The resulting list will still only contain {@code Client}s.
+     */
+    void updateFilteredClientList(Predicate<Person> predicate);
+
+    /**
+     * Sets the currently selected trainer used to filter the client list.
+     */
+    void setSelectedTrainer(Trainer trainer);
+
+    /** Clears any selected trainer filter applied to the client list. */
+    void clearSelectedTrainer();
+
+    /** Returns the currently selected trainer (if any). */
+    Optional<Trainer> getSelectedTrainer();
 }

@@ -49,7 +49,7 @@ public class RemarkCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Person> lastShownList = model.getFilteredClientList();
 
         if (clientIndex.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(MESSAGE_INVALID_CLIENT_INDEX);

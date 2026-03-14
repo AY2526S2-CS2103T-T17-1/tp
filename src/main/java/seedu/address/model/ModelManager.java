@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -11,7 +12,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.model.person.Client;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
 
 /**
@@ -22,7 +25,16 @@ public class ModelManager implements Model {
 
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
+
     private final FilteredList<Person> filteredPersons;
+    private final FilteredList<Person> filteredTrainers;
+    private final FilteredList<Person> filteredClients;
+
+    private Predicate<Person> personListPredicate = PREDICATE_SHOW_ALL_PERSONS;
+    private Predicate<Person> trainerListPredicate = PREDICATE_SHOW_ALL_PERSONS;
+    private Predicate<Person> clientListPredicate = PREDICATE_SHOW_ALL_PERSONS;
+
+    private Optional<Phone> selectedTrainerPhone = Optional.empty();
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -34,7 +46,12 @@ public class ModelManager implements Model {
 
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
+
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+        filteredTrainers = new FilteredList<>(this.addressBook.getPersonList());
+        filteredClients = new FilteredList<>(this.addressBook.getPersonList());
+
+        refreshAllPredicates();
     }
 
     public ModelManager() {
@@ -81,6 +98,8 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
+        clearSelectedTrainer();
+        refreshAllPredicates();
     }
 
     @Override
@@ -103,6 +122,10 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
+        if (target instanceof Trainer && selectedTrainerPhone.isPresent()
+                && ((Trainer) target).getPhone().equals(selectedTrainerPhone.get())) {
+            clearSelectedTrainer();
+        }
     }
 
     @Override
@@ -116,6 +139,18 @@ public class ModelManager implements Model {
         requireAllNonNull(target, editedPerson);
 
         addressBook.setPerson(target, editedPerson);
+
+        if (target instanceof Trainer && selectedTrainerPhone.isPresent()) {
+            Phone selectedPhone = selectedTrainerPhone.get();
+            if (((Trainer) target).getPhone().equals(selectedPhone)) {
+                if (editedPerson instanceof Trainer) {
+                    selectedTrainerPhone = Optional.of(((Trainer) editedPerson).getPhone());
+                } else {
+                    clearSelectedTrainer();
+                }
+                refreshClientPredicate();
+            }
+        }
     }
 
     //=========== Filtered Person List Accessors =============================================================
@@ -130,9 +165,94 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public ObservableList<Person> getFilteredTrainerList() {
+        return filteredTrainers;
+    }
+
+    @Override
+    public ObservableList<Person> getFilteredClientList() {
+        return filteredClients;
+    }
+
+    @Override
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
-        filteredPersons.setPredicate(predicate);
+
+        personListPredicate = predicate;
+        trainerListPredicate = predicate;
+        clientListPredicate = predicate;
+
+        clearSelectedTrainer();
+        refreshAllPredicates();
+    }
+
+    @Override
+    public void updateFilteredTrainerList(Predicate<Person> predicate) {
+        requireNonNull(predicate);
+        trainerListPredicate = predicate;
+        refreshTrainerPredicate();
+    }
+
+    @Override
+    public void updateFilteredClientList(Predicate<Person> predicate) {
+        requireNonNull(predicate);
+        clientListPredicate = predicate;
+        refreshClientPredicate();
+    }
+
+    @Override
+    public void setSelectedTrainer(Trainer trainer) {
+        requireNonNull(trainer);
+        selectedTrainerPhone = Optional.of(trainer.getPhone());
+        refreshClientPredicate();
+    }
+
+    @Override
+    public void clearSelectedTrainer() {
+        selectedTrainerPhone = Optional.empty();
+        refreshClientPredicate();
+    }
+
+    @Override
+    public Optional<Trainer> getSelectedTrainer() {
+        if (selectedTrainerPhone.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Phone trainerPhone = selectedTrainerPhone.get();
+        return addressBook.getPersonList().stream()
+                .filter(person -> person instanceof Trainer)
+                .map(person -> (Trainer) person)
+                .filter(trainer -> trainer.getPhone().equals(trainerPhone))
+                .findFirst();
+    }
+
+    private void refreshAllPredicates() {
+        filteredPersons.setPredicate(personListPredicate);
+        refreshTrainerPredicate();
+        refreshClientPredicate();
+    }
+
+    private void refreshTrainerPredicate() {
+        filteredTrainers.setPredicate(person -> person instanceof Trainer && trainerListPredicate.test(person));
+    }
+
+    private void refreshClientPredicate() {
+        Predicate<Person> selectionPredicate = person -> true;
+        if (selectedTrainerPhone.isPresent()) {
+            Phone trainerPhone = selectedTrainerPhone.get();
+            selectionPredicate = person -> person instanceof Client
+                    && ((Client) person).getTrainerPhone().equals(trainerPhone);
+        }
+
+        Predicate<Person> typeAndUserPredicate = person -> person instanceof Client && clientListPredicate.test(person);
+        filteredClients.setPredicate(typeAndUserPredicate.and(selectionPredicate));
+
+        // If the selected trainer no longer exists, clear it to keep UI state consistent.
+        if (selectedTrainerPhone.isPresent() && getSelectedTrainer().isEmpty()) {
+            selectedTrainerPhone = Optional.empty();
+            filteredClients.setPredicate(typeAndUserPredicate);
+        }
     }
 
     @Override
@@ -149,7 +269,13 @@ public class ModelManager implements Model {
         ModelManager otherModelManager = (ModelManager) other;
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
-                && filteredPersons.equals(otherModelManager.filteredPersons);
+            && filteredPersons.equals(otherModelManager.filteredPersons)
+            && filteredTrainers.equals(otherModelManager.filteredTrainers)
+            && filteredClients.equals(otherModelManager.filteredClients)
+            && personListPredicate.equals(otherModelManager.personListPredicate)
+            && trainerListPredicate.equals(otherModelManager.trainerListPredicate)
+            && clientListPredicate.equals(otherModelManager.clientListPredicate)
+            && selectedTrainerPhone.equals(otherModelManager.selectedTrainerPhone);
     }
 
 }
