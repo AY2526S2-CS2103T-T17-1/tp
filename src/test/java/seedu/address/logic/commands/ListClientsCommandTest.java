@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,6 @@ import seedu.address.model.person.Name;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
-
 public class ListClientsCommandTest {
 
     @Test
@@ -35,10 +35,10 @@ public class ListClientsCommandTest {
         ab.addPerson(clientB);
 
         Model model = new ModelManager(ab, new UserPrefs());
-        model.updateFilteredClientList(new NameContainsKeywordsPredicate(java.util.List.of("Alice")));
+        model.updateFilteredClientList(new NameContainsKeywordsPredicate(List.of("Alice")));
 
         Model expectedModel = new ModelManager(ab, new UserPrefs());
-        expectedModel.updateFilteredClientList(seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS);
+        expectedModel.updateFilteredClientList(Model.PREDICATE_SHOW_ALL_PERSONS);
 
         ListClientsCommand command = new ListClientsCommand();
         assertCommandSuccess(command, model, ListClientsCommand.MESSAGE_SUCCESS, expectedModel);
