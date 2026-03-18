@@ -24,7 +24,7 @@ High-speed management of a **hierarchical trainer → client** structure, plus l
 
 ## Key workflows
 
-* **Trainer → Client operations**: add clients assigned to trainers, and keep a clear separation between the trainer list and client list.
+* **Trainer → Client operations**: add clients assigned to trainers, with a GUI feature to easily view a trainer's designated clients simply by clicking on their card.
 * **Daily tracking**: set calorie targets, log intake, set workout focus, and record client remarks.
 
 ## Command prefixes (Trainer vs Client)

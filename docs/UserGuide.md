@@ -143,11 +143,11 @@ Shows all clients in GymOps.
 
 Format: `list-clients`
 
-### Filtering clients by trainer selection (GUI)
+### Viewing a Trainer's Clients (GUI)
 
-In the GUI, selecting a trainer in the **Trainers** list will automatically filter the **Clients** list to show only clients assigned to that trainer.
+In the GUI, you can click on any trainer card in the **Trainers** list (left) to view their assigned clients. This will automatically filter the **Clients** list (right) to show only the clients assigned to that specific trainer.
 
-To clear the filter, click the **Showing All** link above the client list (or run `list`).
+To clear the filter and view all clients again, click the **Showing All** link above the client list, or run the `list` command.
 
 ### Locating trainers by name: `find-trainers`
 
