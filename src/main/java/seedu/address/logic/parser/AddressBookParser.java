@@ -110,7 +110,7 @@ public class AddressBookParser {
             return new ListTrainersCommand();
 
         case ListClientsCommand.COMMAND_WORD:
-            return new ListClientsCommand();
+            return new ListClientsCommandParser().parse(arguments);
 
         case ExitCommand.COMMAND_WORD:
             return new ExitCommand();

@@ -7,7 +7,7 @@
     "java.format.settings.profile": "VSCode",
 
     "editor.codeActionsOnSave": {
-        "source.organizeImports": false
+        "source.organizeImports": "never"
     },
 
     // Import order: static imports come first automatically; then the groups below.
@@ -26,7 +26,7 @@
     "[java]": {
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-            "source.organizeImports": false
+            "source.organizeImports": "never"
         }
     },
 
