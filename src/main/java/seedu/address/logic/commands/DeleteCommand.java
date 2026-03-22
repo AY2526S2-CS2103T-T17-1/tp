@@ -29,8 +29,10 @@ public class DeleteCommand extends Command {
     public static final String MESSAGE_DELETE_CLIENT_SUCCESS = "Deleted Client: %1$s";
     public static final String MESSAGE_TRAINER_HAS_CLIENTS =
             "Cannot delete trainer: they still have active clients.";
-    public static final String MESSAGE_NOT_A_TRAINER = "The person at the specified index is not a Trainer.";
-    public static final String MESSAGE_NOT_A_CLIENT = "The person at the specified index is not a Client.";
+    public static final String MESSAGE_NOT_A_TRAINER =
+            "The person at the specified index is not a Trainer.";
+    public static final String MESSAGE_NOT_A_CLIENT =
+            "The person at the specified index is not a Client.";
 
     /** Target list that the index refers to. */
     public enum TargetType {
@@ -53,6 +55,7 @@ public class DeleteCommand extends Command {
         this.targetType = targetType;
     }
 
+    /** {@inheritDoc} */
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
@@ -77,7 +80,10 @@ public class DeleteCommand extends Command {
             }
 
             model.deletePerson(trainerToDelete);
-            return new CommandResult(String.format(MESSAGE_DELETE_TRAINER_SUCCESS, Messages.format(trainerToDelete)));
+            return new CommandResult(
+                    String.format(
+                            MESSAGE_DELETE_TRAINER_SUCCESS,
+                            Messages.format(trainerToDelete)));
         }
 
         if (!(personToDelete instanceof Client)) {
@@ -85,9 +91,11 @@ public class DeleteCommand extends Command {
         }
 
         model.deletePerson(personToDelete);
-        return new CommandResult(String.format(MESSAGE_DELETE_CLIENT_SUCCESS, Messages.format(personToDelete)));
+        return new CommandResult(
+                String.format(MESSAGE_DELETE_CLIENT_SUCCESS, Messages.format(personToDelete)));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -104,6 +112,7 @@ public class DeleteCommand extends Command {
                 && targetIndex.equals(otherDeleteCommand.targetIndex);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new ToStringBuilder(this)

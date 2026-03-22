@@ -43,7 +43,8 @@ public class ModelManager implements Model {
     public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs) {
         requireAllNonNull(addressBook, userPrefs);
 
-        logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
+        logger.fine("Initializing with address book: " + addressBook
+            + " and user prefs " + userPrefs);
 
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
@@ -55,45 +56,55 @@ public class ModelManager implements Model {
         refreshAllPredicates();
     }
 
+    /**
+     * Initializes an empty {@code ModelManager}.
+     */
     public ModelManager() {
         this(new AddressBook(), new UserPrefs());
     }
 
-    //=========== UserPrefs ==================================================================================
+    //=========== UserPrefs =================================================================
+    /** {@inheritDoc} */
     @Override
     public void setUserPrefs(ReadOnlyUserPrefs userPrefs) {
         requireNonNull(userPrefs);
         this.userPrefs.resetData(userPrefs);
     }
 
+    /** {@inheritDoc} */
     @Override
     public ReadOnlyUserPrefs getUserPrefs() {
         return userPrefs;
     }
 
+    /** {@inheritDoc} */
     @Override
     public GuiSettings getGuiSettings() {
         return userPrefs.getGuiSettings();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setGuiSettings(GuiSettings guiSettings) {
         requireNonNull(guiSettings);
         userPrefs.setGuiSettings(guiSettings);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Path getAddressBookFilePath() {
         return userPrefs.getAddressBookFilePath();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setAddressBookFilePath(Path addressBookFilePath) {
         requireNonNull(addressBookFilePath);
         userPrefs.setAddressBookFilePath(addressBookFilePath);
     }
 
-    //=========== AddressBook ================================================================================
+    //=========== AddressBook ================================================================
+    /** {@inheritDoc} */
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
@@ -101,23 +112,27 @@ public class ModelManager implements Model {
         refreshAllPredicates();
     }
 
+    /** {@inheritDoc} */
     @Override
     public ReadOnlyAddressBook getAddressBook() {
         return addressBook;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasPerson(Person person) {
         requireNonNull(person);
         return addressBook.hasPerson(person);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasClientWithTrainer(Trainer trainer) {
         requireNonNull(trainer);
         return addressBook.hasClientWithTrainer(trainer);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
@@ -127,12 +142,14 @@ public class ModelManager implements Model {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addPerson(Person person) {
         addressBook.addPerson(person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
@@ -152,7 +169,7 @@ public class ModelManager implements Model {
         }
     }
 
-    //=========== Filtered Person List Accessors =============================================================
+    //=========== Filtered Person List Accessors ============================================
     /**
      * Returns an unmodifiable view of the list of {@code Person} backed by the
      * internal list of {@code versionedAddressBook}
@@ -162,16 +179,19 @@ public class ModelManager implements Model {
         return filteredPersons;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ObservableList<Person> getFilteredTrainerList() {
         return filteredTrainers;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ObservableList<Person> getFilteredClientList() {
         return filteredClients;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
@@ -184,6 +204,7 @@ public class ModelManager implements Model {
         refreshAllPredicates();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void updateFilteredTrainerList(Predicate<Person> predicate) {
         requireNonNull(predicate);
@@ -191,6 +212,7 @@ public class ModelManager implements Model {
         refreshTrainerPredicate();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void updateFilteredClientList(Predicate<Person> predicate) {
         requireNonNull(predicate);
@@ -198,6 +220,7 @@ public class ModelManager implements Model {
         refreshClientPredicate();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setSelectedTrainer(Trainer trainer) {
         requireNonNull(trainer);
@@ -205,22 +228,26 @@ public class ModelManager implements Model {
         refreshClientPredicate();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void clearSelectedTrainer() {
         selectedTrainerPhone = Optional.empty();
         refreshClientPredicate();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isTrainerListFiltered() {
         return trainerListPredicate != PREDICATE_SHOW_ALL_PERSONS;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isClientListFiltered() {
         return clientListPredicate != PREDICATE_SHOW_ALL_PERSONS;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Optional<Trainer> getSelectedTrainer() {
         if (selectedTrainerPhone.isEmpty()) {
@@ -242,7 +269,8 @@ public class ModelManager implements Model {
     }
 
     private void refreshTrainerPredicate() {
-        filteredTrainers.setPredicate(person -> person instanceof Trainer && trainerListPredicate.test(person));
+        filteredTrainers.setPredicate(
+                person -> person instanceof Trainer && trainerListPredicate.test(person));
     }
 
     private void refreshClientPredicate() {
@@ -253,7 +281,8 @@ public class ModelManager implements Model {
                     && ((Client) person).getTrainerPhone().equals(trainerPhone);
         }
 
-        Predicate<Person> typeAndUserPredicate = person -> person instanceof Client && clientListPredicate.test(person);
+        Predicate<Person> typeAndUserPredicate =
+            person -> person instanceof Client && clientListPredicate.test(person);
         filteredClients.setPredicate(typeAndUserPredicate.and(selectionPredicate));
 
         // If the selected trainer no longer exists, clear it to keep UI state consistent.
@@ -263,6 +292,7 @@ public class ModelManager implements Model {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (other == this) {

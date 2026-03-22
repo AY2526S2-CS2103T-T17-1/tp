@@ -26,6 +26,9 @@ public class WorkoutFocus {
         this.value = workoutFocus;
     }
 
+    /**
+     * Returns the workout focus value.
+     */
     public String getValue() {
         return value;
     }
@@ -37,11 +40,13 @@ public class WorkoutFocus {
         return test != null && test.matches(VALIDATION_REGEX);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         return other == this
@@ -49,6 +54,7 @@ public class WorkoutFocus {
                 && value.equals(((WorkoutFocus) other).value));
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return value.hashCode();

@@ -30,7 +30,8 @@ public class SetFocusCommand extends Command {
             + "Example: " + COMMAND_WORD + " " + PREFIX_CLIENT + "1 " + PREFIX_FOCUS + "Chest";
 
     public static final String MESSAGE_SUCCESS = "Workout focus for %1$s set to: %2$s.";
-    public static final String MESSAGE_INVALID_CLIENT_INDEX = "The client index provided is invalid.";
+    public static final String MESSAGE_INVALID_CLIENT_INDEX =
+            "The client index provided is invalid.";
 
     private final Index clientIndex;
     private final WorkoutFocus workoutFocus;
@@ -49,6 +50,7 @@ public class SetFocusCommand extends Command {
         this.workoutFocus = workoutFocus;
     }
 
+    /** {@inheritDoc} */
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
@@ -77,9 +79,11 @@ public class SetFocusCommand extends Command {
         );
 
         model.setPerson(clientToEdit, updatedClient);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, updatedClient.getName(), workoutFocus.getValue()));
+        return new CommandResult(
+            String.format(MESSAGE_SUCCESS, updatedClient.getName(), workoutFocus.getValue()));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -95,11 +99,13 @@ public class SetFocusCommand extends Command {
                 && workoutFocus.equals(otherCommand.workoutFocus);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return Objects.hash(clientIndex, workoutFocus);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new ToStringBuilder(this)

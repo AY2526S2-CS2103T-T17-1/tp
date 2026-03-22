@@ -13,8 +13,9 @@ public class FindTrainersCommand extends Command {
 
     public static final String COMMAND_WORD = "find-trainers";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds all trainers whose names contain any of "
-            + "the specified keywords (case-insensitive) and displays them in the trainer list with index numbers.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Finds all trainers whose names contain any of the specified keywords "
+            + "(case-insensitive) and displays them in the trainer list with index numbers.\n"
             + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
             + "Example: " + COMMAND_WORD + " alice bob";
 
@@ -22,10 +23,14 @@ public class FindTrainersCommand extends Command {
 
     private final NameContainsKeywordsPredicate predicate;
 
+    /**
+     * Creates a {@code FindTrainersCommand}.
+     */
     public FindTrainersCommand(NameContainsKeywordsPredicate predicate) {
         this.predicate = predicate;
     }
 
+    /** {@inheritDoc} */
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
@@ -34,6 +39,7 @@ public class FindTrainersCommand extends Command {
                 model.getFilteredTrainerList().size()));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -48,6 +54,7 @@ public class FindTrainersCommand extends Command {
         return predicate.equals(otherCommand.predicate);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new ToStringBuilder(this)

@@ -22,13 +22,15 @@ public class RemarkCommand extends Command {
     public static final String COMMAND_WORD = "remark";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Adds a remark to an existing client. If a remark already exists, it will be overwritten.\n"
+            + ": Adds a remark to an existing client. "
+            + "If a remark already exists, it will be overwritten.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + PREFIX_REMARK + "REMARK\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_REMARK + "Recovering from ACL surgery";
 
     public static final String MESSAGE_SUCCESS = "Added remark to Client: %1$s. Remark: %2$s";
-    public static final String MESSAGE_INVALID_CLIENT_INDEX = "The client index provided is invalid.";
+    public static final String MESSAGE_INVALID_CLIENT_INDEX =
+            "The client index provided is invalid.";
 
     private final Index clientIndex;
     private final Remark remark;
@@ -47,6 +49,7 @@ public class RemarkCommand extends Command {
         this.remark = remark;
     }
 
+    /** {@inheritDoc} */
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
@@ -75,9 +78,11 @@ public class RemarkCommand extends Command {
         );
 
         model.setPerson(clientToEdit, updatedClient);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, updatedClient.getName(), remark.getValue()));
+        return new CommandResult(
+            String.format(MESSAGE_SUCCESS, updatedClient.getName(), remark.getValue()));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -93,11 +98,13 @@ public class RemarkCommand extends Command {
                 && remark.equals(otherCommand.remark);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return Objects.hash(clientIndex, remark);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new ToStringBuilder(this)

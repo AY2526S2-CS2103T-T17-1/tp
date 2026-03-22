@@ -13,8 +13,9 @@ public class FindClientsCommand extends Command {
 
     public static final String COMMAND_WORD = "find-clients";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds all clients whose names contain any of "
-            + "the specified keywords (case-insensitive) and displays them in the client list with index numbers.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Finds all clients whose names contain any of the specified keywords "
+            + "(case-insensitive) and displays them in the client list with index numbers.\n"
             + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
             + "Example: " + COMMAND_WORD + " alice bob";
 
@@ -22,17 +23,24 @@ public class FindClientsCommand extends Command {
 
     private final NameContainsKeywordsPredicate predicate;
 
+    /**
+     * Creates a {@code FindClientsCommand}.
+     */
     public FindClientsCommand(NameContainsKeywordsPredicate predicate) {
         this.predicate = predicate;
     }
 
+    /** {@inheritDoc} */
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
         model.updateFilteredClientList(predicate);
-        return new CommandResult(String.format(MESSAGE_CLIENTS_LISTED_OVERVIEW, model.getFilteredClientList().size()));
+        int clientCount = model.getFilteredClientList().size();
+        return new CommandResult(
+            String.format(MESSAGE_CLIENTS_LISTED_OVERVIEW, clientCount));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -47,6 +55,7 @@ public class FindClientsCommand extends Command {
         return predicate.equals(otherCommand.predicate);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new ToStringBuilder(this)

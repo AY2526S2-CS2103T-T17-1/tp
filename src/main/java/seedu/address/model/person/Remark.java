@@ -25,6 +25,9 @@ public class Remark {
         this.value = remark;
     }
 
+    /**
+     * Returns the remark value.
+     */
     public String getValue() {
         return value;
     }
@@ -36,11 +39,13 @@ public class Remark {
         return test != null && !test.trim().isEmpty();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         return other == this
@@ -48,6 +53,7 @@ public class Remark {
                 && value.equals(((Remark) other).value));
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return value.hashCode();
