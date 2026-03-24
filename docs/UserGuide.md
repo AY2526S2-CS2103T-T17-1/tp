@@ -3,312 +3,389 @@ layout: page
 title: User Guide
 ---
 
-GymOps is a **desktop app for managing gym trainers and their clients**, optimized for use via a **Command Line Interface** (CLI) while still having the benefits of a Graphical User Interface (GUI).
+GymOps is a **desktop application for gym managers** to manage trainers and their clients. It is optimised for users who prefer a **Command Line Interface (CLI)** while still offering the benefits of a **Graphical User Interface (GUI)**.
+
+---
+
+## Introduction
+
+### Who this guide is for
+
+This guide is written for **gym managers and administrators** who want a fast, keyboard-driven way to manage their gym's roster. GymOps is designed for users comfortable with typing commands and working with indexed lists.
+
+**We assume you:**
+- Can open and use a terminal or command prompt
+- Are comfortable typing commands with parameters
+- Have Java 17 or above installed, or are able to install it
+- Have basic familiarity with indexed lists (e.g. "the 2nd item in a list")
+
+### How to use this guide
+
+- **New to GymOps?** Start with [Quick Start](#quick-start) for installation and a first-use walkthrough.
+- **Looking for a specific command?** Jump to [Features](#features) or the [Command Summary](#command-summary) at the end.
+- **Having trouble?** Check [Known Issues](#known-issues) or [FAQ](#faq).
 
 * Table of Contents
 {:toc}
 
---------------------------------------------------------------------------------------------------------------------
+---
 
 ## Quick start
 
-1. Ensure you have Java `17` or above installed in your Computer.<br>
-   **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
+1. Ensure you have **Java 17 or above** installed on your computer.
 
-1. Download the latest `.jar` file from this project's release page.
+   **Mac users:** Install the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
+
+1. Download the latest `.jar` file from the project's release page.
 
 1. Copy the file to the folder you want to use as the _home folder_ for GymOps.
 
-1. Open a command terminal, `cd` into the folder you put the jar file in, and use `java -jar YOUR_FILE_NAME.jar` to run the application.<br>
-   A GUI similar to the below should appear in a few seconds. Note how the app contains some sample data.<br>
+1. Open a terminal, `cd` into the folder containing the `.jar` file, and run:
+
+   ```
+   java -jar YOUR_FILE_NAME.jar
+   ```
+
+   The GymOps window will appear within a few seconds, pre-loaded with sample data.
+
    ![Ui](images/Ui.png)
 
-1. Type the command in the command box and press Enter to execute it. e.g. typing **`help`** and pressing Enter will open the help window.<br>
-   Some example commands you can try:
+   The window is split into two panels: **Trainers** (left) and **Clients** (right). Each panel shows a scrollable list of cards. Enter commands in the command box at the bottom and press **Enter** to execute them.
 
-  * `list-trainers` : Lists all trainers.
+1. Try the following commands to get started:
 
-  * `list-clients` : Lists all clients.
+   | Step | Command | What it does |
+   |------|---------|-------------|
+   | 1 | `list-trainers` | View all trainers |
+   | 2 | `add-trainer n/John Doe p/98765432 e/johndoe@example.com` | Add a new trainer |
+   | 3 | `list-trainers` | Confirm the trainer was added |
+   | 4 | `add-client n/Alice Lim p/81234567 t/1` | Assign a client to trainer #1 |
+   | 5 | `find-clients Alice` | Search for the client you just added |
+   | 6 | `delete-client 1` | Delete the 1st client in the current list |
+   | 7 | `clear` | Delete all data |
+   | 8 | `exit` | Exit the app |
 
-  * `find-trainers alice` : Finds all trainers whose names match `alice`.
+1. Refer to [Features](#features) for the full details of each command.
 
-  * `add-trainer n/John Doe p/98765432 e/johndoe@example.com` : Adds a trainer.
-
-  * `add-client n/Alice Lim p/81234567 t/1` : Adds a client assigned to trainer #1.
-
-  * `clear` : Deletes all persons.
-
-   * `exit` : Exits the app.
-
-1. Refer to the [Features](#features) below for details of each command.
-
---------------------------------------------------------------------------------------------------------------------
+---
 
 ## Features
 
 <div markdown="block" class="alert alert-info">
 
-**:information_source: Notes about the command format:**<br>
+**:information_source: Notes about the command format:**
 
-* Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
-  e.g. in `add-trainer n/NAME`, `NAME` is a parameter which can be used as `add-trainer n/John Doe ...`.
+- Words in `UPPER_CASE` are parameters you supply. e.g. in `add-trainer n/NAME`, replace `NAME` with the actual name: `add-trainer n/John Doe`.
+- Items in square brackets are optional. e.g. `find KEYWORD [MORE_KEYWORDS]` can be used as `find alice` or `find alice bob`.
+- Parameters can be in any order. e.g. `n/NAME p/PHONE_NUMBER` and `p/PHONE_NUMBER n/NAME` are both valid.
+- Extraneous parameters for commands that take no parameters (such as `help`, `list`, `exit`, and `clear`) will be ignored.
+- An `INDEX` refers to the number shown in the **currently displayed list**, not the full unfiltered list.
+- GymOps displays **two lists**: **Trainers** (left) and **Clients** (right). Trainer-related indexes refer to the trainer list; client-related indexes refer to the client list.
+- If you are using a PDF version of this document, be careful when copying commands that span multiple lines, as spaces around line breaks may be lost.
 
-* Items in square brackets are optional.<br>
-  e.g `find KEYWORD [MORE_KEYWORDS]` can be used as `find alice` or `find alice bob`.
-
-* Parameters can be in any order.<br>
-  e.g. if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
-
-* Extraneous parameters for commands that do not take in parameters (such as `help`, `list`, `exit` and `clear`) will be ignored.<br>
-  e.g. if the command specifies `help 123`, it will be interpreted as `help`.
-
-* For commands that use an `INDEX`, the index refers to the index number shown in the **currently displayed person list**.
-
-* GymOps displays **two lists**: **Trainers** (left) and **Clients** (right). When a command takes an index:
-  * Trainer-related indices refer to the **trainer list**.
-  * Client-related indices refer to the **client list**.
-  * The `delete` command is typed (`delete t/...` or `delete c/...`) to make this explicit.
-
-* If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
-### Viewing help : `help`
+### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
-
-![help message](images/helpMessage.png)
+Opens a link to the help page.
 
 Format: `help`
 
+![help message](images/helpMessage.png)
+
+---
 
 ### Adding a trainer: `add-trainer`
 
-Adds a trainer to GymOps.
+Adds a new trainer to GymOps.
 
 Format: `add-trainer n/NAME p/PHONE_NUMBER e/EMAIL`
 
 Examples:
 * `add-trainer n/John Doe p/98765432 e/johndoe@example.com`
 
+---
+
 ### Adding a client: `add-client`
 
-Adds a client and assigns them to a trainer.
+Adds a new client and assigns them to an existing trainer.
 
 Format: `add-client n/NAME p/PHONE_NUMBER t/TRAINER_INDEX`
 
-* `TRAINER_INDEX` must refer to a **trainer** in the currently displayed list.
+* `TRAINER_INDEX` must refer to a trainer visible in the **current trainer list**.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the trainer list is filtered (e.g. after a `find-trainers` command), `TRAINER_INDEX` refers to the filtered results. Run `list-trainers` first to assign by the full list.</div>
+
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-trainers` to confirm the correct trainer index before adding a client.</div>
 
 Examples:
-* `add-client n/Alice Lim p/81234567 t/1`
+* `add-client n/Alice Lim p/81234567 t/1` — adds Alice Lim and assigns her to the 1st trainer in the list.
 
-### Listing all persons : `list`
+---
 
-Shows all persons in GymOps.
+### Listing all persons: `list`
 
-This resets both the trainer list and client list to show all entries, and clears any trainer-selection filter applied to the client list.
+Shows all trainers and all clients. Resets both lists and clears any active filters.
 
 Format: `list`
 
-### Locating persons by name: `find`
+---
+
+### Listing all trainers: `list-trainers`
+
+Shows all trainers in GymOps. Clears any active trainer filter.
+
+Format: `list-trainers`
+
+---
+
+### Listing all clients: `list-clients`
+
+Shows all clients in GymOps. Clears any active client filter, including filters applied by clicking a trainer card.
+
+Format: `list-clients`
+
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** After filtering clients by trainer (via the GUI), run `list-clients` to return to the full client list.</div>
+
+---
+
+### Viewing a trainer's clients
+
+Click on any trainer card in the **Trainers** list to filter the **Clients** list to show only that trainer's assigned clients.
+
+To clear the filter, click the **Showing All** link above the client list, or run `list`.
+
+---
+
+### Finding persons: `find`
 
 Finds trainers and clients whose names contain any of the given keywords.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
-* The search is case-insensitive. e.g `hans` will match `Hans`
-* The order of the keywords does not matter. e.g. `Hans Bo` will match `Bo Hans`
-* Only the name is searched.
-* Only full words will be matched e.g. `Han` will not match `Hans`
-* Each keyword must be alphanumeric (letters and/or digits). e.g. `Bob123` is allowed, `Bob@` is not.
-* Persons matching at least one keyword will be returned (i.e. `OR` search).
-  e.g. `Hans Bo` will return `Hans Gruber`, `Bo Yang`
-* To return to the full list after a `find`, run `list`.
+* The search is case-insensitive. e.g. `hans` matches `Hans`.
+* The order of keywords does not matter. e.g. `Hans Bo` matches `Bo Hans`.
+* Only full words are matched. e.g. `Han` does not match `Hans`.
+* Each keyword must be alphanumeric. e.g. `Bob123` is valid; `Bob@` is not.
+* Results include persons matching **at least one** keyword (OR search).
+* Run `list` to return to the full list after searching.
 
-Alternatively, you can search within a specific list using `find-trainers` or `find-clients`.
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Use `find-trainers` or `find-clients` to search within a specific list.</div>
 
 Examples:
-* `find John` returns `john` and `John Doe`
-* `find alex david` returns `Alex Yeoh`, `David Li`<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+* `find John` — returns `john`, `John Doe`
+* `find alex david` — returns `Alex Yeoh`, `David Li`
 
-### Listing all trainers: `list-trainers`
+![result for 'find alex david'](images/findAlexDavidResult.png)
 
-Shows all trainers in GymOps.
+---
 
-Format: `list-trainers`
-
-### Listing all clients: `list-clients`
-
-Shows all clients in GymOps.
-
-Format: `list-clients`
-
-### Viewing a Trainer's Clients (GUI)
-
-In the GUI, you can click on any trainer card in the **Trainers** list (left) to view their assigned clients. This will automatically filter the **Clients** list (right) to show only the clients assigned to that specific trainer.
-
-To clear the filter and view all clients again, click the **Showing All** link above the client list, or run the `list` command.
-
-### Locating trainers by name: `find-trainers`
+### Finding trainers: `find-trainers`
 
 Finds trainers whose names contain any of the given keywords.
 
 Format: `find-trainers KEYWORD [MORE_KEYWORDS]`
 
-### Locating clients by name: `find-clients`
+* The search is case-insensitive and matches full words only.
+* Run `list-trainers` to return to the full trainer list after searching.
+
+Examples:
+* `find-trainers John` — returns all trainers with "John" in their name.
+
+---
+
+### Finding clients: `find-clients`
 
 Finds clients whose names contain any of the given keywords.
 
 Format: `find-clients KEYWORD [MORE_KEYWORDS]`
 
-### Setting a client's calorie target: `set-calorie-target`
+* The search is case-insensitive and matches full words only.
+* Each keyword must be alphanumeric. e.g. `Alice123` is valid; `Alice@` is not.
+* Results include clients matching **at least one** keyword (OR search).
+* Run `list-clients` to return to the full client list after searching.
+
+Examples:
+* `find-clients Alice` — returns all clients with "Alice" in their name.
+* `find-clients Alice Bob` — returns all clients with "Alice" or "Bob" in their name.
+
+---
+
+### Setting a calorie target: `set-calorie-target`
 
 Sets the daily calorie target for a client.
 
 Format: `set-calorie-target INDEX cal/CALORIES`
 
-* `INDEX` must refer to a **client** in the client list.
+* `INDEX` must refer to a client in the **client list**.
 * `CALORIES` must be a positive integer.
 
 Examples:
-* `set-calorie-target 1 cal/2000`
+* `set-calorie-target 1 cal/2000` — sets a 2000-calorie daily target for the 1st client.
 
-### Logging a client's calorie intake: `log-calorie`
+---
 
-Logs calorie intake for a client. The calories are added to the client's existing daily intake.
+### Logging calorie intake: `log-calorie`
+
+Logs calorie intake for a client. Calories are added to the client's existing daily intake.
 
 Format: `log-calorie INDEX cal/CALORIES`
 
-* `INDEX` must refer to a **client** in the client list.
+* `INDEX` must refer to a client in the **client list**.
 * `CALORIES` must be a positive integer.
 
 Examples:
-* `log-calorie 1 cal/500`
+* `log-calorie 1 cal/500` — adds 500 calories to the 1st client's daily intake.
 
-### Setting a client's workout focus: `set-focus`
+---
 
-Sets the current primary workout focus for a client. If a focus already exists, it will be overwritten.
+### Setting a workout focus: `set-focus`
+
+Sets the primary workout focus for a client. Overwrites any existing focus.
 
 Format: `set-focus c/CLIENT_INDEX f/FOCUS`
 
-* `CLIENT_INDEX` must refer to a **client** in the client list.
-* `FOCUS` must contain only letters (`A-Z` or `a-z`).
+* `CLIENT_INDEX` must refer to a client in the **client list**.
+* `FOCUS` must contain only letters (A–Z or a–z).
 
 Examples:
-* `set-focus c/1 f/Chest`
+* `set-focus c/1 f/Chest` — sets the 1st client's workout focus to "Chest".
 
-### Adding a remark to a client: `remark`
+---
 
-Adds a remark to an existing client. If a remark already exists, it will be overwritten.
+### Adding a remark: `remark`
+
+Adds a remark to a client. Overwrites any existing remark.
 
 Format: `remark INDEX r/REMARK`
 
-* `INDEX` must refer to a **client** in the client list.
-* `REMARK` must not be empty (after trimming).
+* `INDEX` must refer to a client in the **client list**.
+* `REMARK` must not be empty.
 
 Examples:
 * `remark 1 r/Recovering from ACL surgery`
 
-### Deleting a person : `delete`
+---
 
-Deletes the specified person from GymOps.
+### Deleting a person: `delete`
+
+Deletes a trainer or client using a typed prefix to specify the list.
 
 Format: `delete t/TRAINER_INDEX` or `delete c/CLIENT_INDEX`
 
-* `t/TRAINER_INDEX` refers to the index number shown in the trainer list.
-* `c/CLIENT_INDEX` refers to the index number shown in the client list.
-* Trainer deletion will be rejected if the trainer still has active clients.
+* `t/TRAINER_INDEX` refers to the index in the **trainer list**.
+* `c/CLIENT_INDEX` refers to the index in the **client list**.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** A trainer cannot be deleted if they still have active clients. Remove their clients first using `delete-client` or `delete c/...`.</div>
 
 Examples:
-* `delete t/2` deletes the 2nd trainer in the trainer list.
-* `delete c/1` deletes the 1st client in the client list.
+* `delete t/2` — deletes the 2nd trainer.
+* `delete c/1` — deletes the 1st client.
 
-### Deleting a client : `delete-client`
+---
 
-Deletes the specified client.
+### Deleting a client: `delete-client`
+
+Deletes a client from GymOps. The client is permanently removed and unassigned from their trainer.
 
 Format: `delete-client INDEX`
 
-* `INDEX` must refer to a **client** in the client list.
+* `INDEX` must refer to a client in the **client list**.
+
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `find-clients NAME` first to locate the client, then use the index shown in the filtered list.</div>
 
 Examples:
-* `delete-client 1`
+* `delete-client 1` — deletes the 1st client in the current list.
 
-### Deleting a trainer : `delete-trainer`
+---
 
-Deletes the specified trainer.
+### Deleting a trainer: `delete-trainer`
+
+Deletes a trainer from GymOps.
 
 Format: `delete-trainer INDEX`
 
-* `INDEX` must refer to a **trainer** in the trainer list.
+* `INDEX` must refer to a trainer in the **trainer list**.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** A trainer cannot be deleted if they still have active clients. Use `delete-client` to remove their clients first.</div>
 
 Examples:
-* `delete-trainer 1`
+* `delete-trainer 1` — deletes the 1st trainer.
 
-### Clearing all entries : `clear`
+---
 
-Clears all entries from GymOps.
+### Clearing all data: `clear`
+
+Deletes all trainers and clients from GymOps.
 
 Format: `clear`
 
-### Exiting the program : `exit`
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** This action is irreversible. All data will be permanently deleted.</div>
 
-Exits the program.
+---
+
+### Exiting GymOps: `exit`
+
+Exits the application.
 
 Format: `exit`
 
-### Saving the data
+---
 
-GymOps data are saved on disk automatically after any command that changes the data. There is no need to save manually.
+### Saving data
+
+GymOps saves data automatically after every command that modifies it. No manual saving is needed.
+
+---
 
 ### Editing the data file
 
-GymOps data are saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+Data is saved as a JSON file at `[JAR file location]/data/addressbook.json`. Advanced users may edit this file directly.
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes to the data file makes its format invalid, GymOps will discard all data and start with an empty data file at the next run. Hence, it is recommended to take a backup of the file before editing it.<br>
-Furthermore, certain edits can cause GymOps to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
-</div>
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the file format becomes invalid, GymOps will discard all data and start fresh on the next run. Back up the file before editing it. Certain edits may also cause GymOps to behave unexpectedly if values fall outside acceptable ranges.</div>
+
+---
 
 ### Archiving data files `[coming in v2.0]`
 
-_Details coming soon ..._
+_Details coming soon._
 
---------------------------------------------------------------------------------------------------------------------
+---
 
 ## FAQ
 
-**Q**: How do I transfer my data to another Computer?<br>
-**A**: Install the app in the other computer and overwrite the empty data file it creates with the file that contains the data of your previous GymOps home folder.
+**Q: How do I transfer my data to another computer?**
 
---------------------------------------------------------------------------------------------------------------------
+Install GymOps on the other computer and replace the empty data file it creates with your existing data file from `[JAR file location]/data/addressbook.json`.
+
+---
 
 ## Known issues
 
-1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+1. **Multiple screens:** If you move the app to a secondary screen and later use only the primary screen, the GUI may open off-screen. Fix: delete `preferences.json` before restarting the app.
+2. **Minimised Help Window:** Running `help` again while the Help Window is minimised will not open a new window. Fix: manually restore the minimised window.
 
---------------------------------------------------------------------------------------------------------------------
+---
 
 ## Command summary
 
-Action | Format, Examples
---------|------------------
-**Add trainer** | `add-trainer n/NAME p/PHONE_NUMBER e/EMAIL`<br> e.g., `add-trainer n/John Doe p/98765432 e/johndoe@example.com`
-**Add client** | `add-client n/NAME p/PHONE_NUMBER t/TRAINER_INDEX`<br> e.g., `add-client n/Alice Lim p/81234567 t/1`
-**Set calorie target** | `set-calorie-target INDEX cal/CALORIES`<br> e.g., `set-calorie-target 1 cal/2000`
-**Log calorie intake** | `log-calorie INDEX cal/CALORIES`<br> e.g., `log-calorie 1 cal/500`
-**Set workout focus** | `set-focus c/CLIENT_INDEX f/FOCUS`<br> e.g., `set-focus c/1 f/Chest`
-**Remark** | `remark INDEX r/REMARK`<br> e.g., `remark 1 r/Recovering from ACL surgery`
-**Find (both lists)** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**Find trainers** | `find-trainers KEYWORD [MORE_KEYWORDS]`<br> e.g., `find-trainers John`
-**Find clients** | `find-clients KEYWORD [MORE_KEYWORDS]`<br> e.g., `find-clients Alice`
-**List (both lists)** | `list`
-**List trainers** | `list-trainers`
-**List clients** | `list-clients`
-**Delete (typed)** | `delete t/TRAINER_INDEX` or `delete c/CLIENT_INDEX`<br> e.g., `delete t/1`
-**Delete client** | `delete-client INDEX`<br> e.g., `delete-client 2`
-**Delete trainer** | `delete-trainer INDEX`<br> e.g., `delete-trainer 1`
-**Clear** | `clear`
-**Help** | `help`
-**Exit** | `exit`
+| Action | Format | Example |
+|--------|--------|---------|
+| **Help** | `help` | — |
+| **Add trainer** | `add-trainer n/NAME p/PHONE_NUMBER e/EMAIL` | `add-trainer n/John Doe p/98765432 e/johndoe@example.com` |
+| **Add client** | `add-client n/NAME p/PHONE_NUMBER t/TRAINER_INDEX` | `add-client n/Alice Lim p/81234567 t/1` |
+| **List all** | `list` | — |
+| **List trainers** | `list-trainers` | — |
+| **List clients** | `list-clients` | — |
+| **Find (both lists)** | `find KEYWORD [MORE_KEYWORDS]` | `find James Jake` |
+| **Find trainers** | `find-trainers KEYWORD [MORE_KEYWORDS]` | `find-trainers John` |
+| **Find clients** | `find-clients KEYWORD [MORE_KEYWORDS]` | `find-clients Alice` |
+| **Set calorie target** | `set-calorie-target INDEX cal/CALORIES` | `set-calorie-target 1 cal/2000` |
+| **Log calorie intake** | `log-calorie INDEX cal/CALORIES` | `log-calorie 1 cal/500` |
+| **Set workout focus** | `set-focus c/CLIENT_INDEX f/FOCUS` | `set-focus c/1 f/Chest` |
+| **Remark** | `remark INDEX r/REMARK` | `remark 1 r/Recovering from ACL surgery` |
+| **Delete (typed)** | `delete t/TRAINER_INDEX` or `delete c/CLIENT_INDEX` | `delete t/2`, `delete c/1` |
+| **Delete client** | `delete-client INDEX` | `delete-client 1` |
+| **Delete trainer** | `delete-trainer INDEX` | `delete-trainer 1` |
+| **Clear** | `clear` | — |
+| **Exit** | `exit` | — |
