@@ -35,6 +35,7 @@ Examples:
 
 * Add a trainer: `add-trainer n/John Doe p/98765432 e/johndoe@example.com`
 * Add a client assigned to a trainer: `add-client n/Alice Lim p/81234567 t/1`
+* Reassign a client to a different trainer: `reassign-client 2 t/1`
 * Delete a trainer or client (typed delete): `delete t/1` / `delete c/1`
 
 Calorie tracking:
@@ -46,7 +47,7 @@ Calorie tracking:
 ## v1.0 feature list
 
 * Trainer management: `add-trainer`, `delete-trainer`, `list-trainers`, `find-trainers`
-* Client management: `add-client`, `delete-client`, `list-clients`, `find-clients`
+* Client management: `add-client`, `delete-client`, `list-clients`, `find-clients`, `reassign-client`
 * Tracking: `set-calorie-target`, `log-calorie`, `set-focus`, `remark`
 * General: `list`, `find`, `delete` (typed), `clear`, `help`, `exit`
 
