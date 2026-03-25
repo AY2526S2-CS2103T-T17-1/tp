@@ -35,6 +35,7 @@ public class HelpWindow extends UiPart<Stage> {
             + "set-focus c/CLIENT_INDEX f/FOCUS\n"
             + "remark INDEX r/REMARK\n"
             + "\n"
+            + "export FILE_PATH  |  import FILE_PATH\n"
             + "clear  |  exit";
 
     private static final Logger logger = LogsCenter.getLogger(HelpWindow.class);
