@@ -26,9 +26,9 @@ public class StatsCommand extends Command {
     public CommandResult execute(Model model) {
         requireNonNull(model);
         model.updateFilteredTrainerList(PREDICATE_SHOW_ALL_PERSONS);
-        
+
         ObservableList<Person> allPersons = model.getAddressBook().getPersonList();
-        
+
         Map<Phone, Integer> clientCounts = new HashMap<>();
         for (Person p : allPersons) {
             if (p instanceof Client) {
@@ -37,7 +37,7 @@ public class StatsCommand extends Command {
                 clientCounts.put(pPhone, clientCounts.getOrDefault(pPhone, 0) + 1);
             }
         }
-        
+
         model.updateSortedTrainerList((p1, p2) -> {
             Trainer t1 = (Trainer) p1;
             Trainer t2 = (Trainer) p2;
@@ -48,7 +48,7 @@ public class StatsCommand extends Command {
             }
             return Integer.compare(count2, count1);
         });
-        
+
         return new CommandResult(MESSAGE_SUCCESS);
     }
 }

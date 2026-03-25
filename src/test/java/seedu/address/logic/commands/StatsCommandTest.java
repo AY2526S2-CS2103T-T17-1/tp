@@ -17,8 +17,10 @@ public class StatsCommandTest {
         Model expectedModel = new ModelManager(TypicalPersons.getTypicalAddressBook(), new UserPrefs());
 
         // Expected sorted model
-        expectedModel.updateSortedTrainerList((p1, p2) -> 0); // Dummy sort just to match type, but actually StatsCommand itself updates the comparator based on clients
-        
+        // Dummy sort just to match type, but actually StatsCommand
+        // itself updates the comparator based on clients
+        expectedModel.updateSortedTrainerList((p1, p2) -> 0);
+
         // Let's just execute StatsCommand on expectedModel to get the expected state
         new StatsCommand().execute(expectedModel);
 
