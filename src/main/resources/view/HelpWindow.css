@@ -1,29 +1,56 @@
-.root {
-    -fx-background-color: derive(#1d1d1d, 20%);
+.help-root {
+    -fx-background-color: #0a0a14;
+}
+
+.help-title {
+    -fx-font-size: 22px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-text-fill: #00b4d8;
+}
+
+.help-section-header {
+    -fx-font-size: 10px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-text-fill: #00b4d8;
+    -fx-padding: 4 0 2 0;
 }
 
 #commandSummary {
-    -fx-text-fill: white;
-    -fx-font-family: "Segoe UI";
+    -fx-text-fill: #e2e8f0;
+    -fx-font-family: "Consolas", "Courier New", monospace;
     -fx-font-size: 12px;
+    -fx-background-color: #111124;
+    -fx-padding: 14;
+    -fx-background-radius: 4;
 }
 
-#copyButton, #helpMessage {
+.help-url-row {
+    -fx-background-color: #111124;
+    -fx-background-radius: 4;
+}
+
+#helpMessage {
+    -fx-text-fill: #a0aec0;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 11px;
+}
+
+.help-copy-button {
+    -fx-background-color: #00b4d8;
     -fx-text-fill: white;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 11px;
+    -fx-padding: 6 14 6 14;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
 }
 
-#copyButton {
-    -fx-background-color: dimgray;
+.help-copy-button:hover {
+    -fx-background-color: derive(#00b4d8, 20%);
 }
 
-#copyButton:hover {
-    -fx-background-color: gray;
-}
-
-#copyButton:armed {
-    -fx-background-color: darkgray;
-}
-
-#helpMessageContainer {
-    -fx-background-color: derive(#1d1d1d, 20%);
+.help-copy-button:pressed {
+    -fx-background-color: derive(#00b4d8, -15%);
 }

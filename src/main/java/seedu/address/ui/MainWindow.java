@@ -2,9 +2,11 @@ package seedu.address.ui;
 
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCombination;
@@ -41,6 +43,9 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane commandBoxPlaceholder;
+
+    @FXML
+    private Menu helpMenu;
 
     @FXML
     private MenuItem helpMenuItem;
@@ -162,6 +167,17 @@ public class MainWindow extends UiPart<Stage> {
             primaryStage.setX(guiSettings.getWindowCoordinates().getX());
             primaryStage.setY(guiSettings.getWindowCoordinates().getY());
         }
+    }
+
+    /**
+     * Intercepts the Help menu opening and directly shows the help window instead.
+     */
+    @FXML
+    private void handleHelpMenuShowing() {
+        Platform.runLater(() -> {
+            helpMenu.hide();
+            handleHelp();
+        });
     }
 
     /**

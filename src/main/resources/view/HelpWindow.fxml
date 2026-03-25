@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.stage.Stage?>
 
-<fx:root resizable="false" title="Help" type="javafx.stage.Stage" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root resizable="false" title="GymOps Help" type="javafx.stage.Stage" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <icons>
     <Image url="@/images/help_icon.png" />
   </icons>
@@ -21,31 +21,28 @@
         <URL value="@HelpWindow.css" />
       </stylesheets>
 
-      <VBox alignment="CENTER" spacing="15.0">
+      <VBox styleClass="help-root" spacing="16.0">
         <padding>
-          <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+          <Insets top="24.0" right="24.0" bottom="24.0" left="24.0" />
         </padding>
-        <children>
-          <Label fx:id="commandSummary" text="Label">
-            <VBox.margin>
-              <Insets left="5.0" right="5.0" />
-            </VBox.margin>
-          </Label>
-          <HBox alignment="CENTER" fx:id="helpMessageContainer">
-            <children>
-              <Label fx:id="helpMessage" text="Label">
-                <HBox.margin>
-                  <Insets right="5.0" />
-                </HBox.margin>
-              </Label>
-              <Button fx:id="copyButton" mnemonicParsing="false" onAction="#copyUrl" text="Copy URL">
-                <HBox.margin>
-                  <Insets left="5.0" />
-                </HBox.margin>
-              </Button>
-            </children>
-          </HBox>
-        </children>
+
+        <Label text="GymOps Help" styleClass="help-title" />
+
+        <Label text="COMMAND SUMMARY" styleClass="help-section-header" />
+
+        <Label fx:id="commandSummary" styleClass="help-commands" wrapText="true" />
+
+        <Label text="USER GUIDE" styleClass="help-section-header" />
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="help-url-row">
+          <padding>
+            <Insets top="10.0" right="12.0" bottom="10.0" left="12.0" />
+          </padding>
+          <Label fx:id="helpMessage" styleClass="help-url-label" wrapText="true" HBox.hgrow="ALWAYS" />
+          <Button fx:id="copyButton" mnemonicParsing="false" onAction="#copyUrl"
+                  text="Copy URL" styleClass="help-copy-button" />
+        </HBox>
+
       </VBox>
     </Scene>
   </scene>

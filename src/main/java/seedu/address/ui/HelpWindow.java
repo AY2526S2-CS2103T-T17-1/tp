@@ -15,23 +15,27 @@ import seedu.address.commons.core.LogsCenter;
  */
 public class HelpWindow extends UiPart<Stage> {
 
-    public static final String USERGUIDE_URL = "https://se-education.org/addressbook-level3/UserGuide.html";
+    public static final String USERGUIDE_URL = "https://ay2526s2-cs2103t-t17-1.github.io/tp/UserGuide.html";
     public static final String HELP_MESSAGE = "Refer to the user guide: " + USERGUIDE_URL;
 
-    public static final String COMMAND_SUMMARY_MESSAGE = "Available commands:\n"
-            + "  add-trainer n/NAME p/PHONE_NUMBER e/EMAIL\n"
-            + "  add-client n/NAME p/PHONE_NUMBER t/TRAINER_INDEX\n"
-            + "  delete-trainer INDEX\n"
-            + "  delete-client INDEX\n"
-            + "  delete t/TRAINER_INDEX  (or)  delete c/CLIENT_INDEX\n"
-            + "  list   |   list-trainers   |   list-clients\n"
-            + "  find KEYWORD   |   find-trainers KEYWORD   |   find-clients KEYWORD\n"
-            + "  set-calorie-target INDEX cal/CALORIES\n"
-            + "  log-calorie INDEX cal/CALORIES\n"
-            + "  set-focus c/CLIENT_INDEX f/FOCUS\n"
-            + "  remark INDEX r/REMARK\n"
-            + "  clear\n"
-            + "  exit";
+    public static final String COMMAND_SUMMARY_MESSAGE = ""
+            + "add-trainer n/NAME p/PHONE e/EMAIL\n"
+            + "add-client n/NAME p/PHONE t/TRAINER_INDEX\n"
+            + "reassign-client CLIENT_INDEX t/TRAINER_INDEX\n"
+            + "\n"
+            + "delete-trainer INDEX\n"
+            + "delete-client INDEX\n"
+            + "delete t/TRAINER_INDEX  |  delete c/CLIENT_INDEX\n"
+            + "\n"
+            + "list  |  list-trainers  |  list-clients\n"
+            + "find KEYWORD  |  find-trainers KEYWORD  |  find-clients KEYWORD\n"
+            + "\n"
+            + "set-calorie-target INDEX cal/CALORIES\n"
+            + "log-calorie INDEX cal/CALORIES\n"
+            + "set-focus c/CLIENT_INDEX f/FOCUS\n"
+            + "remark INDEX r/REMARK\n"
+            + "\n"
+            + "clear  |  exit";
 
     private static final Logger logger = LogsCenter.getLogger(HelpWindow.class);
     private static final String FXML = "HelpWindow.fxml";
@@ -65,21 +69,6 @@ public class HelpWindow extends UiPart<Stage> {
 
     /**
      * Shows the help window.
-     * @throws IllegalStateException
-     *     <ul>
-     *         <li>
-     *             if this method is called on a thread other than the JavaFX Application Thread.
-     *         </li>
-     *         <li>
-     *             if this method is called during animation or layout processing.
-     *         </li>
-     *         <li>
-     *             if this method is called on the primary stage.
-     *         </li>
-     *         <li>
-     *             if {@code dialogStage} is already showing.
-     *         </li>
-     *     </ul>
      */
     public void show() {
         logger.fine("Showing help page about the application.");
