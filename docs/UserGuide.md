@@ -265,28 +265,6 @@ Format: `stats`
 
 ---
 
-### Viewing a trainer's clients
-
-Click on any trainer card in the **Trainers** list to filter the **Clients** list to show only that trainer's assigned clients.
-
-To clear the filter, click the **Showing All** link above the client list, or run `list`.
-
-[⬆ Back to top](#table-of-contents)
-
----
-
-### Viewing trainer statistics: `stats`
-
-Lists all trainers sorted by the number of clients they have in descending order. Trainers with the same number of clients are sorted alphabetically by name.
-
-Format: `stats`
-
-**Expected outcome:** The trainers list is updated to show trainers sorted by their client count in descending order.
-
-[⬆ Back to top](#table-of-contents)
-
----
-
 ### Finding persons: `find`
 
 Finds trainers and clients whose names contain any of the given keywords.
@@ -595,12 +573,6 @@ GymOps saves data automatically after every command that modifies it. No manual 
 Data is saved as a JSON file at `[JAR file location]/data/GymOps.json`. Advanced users may edit this file directly.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the file format becomes invalid, GymOps will discard all data and start fresh on the next run. Back up the file before editing it. Certain edits may also cause GymOps to behave unexpectedly if values fall outside acceptable ranges.</div>
-
----
-
-### Archiving data files `[coming in v2.0]`
-
-_Details coming soon._
 
 ---
 
