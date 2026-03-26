@@ -223,6 +223,11 @@ public class AddClientCommandTest {
         }
 
         @Override
+        public void updateSortedTrainerList(java.util.Comparator<Person> comparator) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public void updateFilteredClientList(Predicate<Person> predicate) {
             throw new AssertionError("This method should not be called.");
         }

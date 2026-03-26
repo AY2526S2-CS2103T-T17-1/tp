@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.person.Client;
@@ -29,6 +30,7 @@ public class ModelManager implements Model {
 
     private final FilteredList<Person> filteredPersons;
     private final FilteredList<Person> filteredTrainers;
+    private final SortedList<Person> sortedTrainers;
     private final FilteredList<Person> filteredClients;
 
     private Predicate<Person> personListPredicate = PREDICATE_SHOW_ALL_PERSONS;
@@ -51,6 +53,7 @@ public class ModelManager implements Model {
 
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         filteredTrainers = new FilteredList<>(this.addressBook.getPersonList());
+        sortedTrainers = new SortedList<>(filteredTrainers);
         filteredClients = new FilteredList<>(this.addressBook.getPersonList());
 
         refreshAllPredicates();
@@ -213,7 +216,7 @@ public class ModelManager implements Model {
     /** {@inheritDoc} */
     @Override
     public ObservableList<Person> getFilteredTrainerList() {
-        return filteredTrainers;
+        return sortedTrainers;
     }
 
     /** {@inheritDoc} */
@@ -241,6 +244,12 @@ public class ModelManager implements Model {
         requireNonNull(predicate);
         trainerListPredicate = predicate;
         refreshTrainerPredicate();
+        sortedTrainers.setComparator(null);
+    }
+
+    @Override
+    public void updateSortedTrainerList(java.util.Comparator<Person> comparator) {
+        sortedTrainers.setComparator(comparator);
     }
 
     /** {@inheritDoc} */
@@ -340,6 +349,7 @@ public class ModelManager implements Model {
                 && userPrefs.equals(otherModelManager.userPrefs)
                 && filteredPersons.equals(otherModelManager.filteredPersons)
                 && filteredTrainers.equals(otherModelManager.filteredTrainers)
+                && sortedTrainers.equals(otherModelManager.sortedTrainers)
                 && filteredClients.equals(otherModelManager.filteredClients)
                 && personListPredicate.equals(otherModelManager.personListPredicate)
                 && trainerListPredicate.equals(otherModelManager.trainerListPredicate)
