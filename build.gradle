@@ -21,12 +21,12 @@ checkstyle {
 }
 
 run {
-    jvmArgs = ['-ea']
+    enableAssertions = true
 }
 
 test {
     useJUnitPlatform()
-    jvmArgs = ['-ea']
+    enableAssertions = true
     finalizedBy jacocoTestReport
 }
 
