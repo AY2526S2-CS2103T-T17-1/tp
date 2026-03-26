@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
@@ -68,6 +69,9 @@
         </graphic>
       </Label>
 
+      <ProgressBar fx:id="calorieProgressBar" maxWidth="Infinity" prefHeight="12"
+                   progress="0" styleClass="calorie-bar" />
+
       <Label fx:id="workoutFocus" styleClass="cell_small_label card-info">
         <graphic>
           <SVGPath styleClass="card-icon" scaleX="0.85" scaleY="0.85"
@@ -88,6 +92,7 @@
                    content="M4 2 V4 H12 V2 H14 V4 H15 C15.55 4 16 4.45 16 5 V15 C16 15.55 15.55 16 15 16 H1 C0.45 16 0 15.55 0 15 V5 C0 4.45 0.45 4 1 4 H2 V2 H4 Z M1 15 H15 V9 H1 V15 Z M1 7 H15 V5 H1 V7 Z" />
         </graphic>
       </Label>
+
     </VBox>
   </GridPane>
 </HBox>

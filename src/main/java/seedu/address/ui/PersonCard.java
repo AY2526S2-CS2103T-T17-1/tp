@@ -5,6 +5,7 @@ import java.util.Comparator;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -52,6 +53,8 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private Label calorieInfo;
     @FXML
+    private ProgressBar calorieProgressBar;
+    @FXML
     private Label workoutFocus;
     @FXML
     private Label remark;
@@ -91,6 +94,8 @@ public class PersonCard extends UiPart<Region> {
             assignedTrainer.setVisible(false);
             calorieInfo.setManaged(false);
             calorieInfo.setVisible(false);
+            calorieProgressBar.setManaged(false);
+            calorieProgressBar.setVisible(false);
             workoutFocus.setManaged(false);
             workoutFocus.setVisible(false);
             remark.setManaged(false);
@@ -166,10 +171,11 @@ public class PersonCard extends UiPart<Region> {
     }
 
     /**
-     * Sets the calorie info label text and visibility based on the client's
-     * calorie data. Shows intake vs target if a target is set, or just the
-     * intake if only intake is logged. Hides the label if no calorie data has
-     * been recorded.
+     * Sets the calorie info label text, progress bar, and visibility
+     * based on the client's calorie data.
+     * Shows intake vs target with a progress bar if a target is set,
+     * or just the intake if only intake is logged.
+     * Hides both label and bar if no calorie data has been recorded.
      */
     private void setCalorieInfoLabel(Client client) {
         int target = client.getCalorieTarget();
@@ -184,13 +190,27 @@ public class PersonCard extends UiPart<Region> {
                     intake, target, calorieStatus));
             calorieInfo.setManaged(true);
             calorieInfo.setVisible(true);
+
+            double progress = Math.min(1.0, (double) intake / target);
+            calorieProgressBar.setProgress(progress);
+            calorieProgressBar.setManaged(true);
+            calorieProgressBar.setVisible(true);
+
+            calorieProgressBar.getStyleClass().removeAll("calorie-bar-exceeded");
+            if (intake > target) {
+                calorieProgressBar.getStyleClass().add("calorie-bar-exceeded");
+            }
         } else if (intake > 0) {
             calorieInfo.setText(String.format("Calories consumed: %d kcal", intake));
             calorieInfo.setManaged(true);
             calorieInfo.setVisible(true);
+            calorieProgressBar.setManaged(false);
+            calorieProgressBar.setVisible(false);
         } else {
             calorieInfo.setManaged(false);
             calorieInfo.setVisible(false);
+            calorieProgressBar.setManaged(false);
+            calorieProgressBar.setVisible(false);
         }
     }
 }
