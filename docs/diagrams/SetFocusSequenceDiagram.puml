@@ -1,0 +1,79 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+actor User as User USER_COLOR
+
+box UI UI_COLOR_T1
+participant ":UI" as Ui UI_COLOR
+end box
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":SetFocusCommandParser" as SetFocusCommandParser LOGIC_COLOR
+participant "s:SetFocusCommand" as SetFocusCommand LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant ":Model" as Model MODEL_COLOR
+end box
+
+box Storage STORAGE_COLOR_T1
+participant ":Storage" as Storage STORAGE_COLOR
+end box
+
+
+User -[USER_COLOR]> Ui : enterCommand("set-focus c/1 f/Chest")
+activate Ui
+
+Ui -[UI_COLOR]> LogicManager : execute("set-focus c/1 f/Chest")
+activate LogicManager
+
+LogicManager -[LOGIC_COLOR]> AddressBookParser : parseCommand("set-focus c/1 f/Chest")
+activate AddressBookParser
+
+create SetFocusCommandParser
+AddressBookParser -[LOGIC_COLOR]> SetFocusCommandParser : SetFocusCommandParser()
+activate SetFocusCommandParser
+SetFocusCommandParser --[LOGIC_COLOR]> AddressBookParser
+deactivate SetFocusCommandParser
+
+AddressBookParser -[LOGIC_COLOR]> SetFocusCommandParser : parse("c/1 f/Chest")
+activate SetFocusCommandParser
+
+create SetFocusCommand
+SetFocusCommandParser -[LOGIC_COLOR]> SetFocusCommand : SetFocusCommand(Index, WorkoutFocus)
+activate SetFocusCommand
+SetFocusCommand --[LOGIC_COLOR]> SetFocusCommandParser
+deactivate SetFocusCommand
+
+SetFocusCommandParser --[LOGIC_COLOR]> AddressBookParser : s
+deactivate SetFocusCommandParser
+
+AddressBookParser --[LOGIC_COLOR]> LogicManager : s
+deactivate AddressBookParser
+
+LogicManager -[LOGIC_COLOR]> SetFocusCommand : execute(m)
+activate SetFocusCommand
+
+SetFocusCommand -[LOGIC_COLOR]> Model : getFilteredClientList()
+activate Model
+Model --[MODEL_COLOR]> SetFocusCommand
+deactivate Model
+
+SetFocusCommand -[LOGIC_COLOR]> Model : setPerson(oldClient, updatedClient)
+
+SetFocusCommand --[LOGIC_COLOR]> LogicManager : r:CommandResult
+deactivate SetFocusCommand
+
+LogicManager -[LOGIC_COLOR]> Storage : saveAddressBook(model.getAddressBook())
+activate Storage
+Storage --[STORAGE_COLOR]> LogicManager
+deactivate Storage
+
+LogicManager --[LOGIC_COLOR]> Ui : r:CommandResult
+deactivate LogicManager
+deactivate Ui
+
+@enduml
