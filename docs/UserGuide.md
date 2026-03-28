@@ -25,7 +25,7 @@ This guide is written for **gym managers and administrators** who want a fast, k
 - **Looking for a specific command?** Jump to [Features](#features) or the [Command Summary](#command-summary) at the end.
 - **Having trouble?** Check [Known Issues](#known-issues) or [FAQ](#faq).
 
-**Table of Contents**
+### Table of Contents
 - [Introduction](#introduction)
   - [Who this guide is for](#who-this-guide-is-for)
   - [How to use this guide](#how-to-use-this-guide)
@@ -37,9 +37,7 @@ This guide is written for **gym managers and administrators** who want a fast, k
   - [Reassigning a client](#reassigning-a-client-reassign-client)
   - [Listing all persons](#listing-all-persons-list)
   - [Listing all trainers](#listing-all-trainers-list-trainers)
-  - [Listing all clients](#listing-all-clients-list-clients)
-  - [Viewing trainer statistics](#viewing-trainer-statistics-stats)
-  - [Viewing a trainer's clients](#viewing-a-trainers-clients)
+  - [Listing clients](#listing-clients-list-clients)
   - [Viewing trainer statistics](#viewing-trainer-statistics-stats)
   - [Finding persons](#finding-persons-find)
   - [Finding trainers](#finding-trainers-find-trainers)
@@ -79,6 +77,8 @@ This guide is written for **gym managers and administrators** who want a fast, k
    ```
    java -jar YOUR_FILE_NAME.jar
    ```
+
+   If double-clicking the `.jar` does not launch GymOps on your system, use the terminal method above.
 
    The GymOps window will appear within a few seconds, pre-loaded with sample data.
 
@@ -263,6 +263,10 @@ Format: `stats`
 
 ![stats message](images/stats.png)
 
+**Expected outcome:** The trainer list is sorted by client count (descending), and a summary is shown.
+
+[⬆ Back to top](#table-of-contents)
+
 ---
 
 ### Finding persons: `find`
@@ -419,6 +423,7 @@ Format: `set-validity INDEX v/VALIDITY`
 
 * `INDEX` must refer to a client in the **client list**.
 * `VALIDITY` must be a valid date in the format `YYYY-MM-DD`.
+* GymOps currently displays the validity date but does not automatically enforce expiry or visually highlight expired memberships.
 
 Examples:
 * `set-validity 1 v/2028-09-09` — sets the 1st client's membership validity to 09 Sep 2028.
@@ -588,6 +593,9 @@ Install GymOps on the other computer and replace the empty data file it creates 
 
 1. **Multiple screens:** If you move the app to a secondary screen and later use only the primary screen, the GUI may open off-screen. Fix: delete `preferences.json` before restarting the app.
 2. **Minimised Help Window:** Running `help` again while the Help Window is minimised will not open a new window. Fix: manually restore the minimised window.
+3. **Double-clicking the JAR:** On some systems, double-clicking the `.jar` may not start the app. Fix: run using `java -jar YOUR_FILE_NAME.jar` from a terminal.
+4. **Write-protected folders:** If GymOps is placed in a write-protected folder, it may fail to save changes. Fix: move the `.jar` to a writable folder (e.g., your user directory) and run it from there.
+5. **macOS fullscreen dialogs:** macOS users running secondary dialogs (e.g., Help Window) in fullscreen may encounter unexpected window behaviour. Fix: exit fullscreen for the main app window before opening dialogs.
 
 ---
 

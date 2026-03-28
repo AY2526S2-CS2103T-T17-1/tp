@@ -23,10 +23,10 @@ deactivate model
 logic -[LOGIC_COLOR]> storage : saveAddressBook(model.getAddressBook())
 activate storage STORAGE_COLOR
 
-storage -[STORAGE_COLOR]> storage : Save to file
-activate storage STORAGE_COLOR_T1
-storage --[STORAGE_COLOR]> storage
-deactivate storage
+note over storage STORAGE_COLOR_T1
+	Persists updated data to disk
+	(default: data/GymOps.json)
+end note
 
 storage --[STORAGE_COLOR]> logic
 deactivate storage
