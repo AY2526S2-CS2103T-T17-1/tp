@@ -253,6 +253,9 @@ class JsonAdaptedPerson {
         if (!Validity.isValidValidity(validity)) {
             throw new IllegalValueException(Validity.MESSAGE_CONSTRAINTS);
         }
+        if (!Validity.isNotPastDate(validity)) {
+            throw new IllegalValueException(Validity.MESSAGE_PAST_DATE);
+        }
         return Optional.of(new Validity(validity));
     }
 

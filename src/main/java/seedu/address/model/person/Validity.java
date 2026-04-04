@@ -14,6 +14,7 @@ import java.time.format.DateTimeParseException;
 public class Validity {
 
     public static final String MESSAGE_CONSTRAINTS = "Validity should be a valid date in the format YYYY-MM-DD.";
+    public static final String MESSAGE_PAST_DATE = "Validity date must not be in the past.";
 
     public final String value;
 
@@ -38,6 +39,14 @@ public class Validity {
         } catch (DateTimeParseException e) {
             return false;
         }
+    }
+
+    /**
+     * Returns true if the given validity date string is today or in the future.
+     * Must only be called after {@link #isValidValidity(String)} confirms the format is correct.
+     */
+    public static boolean isNotPastDate(String test) {
+        return !LocalDate.parse(test, DateTimeFormatter.ISO_LOCAL_DATE).isBefore(LocalDate.now());
     }
 
     @Override
