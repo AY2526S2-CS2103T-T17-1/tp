@@ -25,7 +25,7 @@ This guide is written for **gym managers and administrators** who want a fast, k
 - **Looking for a specific command?** Jump to [Features](#features) or the [Command Summary](#command-summary) at the end.
 - **Having trouble?** Check [Known Issues](#known-issues) or [FAQ](#faq).
 
-**Table of Contents**
+### Table of Contents
 - [Introduction](#introduction)
   - [Who this guide is for](#who-this-guide-is-for)
   - [How to use this guide](#how-to-use-this-guide)
@@ -33,13 +33,13 @@ This guide is written for **gym managers and administrators** who want a fast, k
 - [Features](#features)
   - [Viewing help](#viewing-help-help)
   - [Adding a trainer](#adding-a-trainer-add-trainer)
+  - [Editing a trainer](#editing-a-trainer-edit-trainer)
   - [Adding a client](#adding-a-client-add-client)
+  - [Editing a client](#editing-a-client-edit-client)
   - [Reassigning a client](#reassigning-a-client-reassign-client)
   - [Listing all persons](#listing-all-persons-list)
   - [Listing all trainers](#listing-all-trainers-list-trainers)
-  - [Listing all clients](#listing-all-clients-list-clients)
-  - [Viewing trainer statistics](#viewing-trainer-statistics-stats)
-  - [Viewing a trainer's clients](#viewing-a-trainers-clients)
+  - [Listing clients](#listing-clients-list-clients)
   - [Viewing trainer statistics](#viewing-trainer-statistics-stats)
   - [Finding persons](#finding-persons-find)
   - [Finding trainers](#finding-trainers-find-trainers)
@@ -80,6 +80,8 @@ This guide is written for **gym managers and administrators** who want a fast, k
    java -jar YOUR_FILE_NAME.jar
    ```
 
+   If double-clicking the `.jar` does not launch GymOps on your system, use the terminal method above.
+
    The GymOps window will appear within a few seconds, pre-loaded with sample data.
 
    ![Ui](images/Ui.png)
@@ -93,7 +95,7 @@ This guide is written for **gym managers and administrators** who want a fast, k
    | 1 | `list-trainers` | View all trainers |
    | 2 | `add-trainer n/John Doe p/98765432 e/johndoe@example.com` | Add a new trainer |
    | 3 | `list-trainers` | Confirm the trainer was added |
-   | 4 | `add-client n/Alice Lim p/81234567 t/1 [v/2028-09-09]` | Assign a client to trainer #1 |
+   | 4 | `add-client n/Alice Lim p/81234567 t/1 v/2028-09-09` | Assign a client to trainer #1 |
    | 5 | `find-clients Alice` | Search for the client you just added |
    | 6 | `delete-client 1` | Delete the 1st client in the current list |
    | 7 | `clear` | Delete all data |
@@ -155,6 +157,26 @@ Examples:
 
 ---
 
+### Editing a trainer: `edit-trainer`
+
+Edits the details of an existing trainer in GymOps. Use this command to update a trainer's name, phone number, or email address.
+
+Format: `edit-trainer INDEX [n/NAME] [p/PHONE] [e/EMAIL]`
+
+* `INDEX` must be a positive integer.
+* At least one optional field must be provided.
+* Existing values will be overwritten by the input values.
+
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-trainers` to confirm the correct trainer index before editing.</div>
+
+Examples:
+* `edit-trainer 1 e/johndoe@gym.com` — updates the 1st trainer's email.
+* `edit-trainer 2 n/Jane Doe p/92222222` — updates the 2nd trainer's name and phone.
+
+[⬆ Back to top](#table-of-contents)
+
+---
+
 ### Adding a client: `add-client`
 
 Adds a new client and assigns them to an existing trainer.
@@ -174,6 +196,28 @@ Examples:
 
 ![add client](images/addClient.png)
 **Expected outcome:** The new client is assigned to the specified trainer, added to the **Clients** panel, and a success message is displayed.
+
+[⬆ Back to top](#table-of-contents)
+
+---
+
+### Editing a client: `edit-client`
+
+Edits the details of an existing client in GymOps. Use this command to update a client's name, phone number, assigned trainer, calorie target, workout focus, remark, or membership validity.
+
+Format: `edit-client INDEX [n/NAME] [p/PHONE] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]`
+
+* `INDEX` must be a positive integer.
+* At least one optional field must be provided.
+* Existing values will be overwritten by the input values.
+* When editing the trainer assignment, `TRAINER_INDEX` must refer to a valid trainer.
+
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-clients` to confirm the correct client index before editing.</div>
+
+Examples:
+* `edit-client 1 n/Alice Tan` — updates the 1st client's name to Alice Tan.
+* `edit-client 2 p/91234567 cal/2000` — updates the 2nd client's phone and calorie target.
+* `edit-client 1 t/2 f/Arms` — reassigns the 1st client to trainer #2 and sets focus to Arms.
 
 [⬆ Back to top](#table-of-contents)
 
@@ -262,6 +306,10 @@ Shows all trainers in GymOps, sorted by the number of clients they have in desce
 Format: `stats`
 
 ![stats message](images/stats.png)
+
+**Expected outcome:** The trainer list is sorted by client count (descending), and a summary is shown.
+
+[⬆ Back to top](#table-of-contents)
 
 ---
 
@@ -419,6 +467,7 @@ Format: `set-validity INDEX v/VALIDITY`
 
 * `INDEX` must refer to a client in the **client list**.
 * `VALIDITY` must be a valid date in the format `YYYY-MM-DD`.
+* GymOps currently displays the validity date but does not automatically enforce expiry or visually highlight expired memberships.
 
 Examples:
 * `set-validity 1 v/2028-09-09` — sets the 1st client's membership validity to 09 Sep 2028.
@@ -588,6 +637,9 @@ Install GymOps on the other computer and replace the empty data file it creates 
 
 1. **Multiple screens:** If you move the app to a secondary screen and later use only the primary screen, the GUI may open off-screen. Fix: delete `preferences.json` before restarting the app.
 2. **Minimised Help Window:** Running `help` again while the Help Window is minimised will not open a new window. Fix: manually restore the minimised window.
+3. **Double-clicking the JAR:** On some systems, double-clicking the `.jar` may not start the app. Fix: run using `java -jar YOUR_FILE_NAME.jar` from a terminal.
+4. **Write-protected folders:** If GymOps is placed in a write-protected folder, it may fail to save changes. Fix: move the `.jar` to a writable folder (e.g., your user directory) and run it from there.
+5. **macOS fullscreen dialogs:** macOS users running secondary dialogs (e.g., Help Window) in fullscreen may encounter unexpected window behaviour. Fix: exit fullscreen for the main app window before opening dialogs.
 
 ---
 
@@ -597,7 +649,9 @@ Install GymOps on the other computer and replace the empty data file it creates 
 |--------|--------|---------|
 | **Help** | `help` | — |
 | **Add trainer** | `add-trainer n/NAME p/PHONE_NUMBER e/EMAIL` | `add-trainer n/John Doe p/98765432 e/johndoe@example.com` |
+| **Edit trainer** | `edit-trainer INDEX [n/NAME] [e/EMAIL]` | `edit-trainer 1 n/Jane Doe e/jane@example.com` |
 | **Add client** | `add-client n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]` | `add-client n/Alice Lim p/81234567 t/1 v/2028-09-09` |
+| **Edit client** | `edit-client INDEX [n/NAME] [p/PHONE] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]` | `edit-client 1 n/Alice Tan p/91234567` |
 | **Reassign client** | `reassign-client CLIENT_INDEX t/TRAINER_INDEX` | `reassign-client 2 t/1` |
 | **List all** | `list` | — |
 | **List trainers** | `list-trainers` | — |

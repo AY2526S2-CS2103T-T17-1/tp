@@ -34,6 +34,9 @@ public class LogCalorieIntakeCommand extends Command {
             "Logged %2$d kcal for %1$s. Total intake: %3$d kcal";
     public static final String MESSAGE_NOT_A_CLIENT =
             "The person at the specified index is not a Client.";
+    public static final String MESSAGE_CALORIE_OVERFLOW =
+            "Cannot log calories: total intake would exceed the maximum allowed value (%d kcal). "
+            + "Please reset the client's calorie intake first.";
 
     private final Index targetIndex;
     private final int calories;
@@ -66,7 +69,12 @@ public class LogCalorieIntakeCommand extends Command {
         }
 
         Client clientToEdit = (Client) personAtIndex;
-        int newIntake = clientToEdit.getCalorieIntake() + calories;
+        long newIntakeLong = (long) clientToEdit.getCalorieIntake() + calories;
+        if (newIntakeLong > Integer.MAX_VALUE) {
+            throw new CommandException(
+                    String.format(MESSAGE_CALORIE_OVERFLOW, Integer.MAX_VALUE));
+        }
+        int newIntake = (int) newIntakeLong;
         Client updatedClient = clientToEdit.withCalorieIntake(newIntake);
 
         model.setPerson(clientToEdit, updatedClient);

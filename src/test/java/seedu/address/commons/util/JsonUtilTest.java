@@ -43,6 +43,26 @@ public class JsonUtilTest {
     }
 
     @Test
+    public void fromJsonString_withLeadingBom_parsesSuccessfully() throws IOException {
+        String jsonWithBom = "\uFEFF" + SerializableTestClass.JSON_STRING_REPRESENTATION;
+        SerializableTestClass serializableTestClass = JsonUtil.fromJsonString(jsonWithBom, SerializableTestClass.class);
+
+        assertEquals(serializableTestClass.getName(), SerializableTestClass.getNameTestValue());
+        assertEquals(serializableTestClass.getListOfLocalDateTimes(), SerializableTestClass.getListTestValues());
+        assertEquals(serializableTestClass.getMapOfIntegerToString(), SerializableTestClass.getHashMapTestValues());
+    }
+
+    @Test
+    public void fromJsonString_withWhitespaceThenBom_parsesSuccessfully() throws IOException {
+        String jsonWithBom = "\n\t \uFEFF" + SerializableTestClass.JSON_STRING_REPRESENTATION;
+        SerializableTestClass serializableTestClass = JsonUtil.fromJsonString(jsonWithBom, SerializableTestClass.class);
+
+        assertEquals(serializableTestClass.getName(), SerializableTestClass.getNameTestValue());
+        assertEquals(serializableTestClass.getListOfLocalDateTimes(), SerializableTestClass.getListTestValues());
+        assertEquals(serializableTestClass.getMapOfIntegerToString(), SerializableTestClass.getHashMapTestValues());
+    }
+
+    @Test
     public void constructor_coverage() {
         new JsonUtil();
     }

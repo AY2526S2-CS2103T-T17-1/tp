@@ -21,6 +21,8 @@ public class HelpWindow extends UiPart<Stage> {
     public static final String COMMAND_SUMMARY_MESSAGE = ""
             + "add-trainer n/NAME p/PHONE e/EMAIL\n"
             + "add-client n/NAME p/PHONE t/TRAINER_INDEX [v/VALIDITY]\n"
+            + "edit-trainer INDEX [n/NAME] [p/PHONE] [e/EMAIL]\n"
+            + "edit-client INDEX [cal/CALORIES] [f/FOCUS] [r/REMARK] [v/VALIDITY]\n"
             + "reassign-client CLIENT_INDEX t/TRAINER_INDEX\n"
             + "\n"
             + "delete-trainer INDEX\n"

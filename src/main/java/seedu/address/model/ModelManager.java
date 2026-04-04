@@ -157,50 +157,52 @@ public class ModelManager implements Model {
     public void setPerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
 
-        Phone originalTrainerPhone = null;
-        Phone editedTrainerPhone = null;
-        Trainer editedTrainer = null;
-        boolean trainerPhoneChanged = false;
-        boolean trainerNameChanged = false;
-
         if (target instanceof Trainer && editedPerson instanceof Trainer) {
             Trainer originalTrainer = (Trainer) target;
-            editedTrainer = (Trainer) editedPerson;
+            Trainer editedTrainer = (Trainer) editedPerson;
+            boolean trainerPhoneChanged = !originalTrainer.getPhone().equals(editedTrainer.getPhone());
+            boolean trainerNameChanged = !originalTrainer.getName().equals(editedTrainer.getName());
 
-            originalTrainerPhone = originalTrainer.getPhone();
-            editedTrainerPhone = editedTrainer.getPhone();
-            trainerPhoneChanged = !originalTrainerPhone.equals(editedTrainerPhone);
-            trainerNameChanged = !originalTrainer.getName().equals(editedTrainer.getName());
-        }
-
-        addressBook.setPerson(target, editedPerson);
-
-        if (editedTrainer != null && (trainerPhoneChanged || trainerNameChanged)) {
-            Phone originalPhone = originalTrainerPhone;
-            Phone editedPhone = editedTrainerPhone;
-            Trainer editedTrainerSnapshot = editedTrainer;
-
-            addressBook.getPersonList().stream()
-                    .filter(person -> person instanceof Client)
-                    .map(person -> (Client) person)
-                    .filter(client -> client.getTrainerPhone().equals(originalPhone))
-                    .toList()
-                    .forEach(client -> addressBook.setPerson(
-                            client,
-                            client.withTrainer(editedPhone, editedTrainerSnapshot.getName())));
-        }
-
-        if (target instanceof Trainer && selectedTrainerPhone.isPresent()) {
-            Phone selectedPhone = selectedTrainerPhone.get();
-            if (((Trainer) target).getPhone().equals(selectedPhone)) {
-                if (editedPerson instanceof Trainer) {
-                    selectedTrainerPhone = Optional.of(((Trainer) editedPerson).getPhone());
-                } else {
-                    clearSelectedTrainer();
-                }
-                refreshClientPredicate();
+            addressBook.setPerson(target, editedPerson);
+            if (trainerPhoneChanged || trainerNameChanged) {
+                updateClientsAssignedToTrainer(originalTrainer.getPhone(), editedTrainer);
             }
+        } else {
+            addressBook.setPerson(target, editedPerson);
         }
+
+        updateSelectedTrainerAfterEdit(target, editedPerson);
+    }
+
+    private void updateClientsAssignedToTrainer(Phone originalTrainerPhone, Trainer editedTrainer) {
+        Phone editedTrainerPhone = editedTrainer.getPhone();
+        addressBook.getPersonList().stream()
+                .filter(person -> person instanceof Client)
+                .map(person -> (Client) person)
+                .filter(client -> client.getTrainerPhone().equals(originalTrainerPhone))
+                .toList()
+                .forEach(client -> addressBook.setPerson(
+                        client,
+                        client.withTrainer(editedTrainerPhone, editedTrainer.getName())));
+    }
+
+    private void updateSelectedTrainerAfterEdit(Person target, Person editedPerson) {
+        if (!(target instanceof Trainer) || selectedTrainerPhone.isEmpty()) {
+            return;
+        }
+
+        Phone selectedPhone = selectedTrainerPhone.get();
+        if (!((Trainer) target).getPhone().equals(selectedPhone)) {
+            return;
+        }
+
+        if (editedPerson instanceof Trainer) {
+            selectedTrainerPhone = Optional.of(((Trainer) editedPerson).getPhone());
+        } else {
+            clearSelectedTrainer();
+        }
+
+        refreshClientPredicate();
     }
 
     //=========== Filtered Person List Accessors ============================================

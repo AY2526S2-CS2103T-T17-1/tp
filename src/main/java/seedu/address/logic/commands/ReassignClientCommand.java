@@ -28,6 +28,7 @@ public class ReassignClientCommand extends Command {
             + "Example: " + COMMAND_WORD + " 2 " + PREFIX_TRAINER + "1";
 
     public static final String MESSAGE_SUCCESS = "Reassigned %1$s to trainer %2$s.";
+    public static final String MESSAGE_SAME_TRAINER = "Client is already assigned to this trainer.";
     public static final String MESSAGE_INVALID_CLIENT_INDEX = "The client index provided is invalid.";
     public static final String MESSAGE_INVALID_TRAINER_INDEX = "The trainer index provided is invalid.";
 
@@ -74,6 +75,10 @@ public class ReassignClientCommand extends Command {
 
         Client clientToReassign = (Client) personAtClientIndex;
         Trainer newTrainer = (Trainer) personAtTrainerIndex;
+
+        if (clientToReassign.getTrainerPhone().equals(newTrainer.getPhone())) {
+            throw new CommandException(MESSAGE_SAME_TRAINER);
+        }
 
         Client updatedClient = clientToReassign.withTrainer(newTrainer.getPhone(), newTrainer.getName());
 

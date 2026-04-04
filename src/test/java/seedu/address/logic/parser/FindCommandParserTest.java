@@ -33,7 +33,8 @@ public class FindCommandParserTest {
 
     @Test
     public void parse_invalidKeyword_throwsParseException() {
-        assertParseFailure(parser, "Alice B@b", "Keywords must be alphanumeric.");
+        assertParseFailure(parser, "Alice B@b",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
     }
 
 }

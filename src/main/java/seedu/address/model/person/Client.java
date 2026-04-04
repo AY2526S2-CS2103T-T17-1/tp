@@ -244,6 +244,21 @@ public class Client extends Person {
         return calorieIntake;
     }
 
+    /**
+     * Returns true if both persons are Clients and have the same phone.
+     * A Client and a Trainer sharing a phone number are NOT considered duplicates.
+     */
+    @Override
+    public boolean isSamePerson(Person otherPerson) {
+        if (otherPerson == this) {
+            return true;
+        }
+        if (!(otherPerson instanceof Client)) {
+            return false;
+        }
+        return getPhone().equals(otherPerson.getPhone());
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {

@@ -10,8 +10,9 @@ import seedu.address.commons.util.AppUtil;
  */
 public class WorkoutFocus {
 
-    public static final String MESSAGE_CONSTRAINTS = "Focus string must only contain letters.";
-    private static final String VALIDATION_REGEX = "[A-Za-z]+";
+    public static final String MESSAGE_CONSTRAINTS =
+            "Focus string must only contain letters, and words may be separated by single spaces (e.g., Upper Body).";
+    private static final String VALIDATION_REGEX = "[A-Za-z]+(\\s[A-Za-z]+)*";
 
     private final String value;
 

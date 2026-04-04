@@ -9,7 +9,10 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* This project is based on AddressBook-Level3 by the [SE-EDU initiative](https://se-education.org).
+* This project is based on AddressBook-Level3 by the [SE-EDU initiative](https://se-education.org). The overall architecture (UI/Logic/Model/Storage split), command parsing/execution flow, and JSON storage design were adapted from AB3.
+* The structure and some sections/diagrams in this Developer Guide were adapted from the AddressBook-Level3 Developer Guide, then updated to reflect GymOps-specific features and command formats.
+* PlantUML usage and conventions were guided by the [se-edu PlantUML tutorial](https://se-education.org/guides/tutorials/plantUml.html).
+* The Metro-style JavaFX button CSS in the dark theme is adapted from the JMetro styling example by Pedro Duque Vieira (PixelDuke) as cited in the stylesheet comments.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -36,7 +39,7 @@ Given below is a quick overview of main components and how they interact with ea
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes [`Main`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
+**`Main`** (consisting of classes [src/main/java/seedu/address/Main.java](../src/main/java/seedu/address/Main.java) and [src/main/java/seedu/address/MainApp.java](../src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
 * At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
 * At shut down, it shuts down the other components and invokes cleanup methods where necessary.
 
@@ -51,10 +54,7 @@ The bulk of the app's work is done by the following four components:
 
 **How the architecture components interact with each other**
 
-The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete 1`.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** GymOps uses list-scoped delete commands (e.g., `delete t/1` to delete a trainer or `delete c/1` to delete a client). The diagrams in this section use the AddressBook-Level3 style `delete 1` example to illustrate the component interactions.
-</div>
+The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete c/1`.
 
 <img src="images/ArchitectureSequenceDiagram.png" width="574" />
 
@@ -71,13 +71,13 @@ The sections below give more details of each component.
 
 ### UI component
 
-The **API** of this component is specified in [`Ui.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/Ui.java)
+The **API** of this component is specified in [src/main/java/seedu/address/ui/Ui.java](../src/main/java/seedu/address/ui/Ui.java)
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
 The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `PersonListPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
 
-The `UI` component uses the JavaFx UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java) is specified in [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml)
+The `UI` component uses the JavaFx UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [src/main/java/seedu/address/ui/MainWindow.java](../src/main/java/seedu/address/ui/MainWindow.java) is specified in [src/main/resources/view/MainWindow.fxml](../src/main/resources/view/MainWindow.fxml)
 
 The `UI` component,
 
@@ -88,18 +88,15 @@ The `UI` component,
 
 ### Logic component
 
-**API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
+**API** : [src/main/java/seedu/address/logic/Logic.java](../src/main/java/seedu/address/logic/Logic.java)
 
 Here's a (partial) class diagram of the `Logic` component:
 
 <img src="images/LogicClassDiagram.png" width="550"/>
 
-The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete 1")` API call as an example.
+The sequence diagram below illustrates the interactions within the `Logic` component, taking the `execute("delete c/1")` API call as an example.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** In GymOps, the equivalent user command would be `delete t/1` or `delete c/1`.
-</div>
-
-![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
+![Interactions Inside the Logic Component for the `delete c/1` Command](images/DeleteSequenceDiagram.png)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline continues till the end of diagram.
 </div>
@@ -121,7 +118,7 @@ How the parsing works:
 * All `XYZCommandParser` classes (e.g., `AddCommandParser`, `DeleteCommandParser`, ...) inherit from the `Parser` interface so that they can be treated similarly where possible e.g, during testing.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
+**API** : [src/main/java/seedu/address/model/Model.java](../src/main/java/seedu/address/model/Model.java)
 
 <img src="images/ModelClassDiagram.png" width="450" />
 
@@ -142,7 +139,7 @@ The `Model` component,
 
 ### Storage component
 
-**API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
+**API** : [src/main/java/seedu/address/storage/Storage.java](../src/main/java/seedu/address/storage/Storage.java)
 
 <img src="images/StorageClassDiagram.png" width="550" />
 
@@ -171,6 +168,7 @@ Client-specific attributes include:
 * **Calorie tracking**: `calorieTarget` (0 means not set) and `calorieIntake`.
 * **Workout focus**: a short, letters-only string (e.g., `Chest`), stored as a `WorkoutFocus` value object.
 * **Remark**: free-text operational notes (must be non-empty after trimming), stored as a `Remark` value object.
+* **Membership validity**: an optional membership validity date (YYYY-MM-DD), stored as a `Validity` value object.
 
 These values are stored in the `Client` model and are persisted through `JsonAdaptedPerson`.
 
@@ -179,9 +177,10 @@ These values are stored in the `Client` model and are persisted through `JsonAda
 At the model layer, `Client` is a `Person` subtype with additional client-only fields:
 
 * **Assigned trainer**: stored as `trainerPhone` and `trainerName` fields.
-* **Calorie tracking**: `calorieTarget` and `calorieIntake` are stored as integers, where `0` means “not set” for `calorieTarget`.
+* **Calorie tracking**: `calorieTarget` and `calorieIntake` are stored as integers, where `0` means "not set" for `calorieTarget`.
 * **Workout focus**: stored as an `Optional<WorkoutFocus>`.
 * **Remark**: stored as an `Optional<Remark>`.
+* **Membership validity**: stored as an `Optional<Validity>` (ISO-8601 `YYYY-MM-DD`).
 
 `WorkoutFocus` and `Remark` are value objects that encapsulate validation:
 
@@ -195,6 +194,7 @@ To keep `Client` immutable, each client-only update is implemented using a copy-
 * `Client#withCalorieIntake(...)`
 * `Client#withWorkoutFocus(...)`
 * `Client#withRemark(...)`
+* `Client#withValidity(...)`
 
 All client-attribute commands follow the same high-level pattern:
 
@@ -232,6 +232,7 @@ Other client attribute commands follow the same flow, with small differences:
 * `set-calorie-target INDEX cal/CALORIES` updates `Client#calorieTarget`.
 * `log-calorie INDEX cal/CALORIES` adds to `Client#calorieIntake` rather than overwriting it.
 * `reassign-client CLIENT_INDEX t/TRAINER_INDEX` reads both the filtered client list and filtered trainer list and updates `trainerPhone` + `trainerName`.
+* `set-validity INDEX v/YYYY-MM-DD` updates `Client#validity`.
 
 #### Filtering Behaviour
 
@@ -249,6 +250,7 @@ GymOps defends at both parsing and execution layers:
 
 * Invalid formats (missing prefixes/arguments) are rejected by the relevant `XYZCommandParser` with a `ParseException`.
 * Invalid attribute values are rejected by their value objects (e.g., `WorkoutFocus` rejects non-letter input; `Remark` rejects blank remarks).
+* Invalid validity dates are rejected by `Validity` (must be a valid date in `YYYY-MM-DD` format).
 * Invalid indices (out of bounds, or pointing at a non-client in the client list) cause the command to throw a `CommandException`.
 
 #### Usage Scenario
@@ -274,15 +276,15 @@ GymOps adds the new amount to the existing intake total (note: the current versi
 **Aspect: Representation of optional client-only fields**
 
 * **Option 1 (current choice):** Store workout focus and remark as `Optional<...>`.
-   * Pros: Expresses “absent vs present” explicitly and avoids sentinel values.
+   * Pros: Expresses "absent vs present" explicitly and avoids sentinel values.
    * Cons: Slightly more boilerplate at the storage and UI layers.
 * **Option 2:** Store empty strings when not set.
    * Pros: Simpler serialisation.
-   * Cons: Blurs “unset” vs “set to empty”, and makes validation/formatting harder.
+   * Cons: Blurs "unset" vs "set to empty", and makes validation/formatting harder.
 
 **Aspect: Representation of calorie target**
 
-* **Option 1 (current choice):** Use `int calorieTarget` where `0` means “not set”.
+* **Option 1 (current choice):** Use `int calorieTarget` where `0` means "not set".
    * Pros: Lightweight and easy to display without null-handling.
    * Cons: Overloads the meaning of `0` (cannot represent a literal target of 0).
 * **Option 2:** Use `OptionalInt` for calorie target.
@@ -294,6 +296,7 @@ GymOps adds the new amount to the existing intake total (note: the current versi
 * Reset calorie intake totals by date (e.g., auto-reset at midnight, or store intake logs with timestamps).
 * Unify index conventions for client-attribute commands (some commands use `c/INDEX` while others use a plain `INDEX`).
 * Consider using a trainer identifier reference (instead of duplicating trainer name + phone) if trainer details become editable.
+* Improve membership validity UX (e.g., visually highlight expired validity dates in the client card).
 
 **UI**:
 
@@ -340,11 +343,11 @@ Step 1. The user launches the application for the first time. The `VersionedAddr
 
 ![UndoRedoState0](images/UndoRedoState0.png)
 
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+Step 2. The user executes `delete c/5` to delete the 5th client in the currently displayed client list. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete c/5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
 
 ![UndoRedoState1](images/UndoRedoState1.png)
 
-Step 3. The user executes `add n/David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Step 3. The user executes `add-trainer n/David Tan p/91234567 e/david@example.com` to add a new trainer. The `add-trainer` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
 
 ![UndoRedoState2](images/UndoRedoState2.png)
 
@@ -383,7 +386,7 @@ Step 5. The user then decides to execute the command `list`. Commands that do no
 
 ![UndoRedoState4](images/UndoRedoState4.png)
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
+Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add-trainer ...` command. This is the behavior that most modern desktop applications follow.
 
 ![UndoRedoState5](images/UndoRedoState5.png)
 
@@ -448,22 +451,21 @@ Some user stories describe planned/proposed features that may not be implemented
 | -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
 | `* * *`  | new supervisor user                        | see usage instructions         | refer to instructions when I forget how to use GymOps                  |
 | `* * *`  | supervisor                                 | add a new trainer              | build and maintain my roster of staff                                  |
-| `* * *`  | supervisor                                 | edit a trainer’s details       | keep trainer contact information accurate                               |
 | `* * *`  | supervisor                                 | list all trainers              | see which trainers are currently employed/registered                    |
 | `* * *`  | supervisor                                 | delete a trainer who has no assigned clients | remove trainers who have left the gym                      |
 | `* * *`  | supervisor                                 | add a client assigned to a trainer | allocate responsibility for that member                             |
-| `* * *`  | supervisor                                 | edit a client’s details        | keep client contact information accurate                                |
 | `* * *`  | supervisor                                 | list all clients (optionally by trainer) | view allocations and a trainer’s current client base            |
 | `* * *`  | supervisor                                 | delete a client                | remove members who have cancelled their membership                      |
 | `* * *`  | supervisor                                 | reassign a client to another trainer | handle trainer unavailability and schedule changes                 |
+| `* * *`  | supervisor                                 | set a client’s membership validity date | track whether a client’s membership is still valid                |
 | `* * *`  | supervisor                                 | set a calorie target for a client | record their nutritional goal (e.g., 2500 kcal)                     |
 | `* * *`  | supervisor                                 | log a client’s calorie intake  | track whether they are meeting their nutritional goals                  |
 | `* * *`  | supervisor                                 | set a workout focus for a client | preserve the right context during handovers                          |
 | `* * *`  | supervisor                                 | view a client’s progress summary | see target vs consumed calories and workout focus quickly            |
 | `* *`    | supervisor                                 | find trainers/clients by name  | locate their record without scrolling through long lists                |
 | `* *`    | supervisor                                 | add a remark to a client       | keep operational notes (e.g., injuries, payment checks)                 |
-| `* *`    | supervisor                                 | import data from a CSV file    | bulk-load or sync clients/trainers from other tools                     |
-| `* *`    | supervisor                                 | export data to a CSV file      | share or archive data outside of the app                                |
+| `* *`    | supervisor                                 | import data from a JSON file   | restore data from backups or move data between computers                |
+| `* *`    | supervisor                                 | export data to a JSON file     | share or archive data outside of the app                                |
 | `* *`    | supervisor                                 | clear all entries              | reset the system for a new term/season                                  |
 | `*`      | supervisor                                 | undo the last command          | quickly recover from accidental deletions/edits                         |
 | `*`      | supervisor                                 | see a time/day-based handover view | know which clients’ requirements are most relevant right now        |
@@ -605,7 +607,7 @@ Some user stories describe planned/proposed features that may not be implemented
 4.  Data should be persisted locally and remain intact after restarting the application.
 5.  The system should not require an internet connection for normal operation.
 6.  The system is single-user (supervisor-only) and does not require multiple logins or role-based access control.
-7.  CSV import/export (if implemented) should preserve all relevant fields needed for operations (trainer/client identities and client tracking fields) without loss.
+7.  JSON import/export should preserve all relevant fields needed for operations (trainer/client identities and client tracking fields) without loss.
 
 ### Glossary
 
@@ -618,13 +620,13 @@ Some user stories describe planned/proposed features that may not be implemented
 * **Calorie target**: A client’s intended daily calorie goal (kcal).
 * **Calorie intake**: The calories logged as consumed by a client for the day (kcal).
 * **Remark**: A free-text operational note about a client (e.g., injuries, payment flags).
-* **CSV**: Comma-Separated Values format used for import/export.
+* **JSON**: JavaScript Object Notation format used for import/export and local data storage.
 * **Mainstream OS**: Windows, Linux, macOS.
 * **GymOps**: The name of the application.
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Appendix: Instructions for manual testing**
+## **Appendix: Instructions for Manual Testing**
 
 Given below are instructions to test the app manually.
 
@@ -639,7 +641,12 @@ testers are expected to do more *exploratory* testing.
 
    1. Download the jar file and copy into an empty folder
 
-   1. Double-click the jar file Expected: Shows the GUI with a set of sample trainers and clients. The window size may not be optimum.
+   1. Double-click the jar file.
+      Expected: Shows the GUI with a set of sample trainers and clients. The window size may not be optimum.
+
+      Notes for testers:
+      * If double-clicking the `.jar` does not launch the app, run it using `java -jar GymOps.jar` from a terminal.
+      * Do not place the app in a write-protected folder (it may fail to save changes).
 
 1. Saving window preferences
 
@@ -703,8 +710,44 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `list-trainers` (after `find-trainers`) or `list-clients` (after `find-clients`)<br>
       Expected: All trainers/clients are shown again.
 
-   1. Test case: `list-trainers` (after `find-trainers`) or `list-clients` (after `find-clients`)<br>
-      Expected: All trainers/clients are shown again.
+### Adding trainers/clients
+
+1. Adding a trainer
+
+   1. Test case: `add-trainer n/Alex Tan p/91234567 e/alex@example.com`<br>
+      Expected: A new trainer appears in the trainer list.
+
+1. Adding a client
+
+   1. Prerequisites: Ensure there is at least one trainer in the displayed trainer list.
+
+   1. Test case: `add-client n/Bob Lim p/98765432 t/1 v/2026-12-31`<br>
+      Expected: A new client appears in the client list and is assigned to trainer #1.
+
+### Reassigning a client
+
+1. Reassigning a client to a different trainer
+
+   1. Prerequisites: Ensure there are at least 2 trainers and at least 1 client in the displayed lists.
+
+   1. Test case: `reassign-client 1 t/2`<br>
+      Expected: Client at index 1 shows their trainer updated to trainer #2.
+
+### Calorie tracking
+
+1. Setting a calorie target
+
+   1. Prerequisites: Ensure the displayed client list contains at least one client.
+
+   1. Test case: `set-calorie-target 1 cal/2000`<br>
+      Expected: The client card shows a calorie target (and a progress bar).
+
+1. Logging calorie intake
+
+   1. Prerequisites: Ensure the displayed client list contains at least one client.
+
+   1. Test case: `log-calorie 1 cal/500`<br>
+      Expected: The client card shows an updated calorie intake total.
 
 ### Setting workout focus
 
@@ -730,6 +773,39 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `remark 1 r/`<br>
       Expected: Error shown: `Remark cannot be empty.`
 
+### Setting membership validity
+
+1. Setting a membership validity date for a client
+
+   1. Prerequisites: Ensure the displayed client list contains at least one client.
+
+   1. Test case: `set-validity 1 v/2026-12-31`<br>
+      Expected: The client card shows the updated validity date.
+
+   1. Test case: `set-validity 1 v/2026-13-40`<br>
+      Expected: Error shown indicating the date must be in `YYYY-MM-DD` format.
+
+### Viewing trainer statistics
+
+1. Viewing statistics
+
+   1. Test case: `stats`<br>
+      Expected: The trainer list is sorted by client count (descending) and a summary is shown.
+
+### Importing/exporting data
+
+1. Exporting
+
+   1. Test case: `export data/export.json`<br>
+      Expected: A success message is shown and the JSON file is created.
+
+1. Importing
+
+   1. Prerequisites: Ensure there is an existing exported file (e.g., from the previous step).
+
+   1. Test case: `import data/export.json`<br>
+      Expected: A success message is shown and the displayed data matches the imported file.
+
 ### Saving data
 
 1. Dealing with missing/corrupted data files
@@ -737,16 +813,49 @@ testers are expected to do more *exploratory* testing.
    1. Missing file
 
       1. Prerequisites: Close the app.
-      1. Delete the data file at `data/addressbook.json`.
+      1. Delete the data file at `data/GymOps.json`.
       1. Launch the app.
          Expected: App starts normally and the data file is re-created with sample trainers/clients.
 
    1. Corrupted file
 
       1. Prerequisites: Close the app.
-      1. Open `data/addressbook.json` and replace the contents with invalid JSON (e.g., `{`).
+      1. Open `data/GymOps.json` and replace the contents with invalid JSON (e.g., `{`).
       1. Launch the app.
          Expected: App starts normally with an empty address book.
 
 1. Additional test ideas (optional):
    * Verify that data persists after adding/editing/deleting trainers/clients and restarting the app.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## **Appendix: Effort**
+
+GymOps is built on top of the AddressBook-Level3 (AB3) codebase, so a substantial portion of the foundational effort (UI/Logic/Model/Storage scaffolding, basic command framework, JSON persistence, and testing setup) was reused and adapted.
+This reuse saved more than 5% of total project effort and allowed the team to focus on GymOps-specific features and UX.
+
+Compared to AB3, GymOps required additional effort in areas such as:
+
+* Supporting two list-centric entity types (trainers and clients) and keeping their indices consistent under filtering.
+* Implementing client-only attributes (calorie tracking, workout focus, remark, membership validity) with value-object validation and UI presentation.
+* Handling cross-list operations like `reassign-client`, which resolves indices from different displayed lists.
+* Maintaining documentation/diagram accuracy while abstracting UI details appropriately for readability.
+
+Key achievements include a consistent model-level update pattern (`Client#withX(...)` + `Model#setPerson(...)`), JSON import/export support, and a CLI-centric workflow that remains usable under filtered lists.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## **Planned Enhancements**
+
+Team size: 5
+
+1. Highlight expired membership validity dates in the client card (e.g., show the validity label in red when the date is before today).
+2. Unify index conventions for client-attribute commands (accept a consistent `c/INDEX` format across `remark`, `set-calorie-target`, `log-calorie`, `set-validity`, and `set-focus`).
+3. Improve `delete` failure messages to be more specific about the failed target (trainer/client) and failure reason (e.g., trainer still has assigned clients).
+4. Improve `import` error reporting to pinpoint which field/entry is invalid (instead of a generic “failed to import”).
+5. Improve `export`/`import` UX by auto-creating parent directories when exporting to a new path, and by suggesting a correct relative path when users provide an invalid one.
+6. Improve trainer-selection filtering UX by clearly indicating when the client list is filtered by a selected trainer (and how to return to the full list).
+7. Improve `stats` output to explicitly display the computed client counts per trainer in the command result message (in addition to sorting the list).
+8. Improve calorie tracking by optionally resetting calorie intake totals by date (while preserving a simple “today’s total” UX).
+9. Improve `set-validity` ergonomics by allowing users to clear an existing validity value (without editing the data file manually).
+10. Improve robustness of list-scoped commands under dynamic list changes by providing clearer guidance when indices become invalid after filtering.

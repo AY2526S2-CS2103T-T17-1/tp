@@ -39,6 +39,9 @@ public class StatsCommand extends Command {
         }
 
         model.updateSortedTrainerList((p1, p2) -> {
+            if (!(p1 instanceof Trainer) || !(p2 instanceof Trainer)) {
+                return 0;
+            }
             Trainer t1 = (Trainer) p1;
             Trainer t2 = (Trainer) p2;
             int count1 = clientCounts.getOrDefault(t1.getPhone(), 0);

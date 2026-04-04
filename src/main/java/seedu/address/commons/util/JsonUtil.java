@@ -98,7 +98,28 @@ public class JsonUtil {
      * @return The instance of T with the specified values in the JSON string
      */
     public static <T> T fromJsonString(String json, Class<T> instanceClass) throws IOException {
-        return objectMapper.readValue(json, instanceClass);
+        requireNonNull(json);
+        return objectMapper.readValue(stripLeadingBom(json), instanceClass);
+    }
+
+    /**
+     * Strips any leading UTF-8 BOM characters (\uFEFF) and whitespace.
+     *
+     * <p>Some Windows tooling writes UTF-8 text files with a BOM (e.g. PowerShell 5.1
+     * {@code Set-Content -Encoding UTF8}). Jackson does not treat the BOM as whitespace
+     * when parsing from a {@code String}, so we remove it here.
+     */
+    private static String stripLeadingBom(String text) {
+        int index = 0;
+        while (index < text.length()) {
+            char current = text.charAt(index);
+            if (current == '\uFEFF' || Character.isWhitespace(current)) {
+                index++;
+                continue;
+            }
+            break;
+        }
+        return text.substring(index);
     }
 
     /**

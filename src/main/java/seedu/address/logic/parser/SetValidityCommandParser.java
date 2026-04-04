@@ -24,6 +24,8 @@ public class SetValidityCommandParser implements Parser<SetValidityCommand> {
         requireNonNull(args);
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_VALIDITY);
 
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_VALIDITY);
+
         Index index;
         try {
             index = ParserUtil.parseIndex(argMultimap.getPreamble());

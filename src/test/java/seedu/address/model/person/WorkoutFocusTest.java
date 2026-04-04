@@ -18,7 +18,6 @@ public class WorkoutFocusTest {
     public void constructor_invalidWorkoutFocus_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> new WorkoutFocus(""));
         assertThrows(IllegalArgumentException.class, () -> new WorkoutFocus("Ch3st"));
-        assertThrows(IllegalArgumentException.class, () -> new WorkoutFocus("Chest Back"));
     }
 
     @Test
@@ -37,9 +36,6 @@ public class WorkoutFocusTest {
 
         // contains digits -> false
         assertFalse(WorkoutFocus.isValidWorkoutFocus("Ch3st"));
-
-        // contains spaces -> false
-        assertFalse(WorkoutFocus.isValidWorkoutFocus("Chest Back"));
 
         // contains special chars -> false
         assertFalse(WorkoutFocus.isValidWorkoutFocus("Chest!"));
