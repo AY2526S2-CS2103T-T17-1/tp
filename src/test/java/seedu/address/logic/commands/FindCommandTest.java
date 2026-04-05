@@ -9,13 +9,19 @@ import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.person.Email;
+import seedu.address.model.person.Name;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
+import seedu.address.model.person.Phone;
+import seedu.address.model.person.Trainer;
 
 /**
  * Contains integration tests (interaction with the Model) for {@code FindCommand}.
@@ -69,6 +75,26 @@ public class FindCommandTest {
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(Arrays.asList(seedu.address.testutil.TypicalPersons.ALICE), model.getFilteredPersonList());
+    }
+
+    @Test
+    public void execute_preservesSelectedTrainer() throws Exception {
+        AddressBook ab = new AddressBook();
+        Trainer trainer = new Trainer(new Name("John"), new Phone("91234567"),
+                new Email("john@example.com"), new HashSet<>());
+        ab.addPerson(trainer);
+        Model model = new ModelManager(ab, new UserPrefs());
+
+        // Select the trainer before running find
+        model.setSelectedTrainer(trainer);
+        assertTrue(model.getSelectedTrainer().isPresent());
+
+        // Run find with a keyword that matches nothing
+        new FindCommand(preparePredicate("Nonexistent")).execute(model);
+
+        // Trainer selection must still be present
+        assertTrue(model.getSelectedTrainer().isPresent());
+        assertEquals(trainer, model.getSelectedTrainer().get());
     }
 
     @Test
