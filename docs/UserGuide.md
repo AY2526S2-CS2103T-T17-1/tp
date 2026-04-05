@@ -633,6 +633,27 @@ Examples:
 
 [⬆ Back to top](#top)
 
+#### Advanced: assigning tags manually
+
+GymOps includes a tag system, but there is currently **no CLI command** to assign tags.
+Advanced users may still assign tags by editing the `tags` field in the data file.
+
+- Only edit the file while GymOps is **closed**. Otherwise, your changes may be overwritten when GymOps saves.
+- Tags must be **alphanumeric** (e.g., `vip`, `Trial2026`).
+- Each person entry can have a `tags` array. Example:
+
+   ```json
+   {
+      "type": "trainer",
+      "name": "Real Trainer",
+      "phone": "92222222",
+      "email": "real@trainer.com",
+      "tags": ["vip", "trial"]
+   }
+   ```
+
+If you enter an invalid tag (or break the JSON format), GymOps may fail to load the file and start with a fresh/empty dataset.
+
 ---
 
 ## FAQ

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.AddressBook;
+import seedu.address.model.person.Person;
 import seedu.address.testutil.TypicalPersons;
 
 public class JsonSerializableAddressBookTest {
@@ -19,6 +20,8 @@ public class JsonSerializableAddressBookTest {
     private static final Path TYPICAL_PERSONS_FILE = TEST_DATA_FOLDER.resolve("typicalPersonsAddressBook.json");
     private static final Path INVALID_PERSON_FILE = TEST_DATA_FOLDER.resolve("invalidPersonAddressBook.json");
     private static final Path DUPLICATE_PERSON_FILE = TEST_DATA_FOLDER.resolve("duplicatePersonAddressBook.json");
+    private static final Path CLIENT_WITH_MISSING_TRAINER_FILE =
+            TEST_DATA_FOLDER.resolve("clientWithMissingTrainer.json");
 
     @Test
     public void toModelType_typicalPersonsFile_success() throws Exception {
@@ -42,6 +45,21 @@ public class JsonSerializableAddressBookTest {
                 JsonSerializableAddressBook.class).get();
         assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_DUPLICATE_PERSON,
                 dataFromFile::toModelType);
+    }
+
+    @Test
+    public void toModelType_clientWithMissingTrainer_rogueClientRemoved() throws Exception {
+        JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(CLIENT_WITH_MISSING_TRAINER_FILE,
+                JsonSerializableAddressBook.class).get();
+
+        AddressBook addressBookFromFile = dataFromFile.toModelType();
+        // File contains 1 trainer, 1 valid client, and 1 rogue client.
+        assertEquals(2, addressBookFromFile.getPersonList().size());
+
+        boolean containsRogueClient = addressBookFromFile.getPersonList().stream()
+                .map(Person::getPhone)
+                .anyMatch(phone -> phone.getValue().equals("90000000"));
+        assertEquals(false, containsRogueClient);
     }
 
 }

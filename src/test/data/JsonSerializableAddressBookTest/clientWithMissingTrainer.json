@@ -1,0 +1,27 @@
+{
+  "persons": [
+    {
+      "type": "trainer",
+      "name": "Real Trainer",
+      "phone": "92222222",
+      "email": "real@trainer.com",
+      "tags": []
+    },
+    {
+      "type": "client",
+      "name": "Valid Client",
+      "phone": "90000001",
+      "trainerPhone": "92222222",
+      "trainerName": "Real Trainer",
+      "tags": []
+    },
+    {
+      "type": "client",
+      "name": "Rogue Client",
+      "phone": "90000000",
+      "trainerPhone": "91111111",
+      "trainerName": "Nonexistent Trainer",
+      "tags": []
+    }
+  ]
+}

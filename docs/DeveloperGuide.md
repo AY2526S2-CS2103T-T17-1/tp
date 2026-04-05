@@ -824,6 +824,13 @@ testers are expected to do more *exploratory* testing.
       1. Launch the app.
          Expected: App starts normally with an empty address book.
 
+   1. Inconsistent (but valid) file
+
+      1. Prerequisites: Close the app.
+      1. Edit `data/GymOps.json` so that a `client` references a `trainerPhone` that does not exist in the file.
+      1. Launch the app.
+         Expected: App starts normally and only the inconsistent client entries are removed during load.
+
 1. Additional test ideas (optional):
    * Verify that data persists after adding/editing/deleting trainers/clients and restarting the app.
 

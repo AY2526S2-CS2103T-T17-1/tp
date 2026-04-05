@@ -2,6 +2,7 @@ package seedu.address.storage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -11,7 +12,10 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.person.Client;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
+import seedu.address.model.person.Trainer;
 
 /**
  * An Immutable AddressBook that is serializable to JSON format.
@@ -54,7 +58,36 @@ class JsonSerializableAddressBook {
             }
             addressBook.addPerson(person);
         }
+
+        removeClientsWithMissingTrainers(addressBook);
         return addressBook;
+    }
+
+    /**
+     * Removes any {@link Client} that references a non-existent {@link Trainer}.
+     *
+     * <p>This prevents inconsistent state when the JSON file is manually edited,
+     * while still allowing the rest of the data file to be loaded.
+     */
+    private void removeClientsWithMissingTrainers(AddressBook addressBook) {
+        List<Person> allPersons = new ArrayList<>(addressBook.getPersonList());
+
+        Set<Phone> trainerPhones = allPersons.stream()
+                .filter(Trainer.class::isInstance)
+                .map(Trainer.class::cast)
+                .map(Trainer::getPhone)
+                .collect(Collectors.toSet());
+
+        for (Person person : allPersons) {
+            if (!(person instanceof Client)) {
+                continue;
+            }
+
+            Client client = (Client) person;
+            if (!trainerPhones.contains(client.getTrainerPhone())) {
+                addressBook.removePerson(client);
+            }
+        }
     }
 
 }
