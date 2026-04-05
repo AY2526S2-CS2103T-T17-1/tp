@@ -64,7 +64,7 @@ This guide is written for **gym managers and administrators** who want a fast, k
 
 ---
 
-## Quick start
+## Quick Start
 
 1. Ensure you have **Java 17 or above** installed on your computer.
 
@@ -184,7 +184,7 @@ Adds a new client and assigns them to an existing trainer.
 Format: `add-client n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]`
 
 * `TRAINER_INDEX` must refer to a trainer visible in the **current trainer list**.
-* `VALIDITY` is an optional field must be a valid date in the format `YYYY-MM-DD`.
+* `VALIDITY` is an optional field that must be a valid date in the format `YYYY-MM-DD`.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the trainer list is filtered (e.g. after a `find-trainers` command), `TRAINER_INDEX` refers to the filtered results. Run `list-trainers` first to assign by the full list.</div>
 
@@ -254,7 +254,6 @@ This command resets both lists to show all entries by:
 
 Format: `list`
 
-![list](images/list.png)
 **Expected outcome:** Both the trainers and clients lists are refreshed to show all entries, and a success message is displayed.
 
 [⬆ Back to top](#table-of-contents)
@@ -267,7 +266,6 @@ Shows all trainers in GymOps. Clears any active trainer filter.
 
 Format: `list-trainers`
 
-![list trainers](images/listTrainers.png)
 **Expected outcome:** The trainers list is refreshed to show all trainers, and a success message is displayed.
 
 [⬆ Back to top](#table-of-contents)
@@ -282,9 +280,6 @@ Format: `list-clients [TRAINER_INDEX]`
 
 * If `TRAINER_INDEX` is omitted, shows all clients and clears any active trainer filter.
 * If `TRAINER_INDEX` is provided, shows only clients assigned to the trainer at that index in the **current trainer list**.
-
-
-![list clients](images/listClients.png)
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** After filtering clients by trainer (via the GUI or by using an index), run `list-clients` without an index to return to the full client list.</div>
 
@@ -321,7 +316,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 
 * The search is case-insensitive. e.g. `hans` matches `Hans`.
 * The order of keywords does not matter. e.g. `Hans Bo` matches `Bo Hans`.
-* Only full words are matched. e.g. `Han` does not match `Hans`.
+* Partial words are matched. e.g. `Han` matches `Hans`.
 * Each keyword must be alphanumeric. e.g. `Bob123` is valid; `Bob@` is not.
 * Results include persons matching **at least one** keyword (OR search).
 * Run `list` to return to the full list after searching.
@@ -329,8 +324,8 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** Use `find-trainers` or `find-clients` to search within a specific list.</div>
 
 Examples:
-* `find John` — returns `john`, `John Doe`
-* `find alex david` — returns `Alex Yeoh`, `David Li`
+* `find John` — returns `john`, `John Doe`, `Johnny`
+* `find alex david` — returns `Alex Yeoh`, `David Li`, `Alexander`
 
 ![find](images/find.png)
 
@@ -346,7 +341,11 @@ Finds trainers whose names contain any of the given keywords.
 
 Format: `find-trainers KEYWORD [MORE_KEYWORDS]`
 
-* The search is case-insensitive and matches full words only.
+* The search is case-insensitive. e.g. `hans` matches `Hans`.
+* The order of keywords does not matter. e.g. `Hans Bo` matches `Bo Hans`.
+* Partial words are matched. e.g. `Han` matches `Hans`.
+* Each keyword must be alphanumeric. e.g. `Bob123` is valid; `Bob@` is not.
+* Results include trainers matching **at least one** keyword (OR search).
 * Run `list-trainers` to return to the full trainer list after searching.
 
 Examples:
@@ -365,7 +364,9 @@ Finds clients whose names contain any of the given keywords.
 
 Format: `find-clients KEYWORD [MORE_KEYWORDS]`
 
-* The search is case-insensitive and matches full words only.
+* The search is case-insensitive. e.g. `alice` matches `Alice`.
+* The order of keywords does not matter. e.g. `Alice Bob` matches `Bob Alice`.
+* Partial words are matched. e.g. `Ali` matches `Alice`.
 * Each keyword must be alphanumeric. e.g. `Alice123` is valid; `Alice@` is not.
 * Results include clients matching **at least one** keyword (OR search).
 * Run `list-clients` to return to the full client list after searching.
@@ -495,7 +496,6 @@ Examples:
 * `delete t/2` — deletes the 2nd trainer.
 * `delete c/1` — deletes the 1st client.
 
-![delete](images/delete.png)
 **Expected outcome:** The specified person is permanently removed from the application, and a success message is displayed.
 
 [⬆ Back to top](#table-of-contents)
@@ -515,7 +515,6 @@ Format: `delete-client INDEX`
 Examples:
 * `delete-client 1` — deletes the 1st client in the current list.
 
-![delete client](images/deleteClient.png)
 **Expected outcome:** The client is permanently removed from the application, their assigned trainer's client count is updated, and a success message is displayed.
 
 [⬆ Back to top](#table-of-contents)
@@ -535,7 +534,6 @@ Format: `delete-trainer INDEX`
 Examples:
 * `delete-trainer 1` — deletes the 1st trainer.
 
-![delete trainer](images/deleteTrainer.png)
 **Expected outcome:** The trainer is permanently removed from the application, and a success message is displayed.
 
 [⬆ Back to top](#table-of-contents)
@@ -544,7 +542,7 @@ Examples:
 
 ### Exporting data: `export`
 
-Exports the current address book data to a JSON file at the specified location.
+Exports the current GymOps data to a JSON file at the specified location.
 
 Format: `export FILE_PATH`
 
@@ -563,7 +561,7 @@ Examples:
 
 ### Importing data: `import`
 
-Imports address book data from a specified JSON file, replacing the current application data.
+Imports GymOps data from a specified JSON file, replacing the current application data.
 
 Format: `import FILE_PATH`
 
@@ -590,7 +588,6 @@ Format: `clear`
 
 After clearing, GymOps will immediately save the empty data set to disk.
 
-![clear](images/clear.png)
 **Expected outcome:** All trainers and clients are removed from the application, the UI panels are cleared, and a success message is displayed.
 
 [⬆ Back to top](#table-of-contents)
@@ -633,7 +630,7 @@ Install GymOps on the other computer and replace the empty data file it creates 
 
 ---
 
-## Known issues
+## Known Issues
 
 1. **Multiple screens:** If you move the app to a secondary screen and later use only the primary screen, the GUI may open off-screen. Fix: delete `preferences.json` before restarting the app.
 2. **Minimised Help Window:** Running `help` again while the Help Window is minimised will not open a new window. Fix: manually restore the minimised window.
@@ -649,7 +646,7 @@ Install GymOps on the other computer and replace the empty data file it creates 
 |--------|--------|---------|
 | **Help** | `help` | — |
 | **Add trainer** | `add-trainer n/NAME p/PHONE_NUMBER e/EMAIL` | `add-trainer n/John Doe p/98765432 e/johndoe@example.com` |
-| **Edit trainer** | `edit-trainer INDEX [n/NAME] [e/EMAIL]` | `edit-trainer 1 n/Jane Doe e/jane@example.com` |
+| **Edit trainer** | `edit-trainer INDEX [n/NAME] [p/PHONE] [e/EMAIL]` | `edit-trainer 1 n/Jane Doe e/jane@example.com` |
 | **Add client** | `add-client n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]` | `add-client n/Alice Lim p/81234567 t/1 v/2028-09-09` |
 | **Edit client** | `edit-client INDEX [n/NAME] [p/PHONE] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]` | `edit-client 1 n/Alice Tan p/91234567` |
 | **Reassign client** | `reassign-client CLIENT_INDEX t/TRAINER_INDEX` | `reassign-client 2 t/1` |

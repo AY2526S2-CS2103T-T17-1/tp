@@ -10,18 +10,18 @@ import seedu.address.model.Model;
 import seedu.address.storage.JsonAddressBookStorage;
 
 /**
- * Exports the address book to a specified JSON file.
+ * Exports GymOps data to a specified JSON file.
  */
 public class ExportCommand extends Command {
 
     public static final String COMMAND_WORD = "export";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Exports the address book to a specified JSON file.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Exports GymOps data to a specified JSON file.\n"
             + "Parameters: FILE_PATH\n"
             + "Example: " + COMMAND_WORD + " data/my_export.json";
 
-    public static final String MESSAGE_SUCCESS = "Address book exported successfully to: %1$s";
-    public static final String MESSAGE_EXPORT_FAILURE = "Failed to export address book to: %1$s. Error: %2$s";
+    public static final String MESSAGE_SUCCESS = "GymOps data exported successfully to: %1$s";
+    public static final String MESSAGE_EXPORT_FAILURE = "Failed to export GymOps data to: %1$s. Error: %2$s";
 
     private final Path filePath;
 
