@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
@@ -8,6 +9,7 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Client;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
 import seedu.address.model.person.Validity;
@@ -55,6 +58,32 @@ public class SetValidityCommandTest {
         Model expectedModel = new ModelManager(expectedAb, new UserPrefs());
 
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_doesNotResetClientFilter() throws Exception {
+        AddressBook ab = new AddressBook();
+        Trainer trainer = new Trainer(new Name("John"), new Phone("91234567"),
+                new Email("john@example.com"), new HashSet<>());
+        Client alice = new Client(new Name("Alice"), new Phone("81234567"),
+                trainer.getPhone(), trainer.getName(), new HashSet<>());
+        Client bob = new Client(new Name("Bob"), new Phone("82345678"),
+                trainer.getPhone(), trainer.getName(), new HashSet<>());
+        ab.addPerson(trainer);
+        ab.addPerson(alice);
+        ab.addPerson(bob);
+        Model model = new ModelManager(ab, new UserPrefs());
+
+        // Apply a filter so only Alice is visible
+        model.updateFilteredClientList(new NameContainsKeywordsPredicate(List.of("Alice")));
+        assertEquals(1, model.getFilteredClientList().size());
+
+        // Run set-validity on the first (and only) visible client
+        new SetValidityCommand(INDEX_FIRST_PERSON, new Validity("2026-12-31")).execute(model);
+
+        // Filter must still be in place — list should still show only 1 client
+        assertEquals(1, model.getFilteredClientList().size());
+        assertEquals("Alice", model.getFilteredClientList().get(0).getName().getFullName());
     }
 
     @Test

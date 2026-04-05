@@ -2,7 +2,6 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_VALIDITY;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -70,7 +69,6 @@ public class SetValidityCommand extends Command {
         Client updatedClient = clientToEdit.withValidity(validity);
 
         model.setPerson(clientToEdit, updatedClient);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         String successMessage = String.format(MESSAGE_SET_VALIDITY_SUCCESS, validity, clientToEdit.getName());
         LocalDate parsedDate = LocalDate.parse(validity.value);
         if (parsedDate.isBefore(LocalDate.now())) {
