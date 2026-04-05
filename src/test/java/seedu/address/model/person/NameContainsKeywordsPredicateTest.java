@@ -75,6 +75,33 @@ public class NameContainsKeywordsPredicateTest {
     }
 
     @Test
+    public void test_nameContainsPartialKeywords_returnsTrue() {
+        // Partial match at start of word
+        NameContainsKeywordsPredicate predicate = new NameContainsKeywordsPredicate(Collections.singletonList("Han"));
+        assertTrue(predicate.test(new PersonBuilder().withName("Hans").build()));
+
+        // Partial match in middle of word
+        predicate = new NameContainsKeywordsPredicate(Collections.singletonList("ann"));
+        assertTrue(predicate.test(new PersonBuilder().withName("Hanna").build()));
+
+        // Partial match at end of word
+        predicate = new NameContainsKeywordsPredicate(Collections.singletonList("ice"));
+        assertTrue(predicate.test(new PersonBuilder().withName("Alice").build()));
+
+        // Case-insensitive partial match
+        predicate = new NameContainsKeywordsPredicate(Collections.singletonList("han"));
+        assertTrue(predicate.test(new PersonBuilder().withName("Hans").build()));
+
+        // Partial match on first name in full name
+        predicate = new NameContainsKeywordsPredicate(Collections.singletonList("Ali"));
+        assertTrue(predicate.test(new PersonBuilder().withName("Alice Bob").build()));
+
+        // Partial match on last name in full name
+        predicate = new NameContainsKeywordsPredicate(Collections.singletonList("Bo"));
+        assertTrue(predicate.test(new PersonBuilder().withName("Alice Bob").build()));
+    }
+
+    @Test
     public void toStringMethod() {
         List<String> keywords = List.of("keyword1", "keyword2");
         NameContainsKeywordsPredicate predicate = new NameContainsKeywordsPredicate(keywords);
