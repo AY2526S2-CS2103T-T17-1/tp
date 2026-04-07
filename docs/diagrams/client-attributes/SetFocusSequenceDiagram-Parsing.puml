@@ -1,0 +1,28 @@
+@startuml
+skinparam ArrowFontStyle plain
+hide footbox
+
+actor User
+participant ":Ui" as Ui
+participant ":LogicManager" as LogicManager
+participant ":AddressBookParser" as AddressBookParser
+participant ":SetFocusCommandParser" as SetFocusCommandParser
+participant ":SetFocusCommand" as SetFocusCommand
+
+User -> Ui : enterCommand("set-focus c/1 f/Chest")
+activate Ui
+Ui -> LogicManager : execute(...)
+activate LogicManager
+LogicManager -> AddressBookParser : parseCommand(...)
+activate AddressBookParser
+AddressBookParser -> SetFocusCommandParser : parse("c/1 f/Chest")
+activate SetFocusCommandParser
+create SetFocusCommand
+SetFocusCommandParser -> SetFocusCommand : <<create>>
+deactivate SetFocusCommandParser
+AddressBookParser --> LogicManager : SetFocusCommand
+deactivate AddressBookParser
+LogicManager --> Ui : CommandResult
+deactivate LogicManager
+deactivate Ui
+@enduml

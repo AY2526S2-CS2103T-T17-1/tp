@@ -126,8 +126,13 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the currently 'selected' `Person` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
-* stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` objects.
+* exposes multiple _filtered_ lists (as unmodifiable `ObservableList<Person>`) that the UI can observe:
+   * all persons (`Model#getFilteredPersonList()`),
+   * trainers only (`Model#getFilteredTrainerList()`), and
+   * clients only (`Model#getFilteredClientList()`).
+* supports a selected-trainer state (`Model#setSelectedTrainer(...)`) which further refines the displayed client list.
+* supports sorting the trainer list (e.g., `stats` updates a comparator used by the trainer list).
+* stores a `UserPrefs` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `AddressBook`, which `Person` references. This allows `AddressBook` to only require one `Tag` object per unique tag, instead of each `Person` needing their own `Tag` objects.<br>
@@ -145,7 +150,7 @@ The `Model` component,
 
 The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
-* inherits from both `AddressBookStorage` and `UserPrefStorage`, which means it can be treated as either one (if only the functionality of only one is needed).
+* inherits from both `AddressBookStorage` and `UserPrefsStorage`, which means it can be treated as either one (if only the functionality of only one is needed).
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
 ### Common classes
@@ -158,6 +163,66 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Trainer and client domain model (two-entity system)
+
+GymOps models two concrete entity types:
+
+* `Trainer` (staff member), and
+* `Client` (gym member assigned to a trainer).
+
+At the storage and model layers, both are stored in the same collection:
+
+* `AddressBook` maintains a single `UniquePersonList` of `Person` objects.
+* `Trainer` and `Client` are subtypes of the abstract base class `Person`.
+
+The UI shows two lists by filtering that single list using `instanceof` checks in `ModelManager`:
+
+* `Model#getFilteredTrainerList()` returns only `Trainer` instances (and may also be sorted, e.g., by `stats`).
+* `Model#getFilteredClientList()` returns only `Client` instances, optionally refined by the selected-trainer filter.
+
+<div markdown="span" class="alert alert-info">:information_source: **Info:** GymOps does not maintain separate trainer/client collections in the model; both lists are views over the same underlying `UniquePersonList<Person>`.
+</div>
+
+<div markdown="span" class="alert alert-warning">:warning: **Warning:** Identity rules are type-specific (`Trainer` uses phone-or-email; `Client` uses phone only). Avoid assuming that phone numbers are globally unique across all persons.
+</div>
+
+<div markdown="span" class="alert alert-primary">:bulb: **Tip:** When implementing a command that takes an index, be explicit about which filtered list it indexes into (trainer list vs client list) to avoid subtle UI/index mismatches.
+</div>
+
+#### Identity and uniqueness rules
+
+Uniqueness is enforced by `UniquePersonList` via `Person#isSamePerson(...)`. Because `Trainer` and `Client` override this method differently, GymOps has type-specific identity rules:
+
+* **Trainer uniqueness**: two trainers are considered the “same person” if they share either **phone** or **email**.
+   This ensures trainers do not share a phone or email.
+* **Client uniqueness**: two clients are considered the “same person” if they share **phone**.
+* **Cross-type phones**: a `Client` and a `Trainer` with the same phone number are *not* considered duplicates.
+   (This is intentional and is encoded in `Client#isSamePerson(...)`.)
+
+These rules affect `add-*` and `edit-*` commands because duplicates are rejected at the `UniquePersonList` level.
+
+#### Representing client assignment to trainers
+
+Each `Client` stores its assigned trainer as a value pair:
+
+* `trainerPhone` (the trainer’s phone), and
+* `trainerName` (the trainer’s name).
+
+GymOps does not store a direct object reference from `Client` to a `Trainer` instance. This choice keeps the model simple and makes client cards renderable without extra lookups, but requires explicit consistency handling when trainers change.
+
+#### Keeping the two-entity system consistent
+
+GymOps maintains referential consistency between `Client` and `Trainer` in a few key places:
+
+* **On load (storage)**: after JSON is converted into model objects, GymOps removes any `Client` whose `trainerPhone` does not match any existing `Trainer` phone in the loaded dataset.
+   This prevents the app from starting with inconsistent state if the JSON file is manually edited.
+* **On trainer edits (model)**: when `Model#setPerson(target, editedPerson)` edits a trainer, `ModelManager` propagates changes by updating every client whose `trainerPhone` matches the original trainer.
+   This keeps client assignment labels correct even if the trainer’s phone/name changes.
+* **On trainer deletion (logic)**: deleting a trainer is blocked if any client is still assigned to them.
+   Users must reassign or delete those clients first.
+
+The sections below (Client attributes, trainer selection filtering, and trainer edit propagation) build on this model.
+
 ### Client attributes
 
 GymOps extends the base `Person` model with a `Client` subtype that includes client-specific attributes.
@@ -166,9 +231,9 @@ Client-specific attributes include:
 
 * **Assigned trainer**: stored as the trainer's phone and name fields in `Client`.
 * **Calorie tracking**: `calorieTarget` (0 means not set) and `calorieIntake`.
-* **Workout focus**: a short, letters-only string (e.g., `Chest`), stored as a `WorkoutFocus` value object.
+* **Workout focus**: a short string containing letters, where words may be separated by single spaces (e.g., `Upper Body`), stored as a `WorkoutFocus` value object.
 * **Remark**: free-text operational notes (must be non-empty after trimming), stored as a `Remark` value object.
-* **Membership validity**: an optional membership validity date (YYYY-MM-DD), stored as a `Validity` value object.
+* **Membership validity**: an optional membership validity date (`YYYY-MM-DD`) that must not be in the past, stored as a `Validity` value object.
 
 These values are stored in the `Client` model and are persisted through `JsonAdaptedPerson`.
 
@@ -184,7 +249,7 @@ At the model layer, `Client` is a `Person` subtype with additional client-only f
 
 `WorkoutFocus` and `Remark` are value objects that encapsulate validation:
 
-* `WorkoutFocus` only allows letters (`[A-Za-z]+`).
+* `WorkoutFocus` only allows letters, with optional single spaces between words (`[A-Za-z]+(\\s[A-Za-z]+)*`).
 * `Remark` must be non-empty after trimming.
 
 To keep `Client` immutable, each client-only update is implemented using a copy-with style API:
@@ -204,7 +269,7 @@ All client-attribute commands follow the same high-level pattern:
 4. Persist the updated address book through `Storage` (triggered by `LogicManager`).
 
 Storage is implemented through `JsonAdaptedPerson`, which serialises/deserialises all client-only fields.
-For optional fields (`workoutFocus`, `remark`), `null` is stored when absent and mapped back to `Optional.empty()` on load.
+For optional fields (`workoutFocus`, `remark`, `validity`), `null` is stored when absent and mapped back to `Optional.empty()` on load.
 `JsonAdaptedPerson` also includes a small backward-compatibility fallback that infers the person type when `type` is missing.
 
 #### Command Flow
@@ -224,10 +289,20 @@ The following sequence occurs when executing `set-focus c/1 f/Chest`:
 
 The sequence diagram below shows a typical execution flow for `set-focus c/1 f/Chest`:
 
-<img src="images/client-attributes/SetFocusSequenceDiagram.png" width="700" />
+To keep the text readable, the flow is split into two smaller sequence diagrams.
+
+**Parsing flow**:
+
+<img src="images/client-attributes/SetFocusSequenceDiagram-Parsing.png" width="700" />
+
+**Execution and persistence flow**:
+
+<img src="images/client-attributes/SetFocusSequenceDiagram-Execution.png" width="700" />
 
 Other client attribute commands follow the same flow, with small differences:
 
+* `edit-client INDEX [cal/CALORIES] [f/FOCUS] [r/REMARK] [v/VALIDITY]` updates multiple client-only fields in one command.
+   * For `f/`, `r/`, and `v/`, providing an empty value (e.g., `f/`) clears the corresponding optional field.
 * `remark INDEX r/REMARK` updates `Client#remark`.
 * `set-calorie-target INDEX cal/CALORIES` updates `Client#calorieTarget`.
 * `log-calorie INDEX cal/CALORIES` adds to `Client#calorieIntake` rather than overwriting it.
@@ -249,8 +324,8 @@ For `reassign-client`, the `CLIENT_INDEX` is resolved from the displayed client 
 GymOps defends at both parsing and execution layers:
 
 * Invalid formats (missing prefixes/arguments) are rejected by the relevant `XYZCommandParser` with a `ParseException`.
-* Invalid attribute values are rejected by their value objects (e.g., `WorkoutFocus` rejects non-letter input; `Remark` rejects blank remarks).
-* Invalid validity dates are rejected by `Validity` (must be a valid date in `YYYY-MM-DD` format).
+* Invalid attribute values are rejected by their value objects (e.g., `WorkoutFocus` rejects non-letter input and disallows multiple consecutive spaces; `Remark` rejects blank remarks).
+* Invalid validity dates are rejected by `Validity` (must be a valid date in `YYYY-MM-DD` format and must not be in the past).
 * Invalid indices (out of bounds, or pointing at a non-client in the client list) cause the command to throw a `CommandException`.
 
 #### Usage Scenario
@@ -295,12 +370,12 @@ GymOps adds the new amount to the existing intake total (note: the current versi
 
 * Reset calorie intake totals by date (e.g., auto-reset at midnight, or store intake logs with timestamps).
 * Unify index conventions for client-attribute commands (some commands use `c/INDEX` while others use a plain `INDEX`).
-* Consider using a trainer identifier reference (instead of duplicating trainer name + phone) if trainer details become editable.
-* Improve membership validity UX (e.g., visually highlight expired validity dates in the client card).
+* Consider using a trainer identifier reference (instead of duplicating trainer name + phone) to reduce duplication and simplify long-term maintenance.
+* Allow storing past validity dates and visually highlight expired validity dates in the client card.
 
 **UI**:
 
-* `PersonCard` displays workout focus and remark labels for clients when present.
+* `PersonCard` displays client-only labels when present (calorie info + progress bar, workout focus, remark, and membership validity).
 
 ### Trainer selection and client list filtering
 
@@ -314,105 +389,210 @@ To support “select a trainer → filter clients”, the `Model` exposes:
 
 `ModelManager` stores the selected trainer’s phone (as an `Optional<Phone>`) and uses it to refine the client list predicate. This keeps the filtering logic inside `Model`, while allowing `UI` to remain a thin consumer of observable lists.
 
-### Find keyword validation
+In addition to selecting a trainer from the UI list, `list-clients` also participates in this flow:
 
-`find` is parsed by `FindCommandParser`, which:
+* `list-clients` (no index) clears any selected trainer and shows all clients.
+* `list-clients INDEX` selects the trainer at `INDEX` (from the currently displayed trainer list) and filters the client list to that trainer.
 
-* rejects empty input (no keywords), and
-* rejects any keyword that is not alphanumeric (letters and/or digits only).
+### Trainer edits and assignment consistency
 
-The resulting `FindCommand` filters the displayed list using `NameContainsKeywordsPredicate`.
+Because `Client` stores its assigned trainer as a `(trainerPhone, trainerName)` pair, GymOps must keep client assignments consistent when a trainer is edited.
 
-`find-trainers` and `find-clients` follow the same keyword validation rules and filter only their respective lists.
+#### Implementation
 
-### \[Proposed\] Undo/redo feature
+When `Model#setPerson(target, editedPerson)` is called and both `target` and `editedPerson` are trainers, `ModelManager`:
 
-#### Proposed Implementation
+1. Updates the trainer in the address book.
+2. Detects whether the trainer’s phone or name changed.
+3. If either changed, iterates through all clients whose `trainerPhone` matches the original trainer and updates them using `Client#withTrainer(editedTrainerPhone, editedTrainerName)`.
 
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+Additionally, if the edited trainer was the currently selected trainer (used for client list filtering), `ModelManager` updates the stored selected phone to the new value so that the UI remains filtered to the same logical trainer.
 
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+The activity diagram below summarises the propagation logic when a trainer is edited:
 
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+<img src="images/trainer/TrainerEditPropagationActivityDiagram.png" width="650" />
 
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
+#### Design Considerations
 
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+**Aspect: Storing trainer references inside `Client`**
 
-![UndoRedoState0](images/UndoRedoState0.png)
+* **Option 1 (current choice):** Store trainer phone and name directly in the client.
+   * Pros: Client cards can display trainer information without additional lookups.
+   * Cons: Requires propagation logic when trainers are edited.
+* **Option 2:** Store only a trainer identifier and resolve display data on demand.
+   * Pros: Avoids duplication and eliminates propagation on trainer edits.
+   * Cons: Requires more indirection in UI/model and careful handling of deleted trainers.
 
-Step 2. The user executes `delete c/5` to delete the 5th client in the currently displayed client list. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete c/5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+### Viewing trainer statistics (`stats`)
 
-![UndoRedoState1](images/UndoRedoState1.png)
+`stats` sorts the trainer list by the number of clients assigned to each trainer.
 
-Step 3. The user executes `add-trainer n/David Tan p/91234567 e/david@example.com` to add a new trainer. The `add-trainer` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+#### Implementation
 
-![UndoRedoState2](images/UndoRedoState2.png)
+1. `StatsCommand` refreshes the trainer list to show all trainers.
+2. It counts clients per trainer phone by scanning the address book person list.
+3. It updates the trainer list sorting comparator so that trainers are ordered by client count (descending), breaking ties by trainer name.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
+The sorting is implemented using a `SortedList` in the model, so updating the comparator is sufficient for the UI to reflect the new order.
 
-</div>
+### Import/export
 
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
+GymOps supports exporting and importing data as JSON.
 
-![UndoRedoState3](images/UndoRedoState3.png)
+#### Export
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
+* `export FILE_PATH` uses `JsonAddressBookStorage` with the user-provided file path.
+* Storage uses `FileUtil#createIfMissing(...)` to create missing parent directories and the file before writing.
+* Any `IOException` is reported back to the user as a command failure message.
 
-</div>
+#### Import
 
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
+* `import FILE_PATH` uses `JsonAddressBookStorage` with the user-provided file path.
+* If the file is missing, import fails with a “file not found” message.
+* If the JSON is invalid or contains invalid values, storage throws a `DataLoadingException` and the command fails with a corresponding message.
+* On success, the imported address book replaces the current in-memory address book via `Model#setAddressBook(...)`.
 
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
+Note: GymOps persists changes after successful commands (see the next section), so a successful import is also saved into the app’s configured data file immediately after the command completes.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of diagram.
+### Automatic persistence
 
-</div>
+GymOps follows an “auto-save” approach: after every successful command, `LogicManager` saves the updated address book via `Storage#saveAddressBook(...)`.
+This keeps the data file up-to-date without requiring an explicit `save` command.
 
-Similarly, how an undo operation goes through the `Model` component is shown below:
+### Data file migration and resilience
 
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
+#### Data path migration
 
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
+On startup, `MainApp` migrates the data file name from `addressbook.json` to `GymOps.json` (in the same directory) if the preferences still reference the old AB3 default.
+This is a one-time compatibility step to smooth the transition from AB3-based data setups.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
+#### Resilience to missing/corrupted/inconsistent data
 
-</div>
+* If the data file is missing, GymOps starts with sample data and creates the data file on the next save.
+* If the data file is corrupted (invalid JSON or invalid values), GymOps starts with an empty address book.
+* If the data file is valid JSON but contains inconsistent records (e.g., a client referencing a trainer phone that does not exist), GymOps drops only those inconsistent clients during load.
 
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
+### Find feature
 
-![UndoRedoState4](images/UndoRedoState4.png)
+GymOps provides three search commands:
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add-trainer ...` command. This is the behavior that most modern desktop applications follow.
+* `find KEYWORD [MORE_KEYWORDS]...` — filters both the trainer list and client list by name.
+* `find-trainers KEYWORD [MORE_KEYWORDS]...` — filters only the trainer list by name.
+* `find-clients KEYWORD [MORE_KEYWORDS]...` — filters only the client list by name.
 
-![UndoRedoState5](images/UndoRedoState5.png)
+All three commands are **case-insensitive** and use **partial (substring) matching**.
 
-The following activity diagram summarizes what happens when a user executes a new command:
+#### Keyword validation
 
-<img src="images/CommitActivityDiagram.png" width="250" />
+All three `find*` command parsers enforce the same keyword rules:
 
-#### Design considerations:
+1. The input must contain at least one keyword (empty input is rejected).
+2. Keywords are split by whitespace.
+3. Each keyword must match the regex `[\p{Alnum}\-'/]+`.
+    * i.e., only letters/digits plus `-`, `'`, `/` are allowed.
+    * examples of accepted keywords: `alex`, `tan`, `o'connor`, `upper-body`, `s/o`.
+    * examples of rejected keywords: `Bob@`, `Alice!`, `john.doe`.
 
-**Aspect: How undo & redo executes:**
+These constraints keep parsing predictable and ensure that keywords remain unambiguous “tokens”.
 
-* **Alternative 1 (proposed):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
+#### Implementation
 
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
-  * Cons: We must ensure that the implementation of each individual command are correct.
+At a high level, all three `find*` commands follow the same flow:
 
-### \[Proposed\] Data archiving
+1. `AddressBookParser` identifies the command word (`find`, `find-trainers`, or `find-clients`).
+2. The corresponding parser (`FindCommandParser`, `FindTrainersCommandParser`, `FindClientsCommandParser`):
+    * trims input,
+    * splits it into keywords,
+    * validates each keyword (see above), and
+    * constructs a `NameContainsKeywordsPredicate`.
+3. The command executes and updates the model’s filtered list(s):
+    * `find` calls `Model#updateFilteredPersonList(predicate)`.
+    * `find-trainers` calls `Model#updateFilteredTrainerList(predicate)`.
+    * `find-clients` calls `Model#updateFilteredClientList(predicate)`.
 
-GymOps does not currently support archiving trainers/clients.
+The diagram below shows the main classes involved in the `find*` feature:
 
-If this feature is added, a minimal approach is to represent an archived entity using a boolean flag (e.g., `archived`) and filter archived entries out of the default trainer/client lists. Commands such as `archive t/INDEX`, `archive c/INDEX`, `restore t/INDEX`, and `restore c/INDEX` can be added to toggle the flag.
+<img src="images/find/FindFeatureClassDiagram.png" width="700" />
 
+The predicate implementation is intentionally simple:
+
+* It converts the person’s full name to lowercase, and checks whether the full name **contains** any keyword (also lowercased).
+* Multiple keywords are combined using **OR** semantics (`anyMatch`): a person matches if **any** keyword matches.
+
+The activity diagram below summarises the end-to-end flow for keyword validation and filtering.
+To keep the diagram readable, it is split into parsing/validation and execution.
+
+<img src="images/find/FindFeatureActivityDiagram-ParseValidate.png" width="700" />
+
+<img src="images/find/FindFeatureActivityDiagram-Execute.png" width="650" />
+
+#### Matching semantics
+
+**Partial vs exact**
+
+GymOps uses **partial** matching, implemented as a substring check:
+
+* Searching `find alex` matches `Alex Tan`, `Alexandra Lim`, and also any name that contains `alex` as a substring.
+
+**Case-insensitivity**
+
+* Searching `find aLeX` is equivalent to `find alex`.
+
+**Multiple keywords (OR semantics)**
+
+* Searching `find alex tan` matches a person if their name contains `alex` **or** `tan`.
+
+**No relevance ranking**
+
+GymOps currently does not compute relevance scores (e.g., exact-token vs prefix vs substring) and does not re-rank matches by relevance. Results are shown in the list order after filtering (and may still be affected by any existing list sorting, e.g., the trainer list after `stats`).
+
+#### Interaction with trainer selection
+
+GymOps supports “select trainer → filter clients”. This interacts with searching as follows:
+
+* `find` filters both lists via `updateFilteredPersonList(...)`. Because updating the person list clears the selected trainer internally, `FindCommand` preserves the selection by reading the currently selected trainer before filtering and re-applying it afterwards.
+   As a result, if a trainer is selected, the client list remains restricted to that trainer even after `find`.
+* `find-clients` updates the client predicate directly. If a trainer is selected, the model’s selection filter is still applied on top of the keyword filter.
+* `find-trainers` filters only the trainer list and does not change trainer selection.
+
+#### Usage scenario
+
+Step 1. Supervisor enters `find-clients alex`.
+
+Step 2. `FindClientsCommandParser` validates keywords and creates a `FindClientsCommand` with `NameContainsKeywordsPredicate(["alex"])`.
+
+Step 3. `FindClientsCommand` calls `Model#updateFilteredClientList(...)`.
+
+Step 4. The UI updates automatically and shows only clients whose names contain `alex` (case-insensitive), subject to any active trainer selection filter.
+
+#### Design considerations
+
+**Aspect: Matching strategy**
+
+* **Option 1 (current choice): Partial matching (substring)**
+   * Pros: More forgiving and discoverable; users do not need to remember exact full words.
+   * Cons: Can return broader matches (potentially more noise).
+* **Option 2: Exact token matching**
+   * Pros: More precise results.
+   * Cons: Less usable for quick lookup; requires the user to type exact words.
+
+**Aspect: Keyword combination**
+
+* **Option 1 (current choice): OR semantics across keywords**
+   * Pros: Easy to use; supports “show me anyone matching any of these terms”.
+   * Cons: Can return too many results for common keywords.
+* **Option 2: AND semantics across keywords**
+   * Pros: More targeted results.
+   * Cons: More restrictive; may surprise users who expect broader matches.
+
+**Aspect: Result ranking**
+
+* **Option 1 (current choice): No ranking**
+   * Pros: Simpler implementation.
+   * Cons: Does not prioritise the most relevant matches.
+* **Option 2: Relevance ranking (future work)**
+   * Pros: Better UX for large datasets by surfacing best matches first.
+   * Cons: Requires defining a scoring contract and maintaining it consistently.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -473,6 +653,10 @@ Some user stories describe planned/proposed features that may not be implemented
 ### Use cases
 
 (For all use cases below, the **System** is `GymOps` and the **Actor** is the `supervisor`, unless specified otherwise)
+
+The use case diagram below provides a high-level overview of the main user goals supported by GymOps:
+
+<img src="images/UseCaseDiagram.png" width="450" />
 
 **Use case: Add a client to a trainer**
 
@@ -601,13 +785,31 @@ Some user stories describe planned/proposed features that may not be implemented
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ (Windows, Linux, macOS) as long as it has Java `17` or above installed.
-2.  Should be optimized for a CLI-centric workflow (i.e., common operations are achievable with a small number of commands and without requiring mouse input).
-3.  For a dataset of up to 100 trainers and 1000 clients, typical commands (list, find, add-trainer, add-client, delete, set-calorie-target, log-calorie, set-focus, remark) should complete within 1 second on a typical laptop.
-4.  Data should be persisted locally and remain intact after restarting the application.
-5.  The system should not require an internet connection for normal operation.
-6.  The system is single-user (supervisor-only) and does not require multiple logins or role-based access control.
-7.  JSON import/export should preserve all relevant fields needed for operations (trainer/client identities and client tracking fields) without loss.
+#### Usability
+
+1.  The app should be optimized for a CLI-centric workflow (i.e., common operations are achievable with a small number of commands and without requiring mouse input).
+2.  The app should provide clear feedback for both successful and failed commands (e.g., invalid index, invalid value formats).
+3.  The app should provide built-in guidance for users (e.g., `help` command listing available commands).
+
+#### Reliability & Data Integrity
+
+1.  Data should be persisted locally and remain intact after restarting the application.
+2.  If a command fails validation (e.g., invalid index or invalid input format), the app should not modify the in-memory state and should not corrupt the persisted data.
+3.  Import/export should preserve all relevant fields needed for operations (trainer/client identities and client tracking fields) without loss.
+
+#### Performance
+
+1.  For a dataset of up to 100 trainers and 1000 clients, typical commands (e.g., `list`, `find`, `add-trainer`, `add-client`, `delete`, `set-calorie-target`, `log-calorie`, `set-focus`, `remark`) should complete within 1 second on a typical laptop.
+
+#### Portability
+
+1.  The app should work on any mainstream OS (Windows, Linux, macOS) as long as it has Java 17 or above installed.
+
+#### Security & Privacy
+
+1.  The app should not require an internet connection for normal operation.
+2.  The app is single-user (supervisor-only) and does not require multiple logins or role-based access control.
+3.  All user data should be stored locally on the user’s machine.
 
 ### Glossary
 
@@ -659,17 +861,76 @@ testers are expected to do more *exploratory* testing.
       * Launch the app from command line using different working directories.
       * Verify that closing the app does not create error dialogs.
 
+### Listing and filtering trainers/clients
+
+1. Listing all trainers and clients
+
+   1. Test case: `list`<br>
+      Expected: Any active filtering is cleared and all trainers/clients are shown again.
+
+   1. Test case: `list-trainers`<br>
+      Expected: Any active trainer filtering (e.g., after `find-trainers`) is cleared and all trainers are shown.
+
+   1. Test case: `list-clients`<br>
+      Expected: Any active client filtering (e.g., after `find-clients` or selecting a trainer) is cleared and all clients are shown.
+
+1. Filtering clients by selecting a trainer
+
+   1. Prerequisites: Ensure there is at least one trainer with at least one assigned client.
+
+   1. Test case: `list-clients 1`<br>
+      Expected: Trainer at index 1 is selected and the displayed client list shows only clients assigned to that trainer.
+
+   1. Test case: `list-clients`<br>
+      Expected: Trainer selection is cleared and the displayed client list shows all clients again.
+
+### Editing trainers/clients
+
+1. Editing a trainer
+
+   1. Prerequisites: List trainers using `list-trainers` and note a trainer that has assigned clients.
+
+   1. Test case: `edit-trainer 1 n/Alex Tan`<br>
+      Expected: Trainer at index 1 shows the updated name.
+
+   1. Test case: `edit-trainer 1 p/99998888`<br>
+      Expected: Trainer at index 1 shows the updated phone.
+      Also expected: Clients previously assigned to this trainer remain assigned (their stored trainer reference is updated to match the edited trainer).
+
+1. Editing a client (including clearing optional fields)
+
+   1. Prerequisites: List clients using `list-clients`.
+
+   1. Test case: `edit-client 1 n/Bob Lim p/98765432 t/1 cal/2000 f/Upper Body r/Note v/2027-01-01`<br>
+      Expected: Client at index 1 shows updated details (including the optional fields).
+
+   1. Test case: `edit-client 1 f/ r/ v/`<br>
+      Expected: Client at index 1 has workout focus, remark, and validity cleared (removed from the client card display).
+
+   1. Other incorrect edit commands to try: `edit-trainer`, `edit-client`, `edit-client x n/Alice`, `edit-client 1 v/2000-01-01`<br>
+      Expected: Error shown indicating invalid command format or invalid values.
+
 ### Deleting a trainer/client
 
 1. Deleting a trainer or client while the corresponding list is being shown
 
    1. Prerequisites: List entries using `list-trainers` and/or `list-clients`. Ensure there are multiple entries in the list.
 
+   Notes for testers:
+   * GymOps will reject deleting a trainer who still has assigned clients.
+   * For the “successful delete trainer” test case below, pick a trainer with no assigned clients.
+
    1. Test case: `delete t/1`<br>
       Expected: Trainer at index 1 is deleted from the trainer list. Details of the deleted trainer shown in the status message.
 
+   1. Test case: `delete-trainer 1`<br>
+      Expected: Same as `delete t/1`.
+
    1. Test case: `delete c/1`<br>
       Expected: Client at index 1 is deleted from the client list. Details of the deleted client shown in the status message.
+
+   1. Test case: `delete-client 1`<br>
+      Expected: Same as `delete c/1`.
 
    1. Test case: `delete t/1` (where trainer at index 1 still has active clients)<br>
       Expected: Trainer is not deleted. Error shown: `Cannot delete trainer: they still have active clients.`
@@ -694,7 +955,7 @@ testers are expected to do more *exploratory* testing.
       Expected: Only trainers whose names contain `alex` or `david` are shown.
 
    1. Test case: `find-trainers Bob@`<br>
-      Expected: Error shown: `Keywords must be alphanumeric.`
+      Expected: Error shown indicating invalid command format (usage for `find-trainers` is shown).
 
 1. Finding clients by name
 
@@ -759,7 +1020,7 @@ testers are expected to do more *exploratory* testing.
       Expected: The client at index 1 shows workout focus `Chest`.
 
    1. Test case: `set-focus c/1 f/Chest1`<br>
-      Expected: Error shown: `Focus string must only contain letters.`
+      Expected: Error shown: `Focus string must only contain letters, and words may be separated by single spaces (e.g., Upper Body).`
 
 ### Adding remarks
 
@@ -785,6 +1046,9 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `set-validity 1 v/2026-13-40`<br>
       Expected: Error shown indicating the date must be in `YYYY-MM-DD` format.
 
+   1. Test case: `set-validity 1 v/2000-01-01`<br>
+      Expected: Error shown: `Validity date must not be in the past.`
+
 ### Viewing trainer statistics
 
 1. Viewing statistics
@@ -799,12 +1063,41 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `export data/export.json`<br>
       Expected: A success message is shown and the JSON file is created.
 
+   1. Test case: `export data/nested/export.json` (where `data/nested/` does not exist yet)<br>
+      Expected: A success message is shown and the parent directories are created.
+
+   1. Other incorrect export commands to try: `export`, `export ..`, `export :`<br>
+      Expected: Error shown indicating invalid command format or invalid file path.
+
 1. Importing
 
    1. Prerequisites: Ensure there is an existing exported file (e.g., from the previous step).
 
    1. Test case: `import data/export.json`<br>
       Expected: A success message is shown and the displayed data matches the imported file.
+
+   1. Test case: `import data/does-not-exist.json`<br>
+      Expected: Error shown indicating the file cannot be found/read.
+
+   1. Test case: `import data/invalid.json` (prepare by creating a file with invalid JSON)
+      Expected: Error shown indicating the file cannot be imported.
+
+### Clearing data, help, and exit
+
+1. Clearing all data
+
+   1. Test case: `clear`<br>
+      Expected: All trainers and clients are removed from the lists.
+
+1. Viewing help
+
+   1. Test case: `help`<br>
+      Expected: A help window appears showing the command summary.
+
+1. Exiting the app
+
+   1. Test case: `exit`<br>
+      Expected: The application window closes.
 
 ### Saving data
 
@@ -838,17 +1131,23 @@ testers are expected to do more *exploratory* testing.
 
 ## **Appendix: Effort**
 
-GymOps is built on top of the AddressBook-Level3 (AB3) codebase, so a substantial portion of the foundational effort (UI/Logic/Model/Storage scaffolding, basic command framework, JSON persistence, and testing setup) was reused and adapted.
-This reuse saved more than 5% of total project effort and allowed the team to focus on GymOps-specific features and UX.
+GymOps is built on top of the AddressBook-Level3 (AB3) codebase. This allowed the team to reuse and adapt foundational scaffolding (UI/Logic/Model/Storage layers, command parsing framework, JSON persistence patterns, and basic testing infrastructure) and focus effort on GymOps-specific workflows.
 
-Compared to AB3, GymOps required additional effort in areas such as:
+### Difficulty & Challenges
 
-* Supporting two list-centric entity types (trainers and clients) and keeping their indices consistent under filtering.
-* Implementing client-only attributes (calorie tracking, workout focus, remark, membership validity) with value-object validation and UI presentation.
-* Handling cross-list operations like `reassign-client`, which resolves indices from different displayed lists.
-* Maintaining documentation/diagram accuracy while abstracting UI details appropriately for readability.
+* **Two list-centric entity types**: GymOps manages both trainers and clients as first-class entities, which increases complexity around filtering, index-based commands, and keeping UI lists consistent.
+* **Cross-list operations**: Commands such as `reassign-client` and `edit-client ... t/TRAINER_INDEX` resolve indices from different displayed lists, so correctness depends on clearly-defined “index is based on the current filtered list” behavior.
+* **Data integrity constraints**: Clients are assigned to exactly one trainer, and deleting trainers must respect this constraint (e.g., reject deletion if the trainer still has active clients).
+* **Persistence and compatibility**: Import/export and JSON storage need to persist all relevant fields, handle optional client attributes, and remain resilient to malformed or inconsistent data.
+* **Documentation accuracy**: Because behavior depends on filtered lists and selection state (e.g., `list-clients INDEX` selecting a trainer), documenting usage precisely required careful alignment with the implementation.
 
-Key achievements include a consistent model-level update pattern (`Client#withX(...)` + `Model#setPerson(...)`), JSON import/export support, and a CLI-centric workflow that remains usable under filtered lists.
+### Effort & Achievements
+
+* Implemented client-only attributes (calorie tracking, workout focus, remark, membership validity) end-to-end across parsing, model updates, storage, and UI display.
+* Standardized client updates using an immutable “copy-with” pattern (`Client#withX(...)` + `Model#setPerson(...)`) to keep changes localized and predictable.
+* Added trainer selection and client-list filtering so supervisors can drill down to a specific trainer’s clients.
+* Implemented JSON export/import to support data portability and backup workflows.
+* Maintained a CLI-centric UX where common workflows remain efficient even under filtered lists.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -856,13 +1155,12 @@ Key achievements include a consistent model-level update pattern (`Client#withX(
 
 Team size: 5
 
-1. Highlight expired membership validity dates in the client card (e.g., show the validity label in red when the date is before today).
+1. Allow storing past membership validity dates and visually highlight expired validity dates in the client card.
 2. Unify index conventions for client-attribute commands (accept a consistent `c/INDEX` format across `remark`, `set-calorie-target`, `log-calorie`, `set-validity`, and `set-focus`).
 3. Improve `delete` failure messages to be more specific about the failed target (trainer/client) and failure reason (e.g., trainer still has assigned clients).
 4. Improve `import` error reporting to pinpoint which field/entry is invalid (instead of a generic “failed to import”).
-5. Improve `export`/`import` UX by auto-creating parent directories when exporting to a new path, and by suggesting a correct relative path when users provide an invalid one.
+5. Improve `export`/`import` UX by suggesting a correct relative path when users provide an invalid one.
 6. Improve trainer-selection filtering UX by clearly indicating when the client list is filtered by a selected trainer (and how to return to the full list).
 7. Improve `stats` output to explicitly display the computed client counts per trainer in the command result message (in addition to sorting the list).
 8. Improve calorie tracking by optionally resetting calorie intake totals by date (while preserving a simple “today’s total” UX).
-9. Improve `set-validity` ergonomics by allowing users to clear an existing validity value (without editing the data file manually).
-10. Improve robustness of list-scoped commands under dynamic list changes by providing clearer guidance when indices become invalid after filtering.
+9. Improve robustness of list-scoped commands under dynamic list changes by providing clearer guidance when indices become invalid after filtering.

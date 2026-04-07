@@ -1,0 +1,20 @@
+@startuml
+start
+:Model#setPerson(target, editedPerson);
+if (target and editedPerson are Trainer?) then ([yes])
+  :Update trainer in AddressBook;
+  if (Phone or name changed?) then ([yes])
+    :Find all Clients whose
+    trainerPhone == originalTrainerPhone;
+    :Replace each Client with
+    client.withTrainer(newPhone, newName);
+  endif
+  if (Edited trainer was selected?) then ([yes])
+    :Update selectedTrainerPhone;
+    :Refresh client predicate;
+  endif
+else ([no])
+  :Update person normally;
+endif
+stop
+@enduml

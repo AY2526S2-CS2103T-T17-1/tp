@@ -1,0 +1,27 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+actor Supervisor as S
+
+rectangle "GymOps" {
+  (Manage trainers) as MT
+  (Manage clients) as MC
+  (Update client attributes) as UCA
+  (Find trainers/clients) as FIND
+  (View trainer statistics) as STATS
+  (Import data) as IMP
+  (Export data) as EXP
+  (Undo last command) as UNDO
+}
+
+S --> MT
+S --> MC
+S --> FIND
+S --> STATS
+S --> IMP
+S --> EXP
+S --> UNDO
+
+MC .> UCA : <<include>>
+@enduml

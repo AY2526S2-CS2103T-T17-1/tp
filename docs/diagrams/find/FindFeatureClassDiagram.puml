@@ -1,0 +1,41 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide circle
+
+package "logic.parser" {
+  class FindCommandParser
+  class FindTrainersCommandParser
+  class FindClientsCommandParser
+}
+
+package "logic.commands" {
+  class FindCommand
+  class FindTrainersCommand
+  class FindClientsCommand
+}
+
+package "model.person" {
+  class "Predicate<Person>" as Predicate <<interface>>
+  class NameContainsKeywordsPredicate
+  class Person
+}
+
+package "model" {
+  class Model <<interface>>
+}
+
+FindCommandParser ..> FindCommand : <<create>>
+FindTrainersCommandParser ..> FindTrainersCommand : <<create>>
+FindClientsCommandParser ..> FindClientsCommand : <<create>>
+
+FindCommand ..> Model : updateFilteredPersonList(predicate)
+FindTrainersCommand ..> Model : updateFilteredTrainerList(predicate)
+FindClientsCommand ..> Model : updateFilteredClientList(predicate)
+
+NameContainsKeywordsPredicate -up-|> Predicate
+NameContainsKeywordsPredicate ..> Person : reads name
+
+FindCommand o-- NameContainsKeywordsPredicate : predicate
+FindTrainersCommand o-- NameContainsKeywordsPredicate : predicate
+FindClientsCommand o-- NameContainsKeywordsPredicate : predicate
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+skinparam ArrowFontStyle plain
+hide footbox
+
+participant ":LogicManager" as LogicManager
+participant ":SetFocusCommand" as SetFocusCommand
+participant ":Model" as Model
+participant ":Storage" as Storage
+
+LogicManager -> SetFocusCommand : execute(model)
+activate SetFocusCommand
+SetFocusCommand -> Model : getFilteredClientList()
+SetFocusCommand -> Model : setPerson(oldClient, updatedClient)
+SetFocusCommand --> LogicManager : CommandResult
+deactivate SetFocusCommand
+LogicManager -> Storage : saveAddressBook(model.getAddressBook())
+activate Storage
+Storage --> LogicManager
+deactivate Storage
+@enduml

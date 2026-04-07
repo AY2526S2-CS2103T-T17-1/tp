@@ -1,0 +1,30 @@
+@startuml
+start
+:User enters a find command;
+:AddressBookParser selects matching parser;
+:Trim input;
+if (At least 1 keyword?) then ([yes])
+  :Split by whitespace;
+  :Validate each keyword
+  against [\\p{Alnum}\\-'/]+;
+  if (All keywords valid?) then ([yes])
+    :Create NameContainsKeywordsPredicate;
+    :Execute Find*Command;
+    if (Command is find?) then ([yes])
+      :Store selected trainer (if any);
+      :updateFilteredPersonList(predicate);
+      :Re-apply selected trainer
+      (keeps client list filtered);
+    else ([no])
+      :updateFilteredTrainerList or
+      updateFilteredClientList;
+    endif
+    :UI updates filtered lists;
+  else ([no])
+    :Show invalid command format;
+  endif
+else ([no])
+  :Show invalid command format;
+endif
+stop
+@enduml

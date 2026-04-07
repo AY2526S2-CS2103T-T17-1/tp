@@ -1,0 +1,16 @@
+@startuml
+start
+:Execute Find command Ψ;
+:Check command variant;
+if () then ([command is find])
+  :Read selected trainer (if any);
+  :Model.updateFilteredPersonList(predicate);
+  :Re-apply selected trainer (if any);
+else ([else])
+  :Model.updateFilteredTrainerList(predicate)
+  or updateFilteredClientList(predicate);
+endif
+:UI observes filtered lists;
+:Lists in UI update;
+stop
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+start
+:User enters a find command;
+:AddressBookParser selects the appropriate
+find command parser;
+:Trim input;
+
+:Check at least 1 keyword is provided;
+if () then ([at least 1 keyword])
+  :Split by whitespace;
+  :Validate each keyword
+  against allowed pattern
+  (alphanumerics and - ' /);
+
+  :Check all keywords are valid;
+  if () then ([all keywords valid])
+    :Create NameContainsKeywordsPredicate;
+    :Create Find command;
+
+    :Execute Find command Ψ;
+  else ([else])
+    :Show invalid command format;
+  endif
+else ([else])
+  :Show invalid command format;
+endif
+stop
+@enduml
