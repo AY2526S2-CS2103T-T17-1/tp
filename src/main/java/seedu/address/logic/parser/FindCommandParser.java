@@ -29,7 +29,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         String[] nameKeywords = trimmedArgs.split("\\s+");
 
         for (String keyword : nameKeywords) {
-            if (!keyword.matches("[\\p{Alnum}\\-'/]+")) {
+            if (!keyword.matches("[\\p{Alnum}\\-'/.]+")) {
                 throw new ParseException(
                         String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
             }

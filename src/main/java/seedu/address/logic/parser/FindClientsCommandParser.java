@@ -24,7 +24,7 @@ public class FindClientsCommandParser implements Parser<FindClientsCommand> {
         String[] nameKeywords = trimmedArgs.split("\\s+");
 
         for (String keyword : nameKeywords) {
-            if (!keyword.matches("[\\p{Alnum}\\-'/]+")) {
+            if (!keyword.matches("[\\p{Alnum}\\-'/.]+")) {
                 throw new ParseException(
                         String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindClientsCommand.MESSAGE_USAGE));
             }

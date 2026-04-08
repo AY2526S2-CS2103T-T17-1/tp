@@ -174,7 +174,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * The search is case-insensitive. e.g. `hans` matches `Hans`.
 * The order of keywords does not matter. e.g. `Hans Bo` matches `Bo Hans`.
 * Partial words are matched. e.g. `Han` matches `Hans`.
-* Each keyword must be alphanumeric. e.g. `Bob123` is valid; `Bob@` is not.
+* Each keyword may only contain alphanumeric characters, periods, hyphens, apostrophes, and slashes. e.g. `Bob123`, `o'connor`, and `s/o` are valid; `Bob@` is not.
 * Results include persons matching **at least one** keyword (OR search).
 * Run `list` to return to the full list after searching.
 
@@ -237,7 +237,7 @@ Format: `export FILE_PATH`
 
 * `FILE_PATH` can be an absolute path (e.g., `C:/data/export.json` on Windows or `/Users/name/export.json` on macOS/Linux) or a relative path (e.g., `data/export.json` or `export.json`).
 * If a relative path is provided, it is resolved relative to the folder where GymOps is executed.
-* The file must have a `.json` extension, and the parent directory must exist.
+* The file must have a `.json` extension. If the parent directory does not exist, it will be automatically created.
 
 Examples:
 * `export data/my_export.json` — exports the current data to a file named `my_export.json` inside the `data` folder.
@@ -329,6 +329,8 @@ Examples:
 * `edit-trainer 1 e/johndoe@gym.com` — updates the 1st trainer's email.
 * `edit-trainer 2 n/Jane Doe p/92222222` — updates the 2nd trainer's name and phone.
 
+**Expected outcome:** The trainer's details are updated in the list, and a success message is displayed.
+
 [⬆ Back to top](#top)
 
 ---
@@ -354,14 +356,13 @@ Format: `find-trainers KEYWORD [MORE_KEYWORDS]`
 * The search is case-insensitive. e.g. `hans` matches `Hans`.
 * The order of keywords does not matter. e.g. `Hans Bo` matches `Bo Hans`.
 * Partial words are matched. e.g. `Han` matches `Hans`.
-* Each keyword must be alphanumeric. e.g. `Bob123` is valid; `Bob@` is not.
+* Each keyword may only contain alphanumeric characters, periods, hyphens, apostrophes, and slashes. e.g. `Bob123`, `o'connor`, and `s/o` are valid; `Bob@` is not.
 * Results include trainers matching **at least one** keyword (OR search).
 * Run `list-trainers` to return to the full trainer list after searching.
 
 Examples:
 * `find-trainers John` — returns all trainers with "John" in their name.
 
-![find trainers](images/findTrainers.png)
 **Expected outcome:** The trainers list is filtered to show only trainers whose names contain the given keywords. A message showing the number of trainers listed is displayed.
 
 [⬆ Back to top](#top)
@@ -500,7 +501,7 @@ Format: `find-clients KEYWORD [MORE_KEYWORDS]`
 * The search is case-insensitive. e.g. `alice` matches `Alice`.
 * The order of keywords does not matter. e.g. `Alice Bob` matches `Bob Alice`.
 * Partial words are matched. e.g. `Ali` matches `Alice`.
-* Each keyword must be alphanumeric. e.g. `Alice123` is valid; `Alice@` is not.
+* Each keyword may only contain alphanumeric characters, periods, hyphens, apostrophes, and slashes. e.g. `Alice123`, `o'connor`, and `s/o` are valid; `Alice@` is not.
 * Results include clients matching **at least one** keyword (OR search).
 * Run `list-clients` to return to the full client list after searching.
 
@@ -508,7 +509,6 @@ Examples:
 * `find-clients Alice` — returns all clients with "Alice" in their name.
 * `find-clients Alice Bob` — returns all clients with "Alice" or "Bob" in their name.
 
-![find clients](images/findClients.png)
 **Expected outcome:** The clients list is filtered to show only clients whose names contain the given keywords. A message showing the number of clients listed is displayed.
 
 [⬆ Back to top](#top)
@@ -583,7 +583,7 @@ Sets the primary workout focus for a client. Overwrites any existing focus.
 Format: `set-focus c/CLIENT_INDEX f/FOCUS`
 
 * `CLIENT_INDEX` must refer to a client in the **client list**.
-* `FOCUS` must contain only letters (A–Z or a–z).
+* `FOCUS` must contain only letters (A–Z or a–z), and words may be separated by single spaces. e.g. `Upper Body` is valid.
 
 Examples:
 * `set-focus c/1 f/Chest` — sets the 1st client's workout focus to "Chest".
@@ -622,6 +622,7 @@ Format: `set-validity INDEX v/VALIDITY`
 
 * `INDEX` must refer to a client in the **client list**.
 * `VALIDITY` must be a valid date in the format `YYYY-MM-DD`. e.g. `v/2028-09-09`. Using a wrong format such as `v/09-09-2028` will show: `Validity should be a valid date in the format YYYY-MM-DD.`
+* The set validity date must not be in the past.
 * GymOps currently displays the validity date but does not automatically enforce expiry or visually highlight expired memberships.
 
 Examples:
