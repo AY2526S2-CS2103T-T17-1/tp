@@ -515,6 +515,7 @@ This is a one-time compatibility step to smooth the transition from AB3-based da
 
 * If the data file is missing, GymOps starts with sample data and creates the data file on the next save.
 * If the data file is corrupted (invalid JSON or invalid values), GymOps starts with an empty address book.
+   Because GymOps persists after successful commands, continuing to use the app may overwrite the original file.
 * If the data file is valid JSON but contains inconsistent records (e.g., a client referencing a trainer phone that does not exist), GymOps drops only those inconsistent clients during load.
 
 ### Find feature

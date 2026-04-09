@@ -291,7 +291,9 @@ GymOps saves data automatically after every command that modifies it. No manual 
 
 Data is saved as a JSON file at `[JAR file location]/data/GymOps.json`. Advanced users may edit this file directly.
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the file format becomes invalid, GymOps will discard all data and start fresh on the next run. Back up the file before editing it. Certain edits may also cause GymOps to behave unexpectedly if values fall outside acceptable ranges.</div>
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the file format becomes invalid, GymOps will start with an empty dataset on the next run. Back up the file before editing it. Certain edits may also cause GymOps to behave unexpectedly if values fall outside acceptable ranges.</div>
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution (continued):** GymOps also treats some "valid JSON" as invalid data (e.g., duplicate entries such as a repeated phone number, or other constraint violations). In such cases, GymOps will start with an empty dataset for that run. The JSON file is not deleted automatically, but because GymOps auto-saves after successful commands, continuing to use the app may overwrite the data file. To preserve the data, fix/restore the JSON file while GymOps is closed, then restart.</div>
 
 ---
 
