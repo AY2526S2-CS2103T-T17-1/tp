@@ -3,27 +3,27 @@ start
 :User enters a find command;
 :AddressBookParser selects matching parser;
 :Trim input;
-if (At least 1 keyword?) then ([yes])
+if () then ([at least 1 keyword])
   :Split by whitespace;
   :Validate each keyword
   against [\\p{Alnum}\\-'/.]+;
-  if (All keywords valid?) then ([yes])
+  if () then ([all keywords valid])
     :Create NameContainsKeywordsPredicate;
     :Execute Find*Command;
-    if (Command is find?) then ([yes])
+    if () then ([command is find])
       :Store selected trainer (if any);
       :updateFilteredPersonList(predicate);
       :Re-apply selected trainer
       (keeps client list filtered);
-    else ([no])
+    else ([find-trainers or find-clients])
       :updateFilteredTrainerList or
       updateFilteredClientList;
     endif
     :UI updates filtered lists;
-  else ([no])
+  else ([invalid keyword found])
     :Show invalid command format;
   endif
-else ([no])
+else ([no keywords provided])
   :Show invalid command format;
 endif
 stop

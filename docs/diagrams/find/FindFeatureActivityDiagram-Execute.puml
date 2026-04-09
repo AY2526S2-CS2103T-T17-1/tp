@@ -1,11 +1,11 @@
 @startuml
 start
 :Execute Find command Ψ;
-if (Command is find?) then ([yes])
+if () then ([command is find])
   :Read selected trainer (if any);
   :Model.updateFilteredPersonList(predicate);
   :Re-apply selected trainer (if any);
-else ([no])
+else ([find-trainers or find-clients])
   :Model.updateFilteredTrainerList(predicate)
   or updateFilteredClientList(predicate);
 endif

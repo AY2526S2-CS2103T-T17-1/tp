@@ -353,15 +353,11 @@ Format: `list-trainers`
 
 #### Finding trainers: `find-trainers`
 
-Finds trainers whose names contain any of the given keywords.
+Finds trainers whose names contain any of the given keywords. Searches only the trainer list.
 
 Format: `find-trainers KEYWORD [MORE_KEYWORDS]`
 
-* The search is case-insensitive. e.g. `hans` matches `Hans`.
-* The order of keywords does not matter. e.g. `Hans Bo` matches `Bo Hans`.
-* Partial words are matched. e.g. `Han` matches `Hans`.
-* Each keyword may only contain alphanumeric characters, periods, hyphens, apostrophes, and slashes. e.g. `Bob123`, `o'connor`, and `s/o` are valid; `Bob@` is not.
-* Results include trainers matching **at least one** keyword (OR search).
+* Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
 * Run `list-trainers` to return to the full trainer list after searching.
 
 Examples:
@@ -389,12 +385,11 @@ Format: `stats`
 
 #### Deleting a trainer: `delete-trainer`
 
-Alias for `delete t/INDEX`. Deletes a trainer from GymOps.
+Deletes the trainer at the given index from GymOps. Shorthand for `delete t/INDEX`.
 
 Format: `delete-trainer INDEX`
 
 * `INDEX` must refer to a trainer in the **trainer list**.
-* This command is equivalent to `delete t/INDEX`.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:** A trainer cannot be deleted if they still have active clients. Use `delete-client` to remove their clients first.</div>
 
@@ -499,15 +494,11 @@ Examples:
 
 #### Finding clients: `find-clients`
 
-Finds clients whose names contain any of the given keywords.
+Finds clients whose names contain any of the given keywords. Searches only the client list.
 
 Format: `find-clients KEYWORD [MORE_KEYWORDS]`
 
-* The search is case-insensitive. e.g. `alice` matches `Alice`.
-* The order of keywords does not matter. e.g. `Alice Bob` matches `Bob Alice`.
-* Partial words are matched. e.g. `Ali` matches `Alice`.
-* Each keyword may only contain alphanumeric characters, periods, hyphens, apostrophes, and slashes. e.g. `Alice123`, `o'connor`, and `s/o` are valid; `Alice@` is not.
-* Results include clients matching **at least one** keyword (OR search).
+* Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
 * Run `list-clients` to return to the full client list after searching.
 
 Examples:
@@ -522,12 +513,11 @@ Examples:
 
 #### Deleting a client: `delete-client`
 
-Alias for `delete c/INDEX`. Deletes a client from GymOps. The client is permanently removed and unassigned from their trainer.
+Deletes the client at the given index from GymOps. Shorthand for `delete c/INDEX`.
 
 Format: `delete-client INDEX`
 
 * `INDEX` must refer to a client in the **client list**.
-* This command is equivalent to `delete c/INDEX`.
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `find-clients NAME` first to locate the client, then use the index shown in the filtered list.</div>
 
