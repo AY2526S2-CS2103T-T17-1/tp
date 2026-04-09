@@ -1609,3 +1609,4 @@ Team size: 5
 7. Improve `stats` output to explicitly display the computed client counts per trainer in the command result message (in addition to sorting the list).
 8. Improve calorie tracking by optionally resetting calorie intake totals by date (while preserving a simple “today’s total” UX).
 9. Improve robustness of list-scoped commands under dynamic list changes by providing clearer guidance when indices become invalid after filtering.
+10. Improve error messages and data validation strictness for direct data file editing before boot.

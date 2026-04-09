@@ -19,6 +19,7 @@ import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
+import seedu.address.model.person.exceptions.DuplicatePersonException;
 
 /**
  * Edits the details of an existing trainer in GymOps.
@@ -87,12 +88,11 @@ public class EditTrainerCommand extends Command {
         Trainer editedTrainer = createEditedTrainer(
                 trainerToEdit, editTrainerDescriptor);
 
-        if (!trainerToEdit.isSamePerson(editedTrainer)
-                && model.hasPerson(editedTrainer)) {
+        try {
+            model.setPerson(trainerToEdit, editedTrainer);
+        } catch (DuplicatePersonException e) {
             throw new CommandException(MESSAGE_DUPLICATE_TRAINER);
         }
-
-        model.setPerson(trainerToEdit, editedTrainer);
         return new CommandResult(
                 String.format(MESSAGE_EDIT_TRAINER_SUCCESS,
                         Messages.format(editedTrainer)));

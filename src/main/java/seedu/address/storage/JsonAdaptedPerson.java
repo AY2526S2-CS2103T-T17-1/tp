@@ -29,6 +29,8 @@ class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
     public static final String INVALID_TYPE_MESSAGE_FORMAT = "Person's type is invalid!";
+    public static final String NEGATIVE_CALORIE_TARGET_MESSAGE = "Client's calorieTarget must be non-negative!";
+    public static final String NEGATIVE_CALORIE_INTAKE_MESSAGE = "Client's calorieIntake must be non-negative!";
 
     private final String type; // "trainer" or "client"
     private final String name;
@@ -201,6 +203,13 @@ class JsonAdaptedPerson {
         Optional<WorkoutFocus> modelFocus = toModelWorkoutFocus();
         Optional<Remark> modelRemark = toModelRemark();
         Optional<Validity> modelValidity = toModelValidity();
+
+        if (calorieTarget < 0) {
+            throw new IllegalValueException(NEGATIVE_CALORIE_TARGET_MESSAGE);
+        }
+        if (calorieIntake < 0) {
+            throw new IllegalValueException(NEGATIVE_CALORIE_INTAKE_MESSAGE);
+        }
 
         return new Client(modelName, modelPhone, modelTrainerPhone, modelTrainerName, modelTags,
                 calorieTarget, calorieIntake, modelFocus, modelRemark, modelValidity);

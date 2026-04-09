@@ -67,6 +67,24 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_negativeCalorieTarget_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson("client", VALID_CLIENT_NAME, VALID_CLIENT_PHONE, null,
+                VALID_TRAINER_PHONE, VALID_TRAINER_NAME, -1, 0, null, null, null, VALID_TAGS);
+        assertThrows(IllegalValueException.class,
+                JsonAdaptedPerson.NEGATIVE_CALORIE_TARGET_MESSAGE,
+                person::toModelType);
+    }
+
+    @Test
+    public void toModelType_negativeCalorieIntake_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson("client", VALID_CLIENT_NAME, VALID_CLIENT_PHONE, null,
+                VALID_TRAINER_PHONE, VALID_TRAINER_NAME, 0, -10, null, null, null, VALID_TAGS);
+        assertThrows(IllegalValueException.class,
+                JsonAdaptedPerson.NEGATIVE_CALORIE_INTAKE_MESSAGE,
+                person::toModelType);
+    }
+
+    @Test
     public void constructor_fromClientRoundTrip_returnsClient() throws Exception {
         Trainer trainer = new Trainer(new Name("Trainer"), new Phone("90000001"),
                 new Email("trainer@example.com"), Set.of());

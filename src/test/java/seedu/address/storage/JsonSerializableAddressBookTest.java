@@ -5,12 +5,14 @@ import static seedu.address.testutil.Assert.assertThrows;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.AddressBook;
+import seedu.address.model.person.Client;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.TypicalPersons;
 
@@ -60,6 +62,24 @@ public class JsonSerializableAddressBookTest {
                 .map(Person::getPhone)
                 .anyMatch(phone -> phone.getValue().equals("90000000"));
         assertEquals(false, containsRogueClient);
+    }
+
+    @Test
+    public void toModelType_clientWithMismatchedTrainerName_trainerNameReconciled() throws Exception {
+        JsonAdaptedPerson trainer = new JsonAdaptedPerson("trainer", "Real Trainer", "92222222",
+                "real@trainer.com", null, null, 0, 0, null, null, null, List.of());
+        JsonAdaptedPerson client = new JsonAdaptedPerson("client", "Client", "90000002", null,
+                "92222222", "Wrong Name", 0, 0, null, null, null, List.of());
+
+        JsonSerializableAddressBook serializable = new JsonSerializableAddressBook(List.of(trainer, client));
+        AddressBook addressBook = serializable.toModelType();
+
+        Client loadedClient = addressBook.getPersonList().stream()
+                .filter(Client.class::isInstance)
+                .map(Client.class::cast)
+                .findFirst()
+                .orElseThrow();
+        assertEquals("Real Trainer", loadedClient.getTrainerName().getFullName());
     }
 
 }

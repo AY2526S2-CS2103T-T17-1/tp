@@ -4,8 +4,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.Set;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import seedu.address.commons.exceptions.DataLoadingException;
+import seedu.address.commons.util.JsonUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -41,12 +45,26 @@ public class ImportCommand extends Command {
         requireNonNull(model);
         JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
         try {
+            Optional<JsonNode> rootOptional = JsonUtil.readJsonFile(filePath, JsonNode.class);
+            if (rootOptional.isEmpty()) {
+                throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, filePath.toString()));
+            }
+
+            int removedClients = countClientsWithMissingTrainers(rootOptional.get());
+
             Optional<ReadOnlyAddressBook> addressBookOptional = storage.readAddressBook();
             if (addressBookOptional.isEmpty()) {
                 throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, filePath.toString()));
             }
+
             model.setAddressBook(addressBookOptional.get());
-            return new CommandResult(String.format(MESSAGE_SUCCESS, filePath.toString()));
+
+            String message = String.format(MESSAGE_SUCCESS, filePath.toString());
+            if (removedClients > 0) {
+                message += String.format(" (removed %d client(s) with missing trainers)", removedClients);
+            }
+
+            return new CommandResult(message);
         } catch (DataLoadingException e) {
             String errorMessage = e.getMessage();
             if (e.getCause() instanceof java.nio.file.AccessDeniedException) {
@@ -54,6 +72,52 @@ public class ImportCommand extends Command {
             }
             throw new CommandException(String.format(MESSAGE_IMPORT_FAILURE, filePath.toString(), errorMessage));
         }
+    }
+
+    private static int countClientsWithMissingTrainers(JsonNode root) {
+        if (root == null) {
+            return 0;
+        }
+
+        JsonNode personsNode = root.get("persons");
+        if (personsNode == null || !personsNode.isArray()) {
+            return 0;
+        }
+
+        Set<String> trainerPhones = new java.util.HashSet<>();
+        for (JsonNode personNode : personsNode) {
+            if (personNode == null) {
+                continue;
+            }
+            String type = personNode.path("type").asText("");
+            if (!"trainer".equals(type)) {
+                continue;
+            }
+            String trainerPhone = personNode.path("phone").asText("");
+            if (!trainerPhone.isBlank()) {
+                trainerPhones.add(trainerPhone);
+            }
+        }
+
+        int removedClients = 0;
+        for (JsonNode personNode : personsNode) {
+            if (personNode == null) {
+                continue;
+            }
+            String type = personNode.path("type").asText("");
+            if (!"client".equals(type)) {
+                continue;
+            }
+            String trainerPhone = personNode.path("trainerPhone").asText("");
+            if (trainerPhone.isBlank()) {
+                continue;
+            }
+            if (!trainerPhones.contains(trainerPhone)) {
+                removedClients++;
+            }
+        }
+
+        return removedClients;
     }
 
     @Override
