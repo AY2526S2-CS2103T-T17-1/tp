@@ -389,16 +389,17 @@ Format: `stats`
 
 #### Deleting a trainer: `delete-trainer`
 
-Deletes a trainer from GymOps.
+Alias for `delete t/INDEX`. Deletes a trainer from GymOps.
 
 Format: `delete-trainer INDEX`
 
 * `INDEX` must refer to a trainer in the **trainer list**.
+* This command is equivalent to `delete t/INDEX`.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:** A trainer cannot be deleted if they still have active clients. Use `delete-client` to remove their clients first.</div>
 
 Examples:
-* `delete-trainer 1` — deletes the 1st trainer.
+* `delete-trainer 1` — deletes the 1st trainer (same as `delete t/1`).
 
 **Expected outcome:** The trainer is permanently removed from the application, and a success message is displayed.
 
@@ -521,16 +522,17 @@ Examples:
 
 #### Deleting a client: `delete-client`
 
-Deletes a client from GymOps. The client is permanently removed and unassigned from their trainer.
+Alias for `delete c/INDEX`. Deletes a client from GymOps. The client is permanently removed and unassigned from their trainer.
 
 Format: `delete-client INDEX`
 
 * `INDEX` must refer to a client in the **client list**.
+* This command is equivalent to `delete c/INDEX`.
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `find-clients NAME` first to locate the client, then use the index shown in the filtered list.</div>
 
 Examples:
-* `delete-client 1` — deletes the 1st client in the current list.
+* `delete-client 1` — deletes the 1st client in the current list (same as `delete c/1`).
 
 **Expected outcome:** The client is permanently removed from the application, their assigned trainer's client count is updated, and a success message is displayed.
 
@@ -666,6 +668,30 @@ If you enter an invalid tag (or break the JSON format), GymOps may fail to load 
 **Q: How do I transfer my data to another computer?**
 
 Install GymOps on the other computer and replace the empty data file it creates with your existing data file from `[JAR file location]/data/GymOps.json`.
+
+---
+
+**Q: Why can't I delete a trainer?**
+
+A trainer cannot be deleted if they still have active clients. Use `delete-client` or `delete c/` to remove all of the trainer's clients first, then delete the trainer.
+
+---
+
+**Q: Can I undo a command?**
+
+GymOps does not currently support an undo command. Before running destructive commands like `clear` or `delete`, consider running `export` first to back up your data.
+
+---
+
+**Q: Why does my calorie intake not reset to zero each day?**
+
+GymOps does not automatically reset daily calorie intake. You can reset a client's intake by running `log-calorie` with a corrected cumulative total, or by editing the data file directly while GymOps is closed.
+
+---
+
+**Q: Can I add tags via a command?**
+
+There is currently no CLI command to assign tags. Tags can only be added by editing the `tags` field in the data file directly (see [Editing the data file](#editing-the-data-file)). Only edit the file while GymOps is **closed**.
 
 ---
 

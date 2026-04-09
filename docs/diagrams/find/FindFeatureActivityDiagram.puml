@@ -6,7 +6,7 @@ start
 if (At least 1 keyword?) then ([yes])
   :Split by whitespace;
   :Validate each keyword
-  against [\\p{Alnum}\\-'/]+;
+  against [\\p{Alnum}\\-'/.]+;
   if (All keywords valid?) then ([yes])
     :Create NameContainsKeywordsPredicate;
     :Execute Find*Command;

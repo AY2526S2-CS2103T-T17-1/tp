@@ -22,7 +22,6 @@ SetFocusCommandParser -> SetFocusCommand : <<create>>
 deactivate SetFocusCommandParser
 AddressBookParser --> LogicManager : SetFocusCommand
 deactivate AddressBookParser
-LogicManager --> Ui : CommandResult
 deactivate LogicManager
 deactivate Ui
 @enduml

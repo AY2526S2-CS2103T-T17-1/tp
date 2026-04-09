@@ -5,23 +5,21 @@ start
 find command parser;
 :Trim input;
 
-:Check at least 1 keyword is provided;
-if () then ([at least 1 keyword])
+if (At least 1 keyword?) then ([yes])
   :Split by whitespace;
   :Validate each keyword
   against allowed pattern
-  (alphanumerics and - ' /);
+  (alphanumerics and - ' / .);
 
-  :Check all keywords are valid;
-  if () then ([all keywords valid])
+  if (All keywords valid?) then ([yes])
     :Create NameContainsKeywordsPredicate;
     :Create Find command;
 
     :Execute Find command Ψ;
-  else ([else])
+  else ([no])
     :Show invalid command format;
   endif
-else ([else])
+else ([no])
   :Show invalid command format;
 endif
 stop

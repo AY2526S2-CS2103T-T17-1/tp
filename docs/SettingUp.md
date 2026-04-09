@@ -48,7 +48,7 @@ If you plan to use Intellij IDEA (highly recommended):
    When you are ready to start coding, we recommend that you get some sense of the overall design by reading about [AddressBook’s architecture](DeveloperGuide.md#architecture).
 
 1. **Do the tutorials**
-   These tutorials will help you get acquainted with the codebase.
+   These se-edu tutorials cover the general AB3-based architecture that GymOps is built on. Note that some class names differ in GymOps (e.g., GymOps uses `EditClientCommand`/`EditTrainerCommand` instead of `EditCommand`, and `DeleteCommand` instead of a single-field delete).
 
    * [Tracing code](https://se-education.org/guides/tutorials/ab3TracingCode.html)
    * [Adding a new command](https://se-education.org/guides/tutorials/ab3AddRemark.html)

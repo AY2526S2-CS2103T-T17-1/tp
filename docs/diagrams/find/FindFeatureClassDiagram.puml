@@ -33,9 +33,8 @@ FindTrainersCommand ..> Model : updateFilteredTrainerList(predicate)
 FindClientsCommand ..> Model : updateFilteredClientList(predicate)
 
 NameContainsKeywordsPredicate -up-|> Predicate
-NameContainsKeywordsPredicate ..> Person : reads name
 
-FindCommand o-- NameContainsKeywordsPredicate : predicate
-FindTrainersCommand o-- NameContainsKeywordsPredicate : predicate
-FindClientsCommand o-- NameContainsKeywordsPredicate : predicate
+FindCommand --> NameContainsKeywordsPredicate : predicate
+FindTrainersCommand --> NameContainsKeywordsPredicate : predicate
+FindClientsCommand --> NameContainsKeywordsPredicate : predicate
 @enduml

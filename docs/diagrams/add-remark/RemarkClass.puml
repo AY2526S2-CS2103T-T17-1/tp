@@ -8,7 +8,6 @@ Class "{abstract}\nCommand" as Command {
 Class RemarkCommand {
   +COMMAND_WORD: String
   +MESSAGE_USAGE: String
-  +MESSAGE_NOT_IMPLEMENTED_YET: String
   +execute(Model): CommandResult
 }
 Class CommandException

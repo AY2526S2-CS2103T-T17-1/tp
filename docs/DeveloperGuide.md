@@ -538,10 +538,10 @@ All three `find*` command parsers enforce the same keyword rules:
 
 1. The input must contain at least one keyword (empty input is rejected).
 2. Keywords are split by whitespace.
-3. Each keyword must match the regex `[\p{Alnum}\-'/]+`.
-    * i.e., only letters/digits plus `-`, `'`, `/` are allowed.
-    * examples of accepted keywords: `alex`, `tan`, `o'connor`, `upper-body`, `s/o`.
-    * examples of rejected keywords: `Bob@`, `Alice!`, `john.doe`.
+3. Each keyword must match the regex `[\p{Alnum}\-'/.]+`.
+    * i.e., only letters/digits plus `-`, `'`, `/`, `.` are allowed.
+    * examples of accepted keywords: `alex`, `tan`, `o'connor`, `upper-body`, `s/o`, `john.doe`.
+    * examples of rejected keywords: `Bob@`, `Alice!`, `john_doe`.
 
 These constraints keep parsing predictable and ensure that keywords remain unambiguous “tokens”.
 
