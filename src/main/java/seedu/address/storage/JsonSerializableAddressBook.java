@@ -13,6 +13,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Client;
+import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
@@ -60,6 +61,7 @@ class JsonSerializableAddressBook {
         }
 
         removeClientsWithMissingTrainers(addressBook);
+        reconcileClientTrainerNames(addressBook);
         return addressBook;
     }
 
@@ -86,6 +88,26 @@ class JsonSerializableAddressBook {
             Client client = (Client) person;
             if (!trainerPhones.contains(client.getTrainerPhone())) {
                 addressBook.removePerson(client);
+            }
+        }
+    }
+
+    private void reconcileClientTrainerNames(AddressBook addressBook) {
+        java.util.Map<Phone, Name> trainerPhoneToName = addressBook.getPersonList().stream()
+                .filter(Trainer.class::isInstance)
+                .map(Trainer.class::cast)
+                .collect(Collectors.toMap(Trainer::getPhone, Trainer::getName, (a, b) -> a));
+
+        List<Person> allPersons = new ArrayList<>(addressBook.getPersonList());
+        for (Person person : allPersons) {
+            if (!(person instanceof Client)) {
+                continue;
+            }
+
+            Client client = (Client) person;
+            Name correctTrainerName = trainerPhoneToName.get(client.getTrainerPhone());
+            if (correctTrainerName != null && !correctTrainerName.equals(client.getTrainerName())) {
+                addressBook.setPerson(client, client.withTrainer(client.getTrainerPhone(), correctTrainerName));
             }
         }
     }

@@ -5,21 +5,14 @@ import static java.util.Objects.requireNonNull;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.commons.util.JsonUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
-import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
-import seedu.address.model.person.Client;
-import seedu.address.model.person.Name;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.Phone;
-import seedu.address.model.person.Trainer;
 import seedu.address.storage.JsonAddressBookStorage;
 
 /**
@@ -64,9 +57,7 @@ public class ImportCommand extends Command {
                 throw new CommandException(String.format(MESSAGE_FILE_NOT_FOUND, filePath.toString()));
             }
 
-            AddressBook loadedAddressBook = new AddressBook(addressBookOptional.get());
-            reconcileClientTrainerNames(loadedAddressBook);
-            model.setAddressBook(loadedAddressBook);
+            model.setAddressBook(addressBookOptional.get());
 
             String message = String.format(MESSAGE_SUCCESS, filePath.toString());
             if (removedClients > 0) {
@@ -127,25 +118,6 @@ public class ImportCommand extends Command {
         }
 
         return removedClients;
-    }
-
-    private static void reconcileClientTrainerNames(AddressBook addressBook) {
-        java.util.Map<Phone, Name> trainerPhoneToName = addressBook.getPersonList().stream()
-                .filter(Trainer.class::isInstance)
-                .map(Trainer.class::cast)
-                .collect(Collectors.toMap(Trainer::getPhone, Trainer::getName, (a, b) -> a));
-
-        for (Person person : new java.util.ArrayList<>(addressBook.getPersonList())) {
-            if (!(person instanceof Client)) {
-                continue;
-            }
-
-            Client client = (Client) person;
-            Name correctTrainerName = trainerPhoneToName.get(client.getTrainerPhone());
-            if (correctTrainerName != null && !correctTrainerName.equals(client.getTrainerName())) {
-                addressBook.setPerson(client, client.withTrainer(client.getTrainerPhone(), correctTrainerName));
-            }
-        }
     }
 
     @Override
