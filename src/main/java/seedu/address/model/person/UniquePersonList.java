@@ -64,7 +64,18 @@ public class UniquePersonList implements Iterable<Person> {
             throw new PersonNotFoundException();
         }
 
-        if (!target.isSamePerson(editedPerson) && contains(editedPerson)) {
+        boolean editedPersonWouldDuplicateAnother = false;
+        for (int i = 0; i < internalList.size(); i++) {
+            if (i == index) {
+                continue;
+            }
+            if (editedPerson.isSamePerson(internalList.get(i))) {
+                editedPersonWouldDuplicateAnother = true;
+                break;
+            }
+        }
+
+        if (editedPersonWouldDuplicateAnother) {
             throw new DuplicatePersonException();
         }
 

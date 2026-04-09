@@ -98,8 +98,10 @@ public class EditClientCommand extends Command {
         Client editedClient = createEditedClient(
                 clientToEdit, editClientDescriptor, model);
 
-        if (!clientToEdit.isSamePerson(editedClient)
-                && model.hasPerson(editedClient)) {
+        boolean editedClientWouldDuplicateAnother = model.getAddressBook().getPersonList().stream()
+                .filter(person -> person != clientToEdit)
+                .anyMatch(editedClient::isSamePerson);
+        if (editedClientWouldDuplicateAnother) {
             throw new CommandException(MESSAGE_DUPLICATE_CLIENT);
         }
 

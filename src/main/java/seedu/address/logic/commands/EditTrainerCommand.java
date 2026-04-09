@@ -87,8 +87,10 @@ public class EditTrainerCommand extends Command {
         Trainer editedTrainer = createEditedTrainer(
                 trainerToEdit, editTrainerDescriptor);
 
-        if (!trainerToEdit.isSamePerson(editedTrainer)
-                && model.hasPerson(editedTrainer)) {
+        boolean editedTrainerWouldDuplicateAnother = model.getAddressBook().getPersonList().stream()
+                .filter(person -> person != trainerToEdit)
+                .anyMatch(editedTrainer::isSamePerson);
+        if (editedTrainerWouldDuplicateAnother) {
             throw new CommandException(MESSAGE_DUPLICATE_TRAINER);
         }
 

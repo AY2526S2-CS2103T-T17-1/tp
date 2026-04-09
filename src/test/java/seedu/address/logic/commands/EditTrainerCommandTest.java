@@ -199,6 +199,54 @@ public class EditTrainerCommandTest {
                 EditTrainerCommand.MESSAGE_DUPLICATE_TRAINER);
     }
 
+    @Test
+    public void execute_duplicateTrainerPhoneOnlyChange_failure() {
+        AddressBook ab = new AddressBook();
+        Trainer john = new Trainer(new Name("John"), new Phone("91234567"),
+                new Email("john@example.com"), Set.of());
+        Trainer jane = new Trainer(new Name("Jane"), new Phone("92222222"),
+                new Email("jane@example.com"), Set.of());
+        ab.addPerson(john);
+        ab.addPerson(jane);
+        Model model = new ModelManager(ab, new UserPrefs());
+
+        // Edit Jane to have John's phone, but keep Jane's email unchanged.
+        // Previously this could bypass duplicate checks because Trainer#isSamePerson
+        // could return true due to unchanged email.
+        EditTrainerDescriptor descriptor = new EditTrainerDescriptor();
+        descriptor.setPhone(new Phone("91234567"));
+
+        EditTrainerCommand command = new EditTrainerCommand(
+                Index.fromOneBased(2), descriptor);
+
+        assertCommandFailure(command, model,
+                EditTrainerCommand.MESSAGE_DUPLICATE_TRAINER);
+    }
+
+    @Test
+    public void execute_duplicateTrainerEmailOnlyChange_failure() {
+        AddressBook ab = new AddressBook();
+        Trainer john = new Trainer(new Name("John"), new Phone("91234567"),
+                new Email("john@example.com"), Set.of());
+        Trainer jane = new Trainer(new Name("Jane"), new Phone("92222222"),
+                new Email("jane@example.com"), Set.of());
+        ab.addPerson(john);
+        ab.addPerson(jane);
+        Model model = new ModelManager(ab, new UserPrefs());
+
+        // Edit Jane to have John's email, but keep Jane's phone unchanged.
+        // Previously this could bypass duplicate checks because Trainer#isSamePerson
+        // could return true due to unchanged phone.
+        EditTrainerDescriptor descriptor = new EditTrainerDescriptor();
+        descriptor.setEmail(new Email("john@example.com"));
+
+        EditTrainerCommand command = new EditTrainerCommand(
+                Index.fromOneBased(2), descriptor);
+
+        assertCommandFailure(command, model,
+                EditTrainerCommand.MESSAGE_DUPLICATE_TRAINER);
+    }
+
     // ==================== EditTrainerDescriptor tests ===========
 
     @Test
