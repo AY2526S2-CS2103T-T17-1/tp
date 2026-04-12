@@ -46,4 +46,10 @@ public class AddTrainerCommandParserTest {
         String expectedMessage = Messages.getErrorMessageForDuplicatePrefixes(PREFIX_EMAIL);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parse(" n/Alice p/67 e/a@b.com e/b@c.com"));
     }
+
+    @Test
+    public void parse_unknownPrefix_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddTrainerCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parse(" n/John p/911 e/j@ee.com x/extra"));
+    }
 }
