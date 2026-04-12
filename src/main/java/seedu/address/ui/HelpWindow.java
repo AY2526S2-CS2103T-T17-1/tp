@@ -18,37 +18,11 @@ public class HelpWindow extends UiPart<Stage> {
     public static final String USERGUIDE_URL = "https://ay2526s2-cs2103t-t17-1.github.io/tp/UserGuide.html";
     public static final String HELP_MESSAGE = "Refer to the user guide: " + USERGUIDE_URL;
 
-    public static final String COMMAND_SUMMARY_MESSAGE = ""
-            + "add-trainer n/NAME p/PHONE e/EMAIL\n"
-            + "add-client n/NAME p/PHONE t/TRAINER_INDEX [v/VALIDITY]\n"
-            + "edit-trainer INDEX [n/NAME] [p/PHONE] [e/EMAIL]\n"
-            + "edit-client INDEX [cal/CALORIES] [f/FOCUS] [r/REMARK] [v/VALIDITY]\n"
-            + "reassign-client CLIENT_INDEX t/TRAINER_INDEX\n"
-            + "\n"
-            + "delete-trainer INDEX\n"
-            + "delete-client INDEX\n"
-            + "delete t/TRAINER_INDEX  |  delete c/CLIENT_INDEX\n"
-            + "\n"
-            + "list  |  list-trainers  |  list-clients  |  stats\n"
-            + "find KEYWORD  |  find-trainers KEYWORD  |  find-clients KEYWORD\n"
-            + "\n"
-            + "set-cal c/CLIENT_INDEX cal/CALORIES\n"
-            + "log-cal c/CLIENT_INDEX cal/CALORIES\n"
-            + "set-focus c/CLIENT_INDEX f/FOCUS\n"
-            + "remark c/CLIENT_INDEX r/REMARK\n"
-            + "set-validity INDEX v/VALIDITY\n"
-            + "\n"
-            + "export FILE_PATH  |  import FILE_PATH\n"
-            + "clear  |  exit";
-
     private static final Logger logger = LogsCenter.getLogger(HelpWindow.class);
     private static final String FXML = "HelpWindow.fxml";
 
     @FXML
     private Button copyButton;
-
-    @FXML
-    private Label commandSummary;
 
     @FXML
     private Label helpMessage;
@@ -61,7 +35,6 @@ public class HelpWindow extends UiPart<Stage> {
     public HelpWindow(Stage root) {
         super(FXML, root);
         helpMessage.setText(HELP_MESSAGE);
-        commandSummary.setText(COMMAND_SUMMARY_MESSAGE);
     }
 
     /**

@@ -15,15 +15,6 @@
     -fx-padding: 4 0 2 0;
 }
 
-#commandSummary {
-    -fx-text-fill: #e2e8f0;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 12px;
-    -fx-background-color: #111124;
-    -fx-padding: 14;
-    -fx-background-radius: 4;
-}
-
 .help-url-row {
     -fx-background-color: #111124;
     -fx-background-radius: 4;
