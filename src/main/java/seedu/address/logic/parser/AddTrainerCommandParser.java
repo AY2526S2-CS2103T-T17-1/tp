@@ -26,6 +26,10 @@ public class AddTrainerCommandParser implements Parser<AddTrainerCommand> {
      * @throws ParseException if the user input does not conform the expected format
      */
     public AddTrainerCommand parse(String args) throws ParseException {
+        if (ArgumentTokenizer.hasUnknownPrefix(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL)) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddTrainerCommand.MESSAGE_USAGE));
+        }
+
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL);
 

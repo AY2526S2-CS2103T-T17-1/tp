@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -26,6 +27,31 @@ public class ArgumentTokenizer {
     public static ArgumentMultimap tokenize(String argsString, Prefix... prefixes) {
         List<PrefixPosition> positions = findAllPrefixPositions(argsString, prefixes);
         return extractArguments(argsString, positions);
+    }
+
+    /**
+     * Returns true if {@code argsString} contains any prefix-like token (of the form {@code [a-zA-Z]+/})
+     * that is not among the given {@code knownPrefixes}. Used to detect unknown prefixes before they
+     * are silently absorbed into an adjacent field's value.
+     *
+     * @param argsString   Arguments string to inspect
+     * @param knownPrefixes Prefixes that are valid for the current command
+     * @return             True if an unrecognised prefix-like token is present
+     */
+    public static boolean hasUnknownPrefix(String argsString, Prefix... knownPrefixes) {
+        Set<String> knownSet = Arrays.stream(knownPrefixes)
+                .map(Prefix::getPrefix)
+                .collect(Collectors.toSet());
+        for (String token : argsString.trim().split("\\s+")) {
+            int slashIdx = token.indexOf('/');
+            if (slashIdx > 0) {
+                String potentialPrefix = token.substring(0, slashIdx + 1);
+                if (potentialPrefix.matches("[a-zA-Z]+/") && !knownSet.contains(potentialPrefix)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
