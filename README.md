@@ -47,8 +47,8 @@ Calorie tracking:
 
 ## v1.0 feature list
 
-* Trainer management: `add-trainer`, `delete-trainer`, `list-trainers`, `find-trainers`
-* Client management: `add-client`, `delete-client`, `list-clients`, `find-clients`, `reassign-client`
+* Trainer management: `add-trainer`, `delete-trainer`, `list-t`, `find-t`
+* Client management: `add-client`, `delete-client`, `list-c`, `find-c`, `reassign-client`
 * Tracking: `set-calorie-target`, `log-calorie`, `set-focus`, `remark`, `set-validity`
 * General: `list`, `find`, `delete` (typed), `clear`, `help`, `exit`
 

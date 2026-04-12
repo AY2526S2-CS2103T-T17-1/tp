@@ -128,11 +128,11 @@ public class LogicManagerTest {
         // Default: not filtered
         assertEquals(false, logic.isTrainerListFiltered());
 
-        // After find-trainers: filtered
+        // After find-t: filtered
         logic.execute("find-t Alice");
         assertEquals(true, logic.isTrainerListFiltered());
 
-        // After list-trainers: not filtered
+        // After list-t: not filtered
         logic.execute("list-t");
         assertEquals(false, logic.isTrainerListFiltered());
     }

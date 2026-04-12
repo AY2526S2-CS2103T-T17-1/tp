@@ -47,15 +47,15 @@ This guide is written for **gym managers and administrators** who want a fast, k
   - [Trainer Management](#trainer-management)
     - [Adding a trainer](#adding-a-trainer-add-t)
     - [Editing a trainer](#editing-a-trainer-edit-t)
-    - [Listing all trainers](#listing-all-trainers-list-trainers)
-    - [Finding trainers](#finding-trainers-find-trainers)
+    - [Listing all trainers](#listing-all-trainers-list-t)
+    - [Finding trainers](#finding-trainers-find-t)
     - [Viewing trainer statistics](#viewing-trainer-statistics-stats)
   - [Client Management](#client-management)
     - [Adding a client](#adding-a-client-add-c)
     - [Editing a client](#editing-a-client-edit-c)
     - [Reassigning a client](#reassigning-a-client-reassign-c)
-    - [Listing clients](#listing-clients-list-clients)
-    - [Finding clients](#finding-clients-find-clients)
+    - [Listing clients](#listing-clients-list-c)
+    - [Finding clients](#finding-clients-find-c)
   - [Health Tracking](#health-tracking)
     - [Setting a calorie target](#setting-a-calorie-target-set-cal)
     - [Logging calorie intake](#logging-calorie-intake-log-cal)
@@ -96,11 +96,11 @@ This guide is written for **gym managers and administrators** who want a fast, k
 
    | Step | Command | What it does |
    |------|---------|-------------|
-   | 1 | `list-trainers` | View all trainers |
+   | 1 | `list-t` | View all trainers |
    | 2 | `add-t n/John Doe p/98765432 e/johndoe@example.com` | Add a new trainer |
-   | 3 | `list-trainers` | Confirm the trainer was added |
+   | 3 | `list-t` | Confirm the trainer was added |
    | 4 | `add-c n/Alice Lim p/81234567 t/1 v/2028-09-09` | Assign a client to trainer #1 |
-   | 5 | `find-clients Alice` | Search for the client you just added |
+   | 5 | `find-c Alice` | Search for the client you just added |
   | 6 | `delete c/1` | Delete the 1st client in the current list |
    | 7 | `clear` | Delete all data |
    | 8 | `exit` | Exit the app |
@@ -153,7 +153,7 @@ Shows all trainers and all clients.
 
 This command resets both lists to show all entries by clearing any active `find` filters.
 
-<div markdown="span" class="alert alert-info">:bulb: **Tip:** To also clear a trainer selection made via the GUI, run `list-clients` (without an index) after `list`.</div>
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** To also clear a trainer selection made via the GUI, run `list-c` (without an index) after `list`.</div>
 
 Format: `list`
 
@@ -176,7 +176,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * Results include persons matching **at least one** keyword (OR search).
 * Run `list` to return to the full list after searching.
 
-<div markdown="span" class="alert alert-info">:bulb: **Tip:** Use `find-trainers` or `find-clients` to search within a specific list.</div>
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Use `find-t` or `find-c` to search within a specific list.</div>
 
 Examples:
 * `find John` — returns `john`, `John Doe`, `Johnny`
@@ -322,7 +322,7 @@ Format: `edit-t INDEX [n/NAME] [p/PHONE] [e/EMAIL]`
 * At least one optional field must be provided.
 * Existing values will be overwritten by the input values.
 
-<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-trainers` to confirm the correct trainer index before editing.</div>
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-t` to confirm the correct trainer index before editing.</div>
 
 Examples:
 * `edit-t 1 e/johndoe@gym.com` — updates the 1st trainer's email.
@@ -336,11 +336,11 @@ Examples:
 
 ---
 
-#### Listing all trainers: `list-trainers`
+#### Listing all trainers: `list-t`
 
 Shows all trainers in GymOps. Clears any active trainer filter.
 
-Format: `list-trainers`
+Format: `list-t`
 
 **Expected outcome:** The trainers list is refreshed to show all trainers, and a success message is displayed.
 
@@ -348,17 +348,17 @@ Format: `list-trainers`
 
 ---
 
-#### Finding trainers: `find-trainers`
+#### Finding trainers: `find-t`
 
 Finds trainers whose names contain any of the given keywords. Searches only the trainer list.
 
-Format: `find-trainers KEYWORD [MORE_KEYWORDS]`
+Format: `find-t KEYWORD [MORE_KEYWORDS]`
 
 * Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
-* Run `list-trainers` to return to the full trainer list after searching.
+* Run `list-t` to return to the full trainer list after searching.
 
 Examples:
-* `find-trainers John` — returns all trainers with "John" in their name.
+* `find-t John` — returns all trainers with "John" in their name.
 
 **Expected outcome:** The trainers list is filtered to show only trainers whose names contain the given keywords. A message showing the number of trainers listed is displayed.
 
@@ -391,9 +391,9 @@ Format: `add-c n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]`
 * `TRAINER_INDEX` must refer to a trainer visible in the **current trainer list**.
 * `VALIDITY` is an optional field that must be a valid date in the format `YYYY-MM-DD`. e.g. `v/2028-09-09`. Using a wrong format such as `v/09-09-2028` will show: `Validity should be a valid date in the format YYYY-MM-DD.`
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the trainer list is filtered (e.g. after a `find-trainers` command), `TRAINER_INDEX` refers to the filtered results. Run `list-trainers` first to assign by the full list.</div>
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the trainer list is filtered (e.g. after a `find-t` command), `TRAINER_INDEX` refers to the filtered results. Run `list-t` first to assign by the full list.</div>
 
-<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-trainers` to confirm the correct trainer index before adding a client.</div>
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-t` to confirm the correct trainer index before adding a client.</div>
 
 Examples:
 * `add-c n/Alice Lim p/81234567 t/1` — adds Alice Lim and assigns her to the 1st trainer in the list.
@@ -417,7 +417,7 @@ Format: `edit-c INDEX [n/NAME] [p/PHONE] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] 
 * Existing values will be overwritten by the input values.
 * When editing the trainer assignment, `TRAINER_INDEX` must refer to a valid trainer.
 
-<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-clients` to confirm the correct client index before editing.</div>
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-c` to confirm the correct client index before editing.</div>
 
 Examples:
 * `edit-c 1 n/Alice Tan` — updates the 1st client's name to Alice Tan.
@@ -449,20 +449,20 @@ Examples:
 
 ---
 
-#### Listing clients: `list-clients`
+#### Listing clients: `list-c`
 
 Shows all clients in GymOps, or only clients assigned to a specific trainer.
 
-Format: `list-clients [TRAINER_INDEX]`
+Format: `list-c [TRAINER_INDEX]`
 
 * If `TRAINER_INDEX` is omitted, shows all clients and clears any active trainer filter.
 * If `TRAINER_INDEX` is provided, shows only clients assigned to the trainer at that index in the **current trainer list**.
 
-<div markdown="span" class="alert alert-info">:bulb: **Tip:** After filtering clients by trainer (via the GUI or by using an index), run `list-clients` without an index to return to the full client list.</div>
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** After filtering clients by trainer (via the GUI or by using an index), run `list-c` without an index to return to the full client list.</div>
 
 Examples:
-* `list-clients` — shows all clients.
-* `list-clients 1` — shows only clients assigned to the 1st trainer in the current list.
+* `list-c` — shows all clients.
+* `list-c 1` — shows only clients assigned to the 1st trainer in the current list.
 
 **Expected outcome:** The clients list is refreshed to show either all clients or the specified trainer's clients, and a success message is displayed.
 
@@ -470,18 +470,18 @@ Examples:
 
 ---
 
-#### Finding clients: `find-clients`
+#### Finding clients: `find-c`
 
 Finds clients whose names contain any of the given keywords. Searches only the client list.
 
-Format: `find-clients KEYWORD [MORE_KEYWORDS]`
+Format: `find-c KEYWORD [MORE_KEYWORDS]`
 
 * Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
-* Run `list-clients` to return to the full client list after searching.
+* Run `list-c` to return to the full client list after searching.
 
 Examples:
-* `find-clients Alice` — returns all clients with "Alice" in their name.
-* `find-clients Alice Bob` — returns all clients with "Alice" or "Bob" in their name.
+* `find-c Alice` — returns all clients with "Alice" in their name.
+* `find-c Alice Bob` — returns all clients with "Alice" or "Bob" in their name.
 
 **Expected outcome:** The clients list is filtered to show only clients whose names contain the given keywords. A message showing the number of clients listed is displayed.
 
@@ -624,11 +624,11 @@ A trainer cannot be deleted if they still have active clients. Use `delete c/` t
 Use a `find` command to filter the trainer list, then delete using the filtered index.
 
 Example:
-1. Run `find-trainers NAME` (or `find NAME`) to narrow down the trainer list.
+1. Run `find-t NAME` (or `find NAME`) to narrow down the trainer list.
 1. Confirm the trainer’s index in the filtered **Trainers** list.
 1. Run `delete t/TRAINER_INDEX` (e.g., `delete t/1`).
 
-If you need to return to the full trainer list, run `list-trainers`.
+If you need to return to the full trainer list, run `list-t`.
 
 ---
 
@@ -669,12 +669,12 @@ To reset a client's intake total to 0, run `log-cal c/CLIENT_INDEX cal/0`.
 | [**Edit client**](#editing-a-client-edit-c) | `edit-c INDEX [n/NAME] [p/PHONE] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]` | `edit-c 1 n/Alice Tan p/91234567` |
 | [**Reassign client**](#reassigning-a-client-reassign-c) | `reassign-c CLIENT_INDEX t/TRAINER_INDEX` | `reassign-c 2 t/1` |
 | [**List all**](#listing-all-persons-list) | `list` | — |
-| [**List trainers**](#listing-all-trainers-list-trainers) | `list-trainers` | — |
-| [**List clients**](#listing-clients-list-clients) | `list-clients [TRAINER_INDEX]` | `list-clients`, `list-clients 1` |
+| [**List trainers**](#listing-all-trainers-list-t) | `list-t` | — |
+| [**List clients**](#listing-clients-list-c) | `list-c [TRAINER_INDEX]` | `list-c`, `list-c 1` |
 | [**Stats**](#viewing-trainer-statistics-stats) | `stats` | — |
 | [**Find (both lists)**](#finding-persons-find) | `find KEYWORD [MORE_KEYWORDS]` | `find James Jake` |
-| [**Find trainers**](#finding-trainers-find-trainers) | `find-trainers KEYWORD [MORE_KEYWORDS]` | `find-trainers John` |
-| [**Find clients**](#finding-clients-find-clients) | `find-clients KEYWORD [MORE_KEYWORDS]` | `find-clients Alice` |
+| [**Find trainers**](#finding-trainers-find-t) | `find-t KEYWORD [MORE_KEYWORDS]` | `find-t John` |
+| [**Find clients**](#finding-clients-find-c) | `find-c KEYWORD [MORE_KEYWORDS]` | `find-c Alice` |
 | [**Set calorie target**](#setting-a-calorie-target-set-cal) | `set-cal c/CLIENT_INDEX cal/CALORIES` | `set-cal c/1 cal/2400`, `set-cal c/1 cal/0` |
 | [**Log calorie intake**](#logging-calorie-intake-log-cal) | `log-cal c/CLIENT_INDEX cal/CALORIES` | `log-cal c/1 cal/1500` |
 | [**Set workout focus**](#setting-a-workout-focus-set-focus) | `set-focus c/CLIENT_INDEX f/FOCUS` | `set-focus c/1 f/Chest` |

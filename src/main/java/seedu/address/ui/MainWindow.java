@@ -221,7 +221,7 @@ public class MainWindow extends UiPart<Stage> {
     @FXML
     private void handleClearSelectedTrainer() {
         try {
-            executeCommand("list-clients");
+            executeCommand("list-c");
         } catch (CommandException | ParseException e) {
             logger.info("Failed to list all clients: " + e.getMessage());
         }
@@ -230,7 +230,7 @@ public class MainWindow extends UiPart<Stage> {
     @FXML
     private void handleListAllTrainers() {
         try {
-            executeCommand("list-trainers");
+            executeCommand("list-t");
         } catch (CommandException | ParseException e) {
             logger.info("Failed to list all trainers: " + e.getMessage());
         }

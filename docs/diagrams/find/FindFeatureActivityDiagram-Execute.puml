@@ -5,7 +5,7 @@ if () then ([command is find])
   :Read selected trainer (if any);
   :Model.updateFilteredPersonList(predicate);
   :Re-apply selected trainer (if any);
-else ([find-trainers or find-clients])
+else ([find-t or find-c])
   :Model.updateFilteredTrainerList(predicate)
   or updateFilteredClientList(predicate);
 endif

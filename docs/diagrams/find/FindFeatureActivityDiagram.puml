@@ -15,7 +15,7 @@ if () then ([at least 1 keyword])
       :updateFilteredPersonList(predicate);
       :Re-apply selected trainer
       (keeps client list filtered);
-    else ([find-trainers or find-clients])
+    else ([find-t or find-c])
       :updateFilteredTrainerList or
       updateFilteredClientList;
     endif

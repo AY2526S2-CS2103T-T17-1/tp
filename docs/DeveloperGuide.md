@@ -350,7 +350,7 @@ All client-attribute commands resolve the target client based on the **currently
 As a result, the same client can have different indices depending on:
 
 * whether a trainer is currently selected (client list filtering), and
-* whether the user has applied `find-clients`.
+* whether the user has applied `find-c`.
 
 For `reassign-c`, the `CLIENT_INDEX` is resolved from the displayed client list and the `t/TRAINER_INDEX` is resolved from the displayed trainer list.
 
@@ -373,7 +373,7 @@ GymOps defends at both parsing and execution layers:
 
 Given below is an example scenario showing how client attributes are updated over time.
 
-Step 1. The supervisor lists clients using `list-clients` (or narrows down to a smaller set using `find-clients`).
+Step 1. The supervisor lists clients using `list-c` (or narrows down to a smaller set using `find-c`).
 
 Step 2. The supervisor sets the workout focus for the first client using `set-focus c/1 f/Chest`.
 GymOps updates the client’s workout focus, persists the change, and the UI updates to show the focus label on that client’s card.
@@ -433,10 +433,10 @@ To support “select a trainer → filter clients”, the `Model` exposes:
 
 `ModelManager` stores the selected trainer’s phone (as an `Optional<Phone>`) and uses it to refine the client list predicate. This keeps the filtering logic inside `Model`, while allowing `UI` to remain a thin consumer of observable lists.
 
-In addition to selecting a trainer from the UI list, `list-clients` also participates in this flow:
+In addition to selecting a trainer from the UI list, `list-c` also participates in this flow:
 
-* `list-clients` (no index) clears any selected trainer and shows all clients.
-* `list-clients INDEX` selects the trainer at `INDEX` (from the currently displayed trainer list) and filters the client list to that trainer.
+* `list-c` (no index) clears any selected trainer and shows all clients.
+* `list-c INDEX` selects the trainer at `INDEX` (from the currently displayed trainer list) and filters the client list to that trainer.
 
 ### Trainer edits and assignment consistency
 
@@ -529,8 +529,8 @@ This is a one-time compatibility step to smooth the transition from AB3-based da
 GymOps provides three search commands:
 
 * `find KEYWORD [MORE_KEYWORDS]...` — filters both the trainer list and client list by name.
-* `find-trainers KEYWORD [MORE_KEYWORDS]...` — filters only the trainer list by name.
-* `find-clients KEYWORD [MORE_KEYWORDS]...` — filters only the client list by name.
+* `find-t KEYWORD [MORE_KEYWORDS]...` — filters only the trainer list by name.
+* `find-c KEYWORD [MORE_KEYWORDS]...` — filters only the client list by name.
 
 All three commands are **case-insensitive** and use **partial (substring) matching**.
 
@@ -551,7 +551,7 @@ These constraints keep parsing predictable and ensure that keywords remain unamb
 
 At a high level, all three `find*` commands follow the same flow:
 
-1. `AddressBookParser` identifies the command word (`find`, `find-trainers`, or `find-clients`).
+1. `AddressBookParser` identifies the command word (`find`, `find-t`, or `find-c`).
 2. The corresponding parser (`FindCommandParser`, `FindTrainersCommandParser`, `FindClientsCommandParser`):
     * trims input,
     * splits it into keywords,
@@ -559,8 +559,8 @@ At a high level, all three `find*` commands follow the same flow:
     * constructs a `NameContainsKeywordsPredicate`.
 3. The command executes and updates the model’s filtered list(s):
     * `find` calls `Model#updateFilteredPersonList(predicate)`.
-    * `find-trainers` calls `Model#updateFilteredTrainerList(predicate)`.
-    * `find-clients` calls `Model#updateFilteredClientList(predicate)`.
+    * `find-t` calls `Model#updateFilteredTrainerList(predicate)`.
+    * `find-c` calls `Model#updateFilteredClientList(predicate)`.
 
 The diagram below shows the main classes involved in the `find*` feature:
 
@@ -604,12 +604,12 @@ GymOps supports “select trainer → filter clients”. This interacts with sea
 
 * `find` filters both lists via `updateFilteredPersonList(...)`. Because updating the person list clears the selected trainer internally, `FindCommand` preserves the selection by reading the currently selected trainer before filtering and re-applying it afterwards.
    As a result, if a trainer is selected, the client list remains restricted to that trainer even after `find`.
-* `find-clients` updates the client predicate directly. If a trainer is selected, the model’s selection filter is still applied on top of the keyword filter.
-* `find-trainers` filters only the trainer list and does not change trainer selection.
+* `find-c` updates the client predicate directly. If a trainer is selected, the model’s selection filter is still applied on top of the keyword filter.
+* `find-t` filters only the trainer list and does not change trainer selection.
 
 #### Usage scenario
 
-Step 1. Supervisor enters `find-clients alex`.
+Step 1. Supervisor enters `find-c alex`.
 
 Step 2. `FindClientsCommandParser` validates keywords and creates a `FindClientsCommand` with `NameContainsKeywordsPredicate(["alex"])`.
 
@@ -1311,27 +1311,27 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `list`<br>
       Expected: Any active filtering is cleared and all trainers/clients are shown again.
 
-   1. Test case: `list-trainers`<br>
-      Expected: Any active trainer filtering (e.g., after `find-trainers`) is cleared and all trainers are shown.
+   1. Test case: `list-t`<br>
+      Expected: Any active trainer filtering (e.g., after `find-t`) is cleared and all trainers are shown.
 
-   1. Test case: `list-clients`<br>
-      Expected: Any active client filtering (e.g., after `find-clients` or selecting a trainer) is cleared and all clients are shown.
+   1. Test case: `list-c`<br>
+      Expected: Any active client filtering (e.g., after `find-c` or selecting a trainer) is cleared and all clients are shown.
 
 1. Filtering clients by selecting a trainer
 
    1. Prerequisites: Ensure there is at least one trainer with at least one assigned client.
 
-   1. Test case: `list-clients 1`<br>
+   1. Test case: `list-c 1`<br>
       Expected: Trainer at index 1 is selected and the displayed client list shows only clients assigned to that trainer.
 
-   1. Test case: `list-clients`<br>
+   1. Test case: `list-c`<br>
       Expected: Trainer selection is cleared and the displayed client list shows all clients again.
 
 ### Editing trainers/clients
 
 1. Editing a trainer
 
-   1. Prerequisites: List trainers using `list-trainers` and note a trainer that has assigned clients.
+   1. Prerequisites: List trainers using `list-t` and note a trainer that has assigned clients.
 
    1. Test case: `edit-t 1 n/Alex Tan`<br>
       Expected: Trainer at index 1 shows the updated name.
@@ -1342,7 +1342,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Editing a client (including clearing optional fields)
 
-   1. Prerequisites: List clients using `list-clients`.
+   1. Prerequisites: List clients using `list-c`.
 
    1. Test case: `edit-c 1 n/Bob Lim p/98765432 t/1 cal/2000 f/Upper Body r/Note v/2027-01-01`<br>
       Expected: Client at index 1 shows updated details (including the optional fields).
@@ -1357,7 +1357,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Deleting a trainer or client while the corresponding list is being shown
 
-   1. Prerequisites: List entries using `list-trainers` and/or `list-clients`. Ensure there are multiple entries in the list.
+   1. Prerequisites: List entries using `list-t` and/or `list-c`. Ensure there are multiple entries in the list.
 
    <div markdown="block" class="alert alert-warning">
 
@@ -1389,33 +1389,33 @@ testers are expected to do more *exploratory* testing.
       Expected: Similar to previous.
 
 1. Additional test ideas (optional):
-   * Delete a client after filtering the client list (e.g., after `find-clients ...`).
-   * Delete a trainer after filtering the trainer list (e.g., after `find-trainers ...`).
+   * Delete a client after filtering the client list (e.g., after `find-c ...`).
+   * Delete a trainer after filtering the trainer list (e.g., after `find-t ...`).
 
 ### Finding trainers/clients
 
 1. Finding trainers by name
 
-   1. Prerequisites: List all trainers using `list-trainers`.
+   1. Prerequisites: List all trainers using `list-t`.
 
-   1. Test case: `find-trainers alex david`<br>
+   1. Test case: `find-t alex david`<br>
       Expected: Only trainers whose names contain `alex` or `david` are shown.
 
-   1. Test case: `find-trainers Bob@`<br>
-      Expected: Error shown indicating invalid command format (usage for `find-trainers` is shown).
+   1. Test case: `find-t Bob@`<br>
+      Expected: Error shown indicating invalid command format (usage for `find-t` is shown).
 
 1. Finding clients by name
 
-   1. Prerequisites: List all clients using `list-clients`.
+   1. Prerequisites: List all clients using `list-c`.
 
-   1. Test case: `find-clients alex david`<br>
+   1. Test case: `find-c alex david`<br>
       Expected: Only clients whose names contain `alex` or `david` are shown.
 
 1. Returning to full trainer/client list
 
-   1. Prerequisites: Run any successful `find-trainers` or `find-clients` command.
+   1. Prerequisites: Run any successful `find-t` or `find-c` command.
 
-   1. Test case: `list-trainers` (after `find-trainers`) or `list-clients` (after `find-clients`)<br>
+   1. Test case: `list-t` (after `find-t`) or `list-c` (after `find-c`)<br>
       Expected: All trainers/clients are shown again.
 
 ### Adding trainers/clients
@@ -1594,7 +1594,7 @@ GymOps is built on top of the AddressBook-Level3 (AB3) codebase. This allowed th
 * **Cross-list operations**: Commands such as `reassign-c` and `edit-c ... t/TRAINER_INDEX` resolve indices from different displayed lists, so correctness depends on clearly-defined “index is based on the current filtered list” behavior.
 * **Data integrity constraints**: Clients are assigned to exactly one trainer, and deleting trainers must respect this constraint (e.g., reject deletion if the trainer still has active clients).
 * **Persistence and compatibility**: Import/export and JSON storage need to persist all relevant fields, handle optional client attributes, and remain resilient to malformed or inconsistent data.
-* **Documentation accuracy**: Because behavior depends on filtered lists and selection state (e.g., `list-clients INDEX` selecting a trainer), documenting usage precisely required careful alignment with the implementation.
+* **Documentation accuracy**: Because behavior depends on filtered lists and selection state (e.g., `list-c INDEX` selecting a trainer), documenting usage precisely required careful alignment with the implementation.
 
 ### Effort & Achievements
 
