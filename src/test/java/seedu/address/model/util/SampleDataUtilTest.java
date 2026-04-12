@@ -9,7 +9,6 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Client;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Trainer;
-import seedu.address.model.tag.Tag;
 
 public class SampleDataUtilTest {
 
@@ -37,11 +36,4 @@ public class SampleDataUtilTest {
         assertEquals(6, ab.getPersonList().size());
     }
 
-    @Test
-    public void getTagSet_returnsTagObjects() {
-        java.util.Set<Tag> tags = SampleDataUtil.getTagSet("friends", "colleagues");
-        assertEquals(2, tags.size());
-        assertTrue(tags.contains(new Tag("friends")));
-        assertTrue(tags.contains(new Tag("colleagues")));
-    }
 }

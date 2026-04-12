@@ -631,29 +631,6 @@ Examples:
 
 [⬆ Back to top](#top)
 
-#### Advanced: assigning tags manually
-
-GymOps includes a tag system, but there is currently **no CLI command** to assign tags.
-Advanced users may still assign tags by editing the `tags` field in the data file.
-
-- Only edit the file while GymOps is **closed**. Otherwise, your changes may be overwritten when GymOps saves.
-- Tags must be **alphanumeric** (e.g., `vip`, `Trial2026`).
-- Each person entry can have a `tags` array. Example:
-
-   ```json
-   {
-      "type": "trainer",
-      "name": "Real Trainer",
-      "phone": "92222222",
-      "email": "real@trainer.com",
-      "tags": ["vip", "trial"]
-   }
-   ```
-
-If you enter an invalid tag (or break the JSON format), GymOps may fail to load the file and start with a fresh/empty dataset.
-
----
-
 ## FAQ
 
 **Q: How do I transfer my data to another computer?**
@@ -677,12 +654,6 @@ GymOps does not currently support an undo command. Before running destructive co
 **Q: Why does my calorie intake not reset to zero each day?**
 
 GymOps does not automatically reset daily calorie intake. You can reset a client's intake by running `log-cal` with a corrected cumulative total, or by editing the data file directly while GymOps is closed.
-
----
-
-**Q: Can I add tags via a command?**
-
-There is currently no CLI command to assign tags. Tags can only be added by editing the `tags` field in the data file directly (see [Editing the data file](#editing-the-data-file)). Only edit the file while GymOps is **closed**.
 
 ---
 
