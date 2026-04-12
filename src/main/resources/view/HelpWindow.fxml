@@ -28,10 +28,6 @@
 
         <Label text="GymOps Help" styleClass="help-title" />
 
-        <Label text="COMMAND SUMMARY" styleClass="help-section-header" />
-
-        <Label fx:id="commandSummary" styleClass="help-commands" wrapText="true" />
-
         <Label text="USER GUIDE" styleClass="help-section-header" />
 
         <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="help-url-row">
@@ -40,7 +36,7 @@
           </padding>
           <Label fx:id="helpMessage" styleClass="help-url-label" wrapText="true" HBox.hgrow="ALWAYS" />
           <Button fx:id="copyButton" mnemonicParsing="false" onAction="#copyUrl"
-                  text="Copy URL" styleClass="help-copy-button" />
+                  text="Copy URL" styleClass="help-copy-button" minWidth="80" HBox.hgrow="NEVER" />
         </HBox>
 
       </VBox>
