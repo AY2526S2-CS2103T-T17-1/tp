@@ -5,7 +5,9 @@ skinparam arrowColor MODEL_COLOR
 skinparam classBackgroundColor MODEL_COLOR
 
 abstract class Person
-class Trainer
+class Trainer {
+  email : Email
+}
 class Client {
   trainerPhone : Phone
   trainerName : Name
@@ -20,6 +22,7 @@ class WorkoutFocus
 class Remark
 class Validity
 
+show Trainer members
 show Client members
 
 Trainer -up-|> Person
