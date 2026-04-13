@@ -170,7 +170,7 @@ Format: `list`
 
 #### Finding persons: `find`
 
-Finds trainers and clients whose names contain any of the given keywords.
+Filters the trainer and client lists to show persons whose names contain any of the given keywords.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
@@ -180,6 +180,8 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * **Valid characters**: Each keyword may only contain alphanumeric characters, hyphens, apostrophes, and slashes. e.g. `Bob123`, `o'connor`, and `s/o` are valid; `Bob@` and `al.ha` are not.
 * Results include persons matching **at least one** keyword (OR search).
 * Run `list` to return to the full list after searching.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Note (filtered scope):** If a trainer is currently selected (the client panel shows **Showing: &lt;Trainer Name&gt;**), the client list will remain restricted to that trainer after `find`. To search across all clients, clear the selection first using `list-c` (without an index).</div>
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** You can also click the status button at the top of either list panel (labelled **Showing: Filtered**) in the GUI to quickly clear the filter for that panel.</div>
 
@@ -191,7 +193,7 @@ Examples:
 
 ![find](images/find.png)
 
-**Expected outcome:** Both lists are filtered to show only persons whose names contain the given keywords. A message showing the number of persons listed is displayed.
+**Expected outcome:** Both lists are filtered to show only persons whose names contain any of the given keywords. A message showing the number of persons listed is displayed.
 
 [⬆ Back to top](#top)
 
@@ -379,7 +381,7 @@ Format: `find-t KEYWORD [MORE_KEYWORDS]`
 Examples:
 * `find-t John` — returns all trainers with "John" in their name.
 
-**Expected outcome:** The trainers list is filtered to show only trainers whose names contain the given keywords. A message showing the number of trainers listed is displayed.
+**Expected outcome:** The trainers list is filtered to show only trainers whose names contain any of the given keywords. A message showing the number of trainers listed is displayed.
 
 [⬆ Back to top](#top)
 
@@ -508,7 +510,7 @@ Finds clients whose names contain any of the given keywords. Searches only the c
 Format: `find-c KEYWORD [MORE_KEYWORDS]`
 
 * **Search Rules**: Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
-* **Filtered Scope**: `find-c` restricts its search strictly to the *currently visible* client list. To search all clients, reset the list first using `list`.
+* **Filtered Scope**: `find-c` restricts its search strictly to the *currently visible* client list. To search across all clients, clear any active trainer selection first using `list-c` (without an index).
 * **Clear via CLI**: Run `list-c` to return to the previously unfiltered client list after your search is done.
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** You can also click the status button at the top of the client list panel (labelled **Showing: Filtered**) in the GUI to quickly clear the search filter.</div>
@@ -517,7 +519,7 @@ Examples:
 * `find-c Alice` — returns all clients with "Alice" in their name.
 * `find-c Alice Bob` — returns all clients with "Alice" or "Bob" in their name.
 
-**Expected outcome:** The clients list is filtered to show only clients whose names contain the given keywords. A message showing the number of clients listed is displayed.
+**Expected outcome:** The clients list is filtered to show only clients whose names contain any of the given keywords. A message showing the number of clients listed is displayed.
 
 [⬆ Back to top](#top)
 

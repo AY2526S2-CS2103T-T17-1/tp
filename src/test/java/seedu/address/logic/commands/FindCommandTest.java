@@ -17,6 +17,7 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.person.Client;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
@@ -63,7 +64,7 @@ public class FindCommandTest {
         NameContainsKeywordsPredicate predicate = preparePredicate(" ");
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
-        assertCommandSuccess(command, model, new CommandResult(expectedMessage, false, false, true), expectedModel);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(Collections.emptyList(), model.getFilteredPersonList());
     }
 
@@ -73,12 +74,12 @@ public class FindCommandTest {
         NameContainsKeywordsPredicate predicate = preparePredicate("Alice Pauline");
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
-        assertCommandSuccess(command, model, new CommandResult(expectedMessage, false, false, true), expectedModel);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(Arrays.asList(seedu.address.testutil.TypicalPersons.ALICE), model.getFilteredPersonList());
     }
 
     @Test
-    public void execute_clearsSelectedTrainer() throws Exception {
+    public void execute_preservesSelectedTrainer() throws Exception {
         AddressBook ab = new AddressBook();
         Trainer trainer = new Trainer(new Name("John"), new Phone("91234567"),
                 new Email("john@example.com"), new HashSet<>());
@@ -92,8 +93,40 @@ public class FindCommandTest {
         // Run find with a keyword that matches nothing
         new FindCommand(preparePredicate("Nonexistent")).execute(model);
 
-        // Trainer selection must be cleared so client list can show filtered results
-        assertTrue(model.getSelectedTrainer().isEmpty());
+        // Trainer selection should be preserved across find
+        assertTrue(model.getSelectedTrainer().isPresent());
+        assertEquals(trainer, model.getSelectedTrainer().get());
+    }
+
+    @Test
+    public void execute_selectedTrainerActive_messageReflectsActuallyDisplayedCards() {
+        AddressBook ab = new AddressBook();
+
+        Trainer bernice = new Trainer(new Name("Bernice Yu"), new Phone("90000000"),
+                new Email("bernice@example.com"), new HashSet<>());
+        Trainer alex = new Trainer(new Name("Alex Yeoh"), new Phone("91111111"),
+                new Email("alex@example.com"), new HashSet<>());
+
+        // David matches the find predicate, but is assigned to Alex.
+        Client david = new Client(new Name("David Li"), new Phone("92222222"),
+                alex.getPhone(), alex.getName(), new HashSet<>());
+
+        ab.addPerson(bernice);
+        ab.addPerson(alex);
+        ab.addPerson(david);
+
+        Model model = new ModelManager(ab, new UserPrefs());
+        model.setSelectedTrainer(bernice);
+
+        FindCommand command = new FindCommand(preparePredicate("David"));
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0);
+
+        CommandResult result = command.execute(model);
+        assertEquals(expectedMessage, result.getFeedbackToUser());
+
+        // Sanity: nothing should be displayed in either list.
+        assertEquals(0, model.getFilteredTrainerList().size());
+        assertEquals(0, model.getFilteredClientList().size());
     }
 
     @Test
