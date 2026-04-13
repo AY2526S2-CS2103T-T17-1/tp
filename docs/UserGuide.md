@@ -413,9 +413,10 @@ Format: `add-c n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]`
 
 * `TRAINER_INDEX` must refer to a trainer visible in the **current trainer list**.
 * `VALIDITY` is an optional field that must be a valid date in the format `YYYY-MM-DD`. e.g. `v/2028-09-09`. Using a wrong format such as `v/09-09-2028` will show: `Validity should be a valid date in the format YYYY-MM-DD.`
-* The provided validity date must logically not be set in the past.
 * **Name length**: `NAME` must be no longer than 50 characters.
 * **Phone uniqueness**: `PHONE_NUMBER` must be strictly unique globally across both trainers and clients.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** The current date is accepted as a valid membership validity date. Only past dates are rejected.</div>
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:** `TRAINER_INDEX` always refers to the index in the *current* trainer list. Run `list-t` first to view all trainers before assigning.</div>
 
@@ -489,7 +490,7 @@ Format: `list-c [TRAINER_INDEX]`
 * If `TRAINER_INDEX` is omitted, shows all clients and clears any active trainer filter.
 * If `TRAINER_INDEX` is provided, shows only clients assigned to the trainer at that index in the **current trainer list**.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** Clicking on a trainer's card in the Graphical User Interface (GUI) essentially runs `list-c <trainer_index>`. Therefore, if you currently have an active search filter (e.g. `find-c`), clicking a trainer card will clear your active search and show all clients assigned to that trainer.</div>
+<div markdown="span" class="alert alert-info">:information_source: **Note:** Clicking on a trainer's card in the Graphical User Interface (GUI) applies a trainer filter to the currently displayed client list. Therefore, if you currently have an active search filter (e.g. `find-c`), clicking a trainer card does not clear that search; it further narrows the visible client list to matching clients assigned to that trainer. To view all clients assigned to the selected trainer, clear the client search first by running `list-c` or clicking **Showing: Filtered**.</div>
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** After filtering clients by trainer (via the GUI or by using an index), run `list-c` without an index to return to the full client list.</div>
 
@@ -533,10 +534,10 @@ These commands provide targeted features to monitor and encourage your clients' 
 
 Sets the daily calorie target for a client.
 
-Format: `set-cal c/CLIENT_INDEX cal/CALORIES`
+Format: `set-cal c/CLIENT_INDEX cal/CALORIE_TARGET`
 
 * `CLIENT_INDEX` must refer to a client in the **client list**.
-* `CALORIES` must be a non-negative integer. Use `0` to clear the calorie target.
+* `CALORIE_TARGET` must be a non-negative integer. Use `0` to clear the calorie target.
 
 Examples:
 * `set-cal c/1 cal/3000` — sets a 3000-calorie daily target for the 1st client.
@@ -603,9 +604,10 @@ Format: `remark c/CLIENT_INDEX r/REMARK`
 
 * `CLIENT_INDEX` must refer to a client in the **client list**.
 * `REMARK` must not be empty.
+* Remark is a client-specific functionality. It enables trainers to keep track of specific concerns/notes pertaining to a particular client.
 
 Examples:
-* `remark c/1 r/Supports Homelander` — sets the 1st client's remark to "Supports Homelander".
+* `remark c/1 r/Recovering from ACL Tear` — sets the 1st client's remark to "Recovering from ACL Tear".
 
 ![remark](images/remark.png)
 **Expected outcome:** The client's remark is updated and displayed on their card. A success message is displayed.
@@ -622,9 +624,11 @@ Format: `set-validity INDEX v/VALIDITY`
 
 * `INDEX` must refer to a client in the **client list**.
 * `VALIDITY` must be a valid date in the format `YYYY-MM-DD`. e.g. `v/2028-09-09`. Using a wrong format such as `v/09-09-2028` will show: `Validity should be a valid date in the format YYYY-MM-DD.`
-* The set validity date must not be in the past.
 * GymOps currently displays the validity date but does not automatically enforce expiry or visually highlight expired memberships.
 * **Clearing Validity**: To completely remove an existing validity date, leave the `set-validity` command behind and use `edit-c INDEX v/` instead.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** The current date is accepted as a valid membership validity date. Only past dates are rejected.</div>
+
 
 Examples:
 * `set-validity 1 v/2026-12-31` — sets the 1st client's membership validity to 31 Dec 2026.
@@ -682,9 +686,9 @@ GymOps does not currently support an undo command. Before running destructive co
 
 **Q: Why does my client list remain empty even after I run `list-c 1`?**
 
-If you previously ran a search (like `find-c`) that resulted in zero matches, that search filter remains active. Running `list-c 1` attempts to filter that *already artificially empty* list.
+If you previously ran a search such as `find-c`, that search filter remains active. Running `list-c 1` or clicking a trainer card filters the currently displayed client list, so the result may still be incomplete or even empty.
 
-To fix this, click the **Showing: Filtered** button in the GUI or run `list` first to bring back the full list before selecting the trainer.
+To view all clients assigned to that trainer, clear the client filter first by clicking the **Showing: Filtered** button in the GUI or by running `list-c`.
 
 ---
 

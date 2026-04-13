@@ -13,6 +13,7 @@ title: Developer Guide
 * The structure and some sections/diagrams in this Developer Guide were adapted from the AddressBook-Level3 Developer Guide, then updated to reflect GymOps-specific features and command formats.
 * PlantUML usage and conventions were guided by the [se-edu PlantUML tutorial](https://se-education.org/guides/tutorials/plantUml.html).
 * The Metro-style JavaFX button CSS in the dark theme is adapted from the JMetro styling example by Pedro Duque Vieira (PixelDuke) as cited in the stylesheet comments.
+* Claude, and specifically, Claude Code, was used to refactor the code written by us, devise test cases to ensure that comprehensive functionality testing was conducted and edit documentation.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -1617,12 +1618,11 @@ GymOps is built on top of the AddressBook-Level3 (AB3) codebase. This allowed th
 Team size: 5
 
 1. Allow storing past membership validity dates and visually highlight expired validity dates in the client card.
-2. Add a `c/` index prefix to client-attribute commands that currently accept a plain `INDEX`, so that all client-attribute commands uniformly require `c/INDEX` instead of a bare index number.
-3. Improve `delete` failure messages to be more specific about the failed target (trainer/client) and failure reason (e.g., trainer still has assigned clients).
-4. Improve `import` error reporting to pinpoint which field/entry is invalid (instead of a generic “failed to import”).
-5. Improve `export`/`import` UX by suggesting a correct relative path when users provide an invalid one.
-6. Improve trainer-selection filtering UX by clearly indicating when the client list is filtered by a selected trainer (and how to return to the full list).
-7. Improve `stats` output to explicitly display the computed client counts per trainer in the command result message (in addition to sorting the list).
-8. Improve calorie tracking by adding support for resetting calorie intake totals by date. This would require adding reset logic, date-aware intake storage, and corresponding UI changes to display daily progress accurately. Currently, calorie intake does not reset daily — supervisors must manually reset intake using `log-cal c/INDEX cal/0`.
-9. Implement a comprehensive tags feature for both trainers and clients, empowering managers to apply custom labels (e.g., "Premium", "Morning Shift") for easier categorization, visual identification, and rapid filtering across both lists.
+2. Improve `delete` failure messages to be more specific about the failed target (trainer/client) and failure reason (e.g., trainer still has assigned clients).
+3. Improve `import` error reporting to pinpoint which field/entry is invalid (instead of a generic “failed to import”).
+4. Improve `export`/`import` UX by suggesting a correct relative path when users provide an invalid one.
+5. Improve trainer-selection filtering UX by clearly indicating when the client list is filtered by a selected trainer (and how to return to the full list).
+6. Improve `stats` output to explicitly display the computed client counts per trainer in the command result message (in addition to sorting the list).
+7. Improve calorie tracking by adding support for resetting calorie intake totals by date. This would require adding reset logic, date-aware intake storage, and corresponding UI changes to display daily progress accurately. Currently, calorie intake does not reset daily — supervisors must manually reset intake using `log-cal c/INDEX cal/0`.
+8. Implement a comprehensive tags feature for both trainers and clients, empowering managers to apply custom labels (e.g., "Premium", "Morning Shift") for easier categorization, visual identification, and rapid filtering across both lists.
 
