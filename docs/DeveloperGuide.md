@@ -142,6 +142,7 @@ How the parsing works:
 
 <img src="images/ModelClassDiagram.png" width="450" />
 
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The diagram above shows a simplified view of the `Model` component. It omits client-specific value objects (`Validity`, `WorkoutFocus`, `Remark`) for clarity. These classes are documented in the [Trainer and client domain model](#trainer-and-client-domain-model-two-entity-system) section below.</div>
 
 The `Model` component,
 
@@ -219,12 +220,17 @@ The class diagram below shows the entity hierarchy and the fields each type owns
 
 <img src="images/TrainerClientClassDiagram.png" width="600" />
 
+<div markdown="span" class="alert alert-info">:information_source: **Note:** In the actual implementation, `Client` stores the assigned trainer as `trainerPhone` and `trainerName` fields — there is no direct object reference from `Client` to a `Trainer` instance, and no direct reference from `Trainer` to `Client`.</div>
+
 #### Identity and uniqueness rules
 
 Uniqueness is enforced by `UniquePersonList` via `Person#isSamePerson(...)` using these rules:
 
 * **Phone uniqueness (global)**: two persons (client or trainer) are considered the “same person” if they share **phone**.
 * **Trainer email uniqueness**: two trainers are also considered the “same person” if they share **email**.
+
+Additionally, as part of the domain constraints:
+* **Name length constraint**: All names (for both clients and trainers) are strictly limited to a maximum of 50 characters.
 
 These rules affect `add-*` and `edit-*` commands because duplicates are rejected at the `UniquePersonList` level.
 
@@ -340,7 +346,7 @@ Other client attribute commands follow the same flow, with small differences:
    * For `f/`, `r/`, and `v/`, providing an empty value (e.g., `f/`) clears the corresponding optional field.
 * `remark INDEX r/REMARK` updates `Client#remark`.
 * `set-cal c/INDEX cal/CALORIES` updates `Client#calorieTarget`. Use `cal/0` to clear the target.
-* `log-cal c/INDEX cal/CALORIES` overwrites `Client#calorieIntake` with the given total.
+* `log-cal c/INDEX cal/CALORIES` sets `Client#calorieIntake` to the given value (records the client's calorie consumption total).
 * `reassign-c CLIENT_INDEX t/TRAINER_INDEX` reads both the filtered client list and filtered trainer list and updates `trainerPhone` + `trainerName`.
 * `set-validity INDEX v/YYYY-MM-DD` updates `Client#validity`.
 
@@ -519,7 +525,7 @@ This is a one-time compatibility step to smooth the transition from AB3-based da
 
 #### Resilience to missing/corrupted/inconsistent data
 
-* If the data file is missing, GymOps starts with sample data and creates the data file on the next save.
+* If the data file is missing, GymOps starts with sample data. The data file is only re-created during the next save operation (e.g., executing a command).
 * If the data file is corrupted (invalid JSON or invalid values), GymOps starts with an empty address book.
    Because GymOps persists after successful commands, continuing to use the app may overwrite the original file.
 * If the data file is valid JSON but contains inconsistent records (e.g., a client referencing a trainer phone that does not exist), GymOps drops only those inconsistent clients during load.
@@ -540,10 +546,10 @@ All three `find*` command parsers enforce the same keyword rules:
 
 1. The input must contain at least one keyword (empty input is rejected).
 2. Keywords are split by whitespace.
-3. Each keyword must match the regex `[\p{Alnum}\-'/.]+`.
-    * i.e., only letters/digits plus `-`, `'`, `/`, `.` are allowed.
-    * examples of accepted keywords: `alex`, `tan`, `o'connor`, `upper-body`, `s/o`, `john.doe`.
-    * examples of rejected keywords: `Bob@`, `Alice!`, `john_doe`.
+3. Each keyword must match the regex `[\p{Alnum}\-'/]+`.
+    * i.e., only letters/digits plus `-`, `'`, `/` are allowed.
+    * examples of accepted keywords: `alex`, `tan`, `o'connor`, `upper-body`, `s/o`.
+    * examples of rejected keywords: `Bob@`, `Alice!`, `john_doe`, `al.ha`.
 
 These constraints keep parsing predictable and ensure that keywords remain unambiguous “tokens”.
 
@@ -712,7 +718,7 @@ The use case diagram below provides a high-level overview of the main user goals
 
 The use cases below cover the user stories in the table above. Use cases that are planned but not implemented in the current version are explicitly labelled.
 
-**Use case: View help**
+**Use case UC01: View help**
 
 **MSS**
 
@@ -730,7 +736,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case ends.
 
 
-**Use case: Add a trainer**
+**Use case UC02: Add a trainer**
 
 **MSS**
 
@@ -755,7 +761,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 1.
 
 
-**Use case: List all trainers**
+**Use case UC03: List all trainers**
 
 **MSS**
 
@@ -765,7 +771,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
    Use case ends.
 
 
-**Use case: Find trainers and/or clients by name**
+**Use case UC04: Find trainers and/or clients by name**
 
 **MSS**
 
@@ -790,7 +796,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case ends.
 
 
-**Use case: Add a client to a trainer**
+**Use case UC05: Add a client to a trainer**
 
 **MSS**
 
@@ -822,7 +828,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
       Use case resumes at step 2.
 
 
-**Use case: List all clients (optionally by trainer)**
+**Use case UC06: List all clients (optionally by trainer)**
 
 **MSS**
 
@@ -847,7 +853,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 1.
 
 
-**Use case: Reassign a client to another trainer**
+**Use case UC07: Reassign a client to another trainer**
 
 **MSS**
 
@@ -881,7 +887,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
       Use case resumes at step 4.
 
 
-**Use case: Edit a trainer**
+**Use case UC08: Edit a trainer**
 
 **MSS**
 
@@ -908,7 +914,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 2.
 
 
-**Use case: Edit a client (including client-only fields)**
+**Use case UC09: Edit a client (including client-only fields)**
 
 **MSS**
 
@@ -934,7 +940,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 2.
 
 
-**Use case: Update a client’s daily calories (target + intake)**
+**Use case UC10: Update a client’s calories (target + intake)**
 
 **MSS**
 
@@ -943,7 +949,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
 3.  Supervisor identifies the relevant client and issues a command to set the client’s calorie target.
 4.  GymOps updates the client’s calorie target.
 5.  Supervisor issues a command to log calorie intake for the same client.
-6.  GymOps adds the logged intake to the client’s total intake for the day.
+6.  GymOps updates the client’s calorie intake total with the logged value.
 
    Use case ends.
 
@@ -968,7 +974,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
       Use case resumes at step 2.
 
 
-**Use case: Set a client’s workout focus**
+**Use case UC11: Set a client’s workout focus**
 
 **MSS**
 
@@ -994,7 +1000,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 2.
 
 
-**Use case: Add a remark to a client**
+**Use case UC12: Add a remark to a client**
 
 **MSS**
 
@@ -1014,7 +1020,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 2.
 
 
-**Use case: Set a client’s membership validity date**
+**Use case UC13: Set a client’s membership validity date**
 
 **MSS**
 
@@ -1034,7 +1040,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 2.
 
 
-**Use case: View a client’s progress summary**
+**Use case UC14: View a client’s progress summary**
 
 **MSS**
 
@@ -1054,7 +1060,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case ends.
 
 
-**Use case: View trainer statistics**
+**Use case UC15: View trainer statistics**
 
 **MSS**
 
@@ -1073,7 +1079,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case ends.
 
 
-**Use case: Delete a client**
+**Use case UC16: Delete a client**
 
 **MSS**
 
@@ -1093,7 +1099,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 2.
 
 
-**Use case: Delete a trainer**
+**Use case UC17: Delete a trainer**
 
 **MSS**
 
@@ -1119,7 +1125,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
       Use case resumes at step 2.
 
 
-**Use case: Export data**
+**Use case UC18: Export data**
 
 **MSS**
 
@@ -1144,7 +1150,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 1.
 
 
-**Use case: Import data**
+**Use case UC19: Import data**
 
 **MSS**
 
@@ -1170,7 +1176,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case resumes at step 1.
 
 
-**Use case: Clear all entries**
+**Use case UC20: Clear all entries**
 
 **MSS**
 
@@ -1180,7 +1186,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
    Use case ends.
 
 
-**Use case: Exit GymOps**
+**Use case UC21: Exit GymOps**
 
 **MSS**
 
@@ -1190,7 +1196,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
    Use case ends.
 
 
-**Use case (planned): Undo the last command**
+**Use case UC22 (planned): Undo the last command**
 
 **MSS**
 
@@ -1208,7 +1214,7 @@ The use cases below cover the user stories in the table above. Use cases that ar
     Use case ends.
 
 
-**Use case (planned): View a time/day-based handover view**
+**Use case UC23 (planned): View a time/day-based handover view**
 
 **MSS**
 
@@ -1563,7 +1569,7 @@ testers are expected to do more *exploratory* testing.
       1. Prerequisites: Close the app.
       1. Delete the data file at `data/GymOps.json`.
       1. Launch the app.
-         Expected: App starts normally and the data file is re-created with sample trainers/clients.
+         Expected: App starts normally with sample trainers/clients. Note that the data file is only re-created on the next command that saves data.
 
    1. Corrupted file
 
@@ -1617,6 +1623,6 @@ Team size: 5
 5. Improve `export`/`import` UX by suggesting a correct relative path when users provide an invalid one.
 6. Improve trainer-selection filtering UX by clearly indicating when the client list is filtered by a selected trainer (and how to return to the full list).
 7. Improve `stats` output to explicitly display the computed client counts per trainer in the command result message (in addition to sorting the list).
-8. Improve calorie tracking by optionally resetting calorie intake totals by date (while preserving a simple “today’s total” UX).
-9. Improve robustness of list-scoped commands under dynamic list changes by providing clearer guidance when indices become invalid after filtering.
-10. Improve error messages and data validation strictness for corrupted/externally modified data files on startup.
+8. Improve calorie tracking by adding support for resetting calorie intake totals by date. This would require adding reset logic, date-aware intake storage, and corresponding UI changes to display daily progress accurately. Currently, calorie intake does not reset daily — supervisors must manually reset intake using `log-cal c/INDEX cal/0`.
+9. Implement a comprehensive tags feature for both trainers and clients, empowering managers to apply custom labels (e.g., "Premium", "Morning Shift") for easier categorization, visual identification, and rapid filtering across both lists.
+

@@ -13,7 +13,7 @@ GymOps is a **desktop application for gym managers** to manage trainers and thei
 
 ### Who this guide is for
 
-This guide is written for **gym managers and administrators** who want a fast, keyboard-driven way to manage their gym's roster. GymOps is designed for users comfortable with typing commands and working with indexed lists.
+This guide is written for **gym managers and administrators** who want a fast, keyboard-driven way to manage their gym's roster. GymOps streamlines the daily administrative burden of running a gym by making it incredibly fast to track trainer substitutions, assign clients, manage fitness focus goals, and log daily calorie intake without ever taking your hands off the keyboard.
 
 **We assume you:**
 - Can open and use a terminal or command prompt
@@ -74,6 +74,10 @@ This guide is written for **gym managers and administrators** who want a fast, k
 
    **Mac users:** Install the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
+   **Windows users:** Install the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationWindows.html).
+
+   **Linux users:** Install the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationLinux.html).
+
 1. Download the latest `.jar` file from the [project's release page](https://github.com/AY2526S2-CS2103T-T17-1/tp/releases).
 
 1. Copy the file to the folder you want to use as the _home folder_ for GymOps.
@@ -81,7 +85,7 @@ This guide is written for **gym managers and administrators** who want a fast, k
 1. Open a terminal, `cd` into the folder containing the `.jar` file, and run:
 
    ```
-   java -jar YOUR_FILE_NAME.jar
+   java -jar GymOps.jar
    ```
 
    If double-clicking the `.jar` does not launch GymOps on your system, use the terminal method above.
@@ -115,13 +119,13 @@ This guide is written for **gym managers and administrators** who want a fast, k
 
 **:information_source: Notes about the command format:**
 
-- Words in `UPPER_CASE` are parameters you supply. e.g. in `add-t n/NAME`, replace `NAME` with the actual name: `add-t n/John Doe`.
-- Items in square brackets are optional. e.g. `find KEYWORD [MORE_KEYWORDS]` can be used as `find alice` or `find alice bob`.
-- Parameters can be in any order. e.g. `n/NAME p/PHONE_NUMBER` and `p/PHONE_NUMBER n/NAME` are both valid.
-- Extraneous parameters for commands that take no parameters (such as `help`, `list`, `exit`, and `clear`) will be ignored.
-- An `INDEX` refers to the number shown in the **currently displayed list**, not the full unfiltered list.
-- GymOps displays **two lists**: **Trainers** (left) and **Clients** (right). Trainer-related indexes refer to the trainer list; client-related indexes refer to the client list.
-- If you are using a PDF version of this document, be careful when copying commands that span multiple lines, as spaces around line breaks may be lost.
+- **Placeholders**: Words in `UPPER_CASE` are parameters you supply. e.g. in `add-t n/NAME`, replace `NAME` with the actual name.
+- **Optional fields**: Items in square brackets are optional. e.g. `find KEYWORD [MORE_KEYWORDS]` can be used as `find alice bob`.
+- **Order flexibility**: Parameters can be in any order. e.g. `n/NAME p/PHONE_NUMBER` and `p/PHONE_NUMBER n/NAME` are both valid.
+- **Extra data ignored**: Extraneous parameters for commands that take no parameters (like `help` or `list`) will be safely ignored.
+- **Index lists**: An `INDEX` always refers to the number shown in the **currently displayed list**, not the full unfiltered list.
+- **Dual layout**: GymOps dynamically displays **two lists**: **Trainers** (left) and **Clients** (right). Trainer-related indexes predictably refer to the trainer list, and client indexes to the client list.
+- **PDF notice**: If you are using a PDF version of this document, be careful when copying commands that span multiple lines, as spaces might be lost.
 
 </div>
 
@@ -139,8 +143,6 @@ If the Help Window is already open, running `help` will focus the existing windo
 
 Format: `help`
 
-![help message](images/helpMessage.png)
-
 **Expected outcome:** The Help Window opens or comes to the front, displaying a link to the User Guide and a command summary.
 
 [⬆ Back to top](#top)
@@ -154,6 +156,8 @@ Shows all trainers and all clients.
 This command resets both lists to show all entries by clearing any active `find` filters.
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** To also clear a trainer selection made via the GUI, run `list-c` (without an index) after `list`.</div>
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** You can also click the status buttons at the top of the panels (labelled **Showing: Filtered**) in the GUI to immediately clear their active filters without having to type the `list` command.</div>
 
 Format: `list`
 
@@ -172,9 +176,11 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * The search is case-insensitive. e.g. `hans` matches `Hans`.
 * The order of keywords does not matter. e.g. `Hans Bo` matches `Bo Hans`.
 * Partial words are matched. e.g. `Han` matches `Hans`.
-* Each keyword may only contain alphanumeric characters, periods, hyphens, apostrophes, and slashes. e.g. `Bob123`, `o'connor`, and `s/o` are valid; `Bob@` is not.
+* **Valid characters**: Each keyword may only contain alphanumeric characters, hyphens, apostrophes, and slashes. e.g. `Bob123`, `o'connor`, and `s/o` are valid; `Bob@` and `al.ha` are not.
 * Results include persons matching **at least one** keyword (OR search).
 * Run `list` to return to the full list after searching.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** You can also click the status button at the top of either list panel (labelled **Showing: Filtered**) in the GUI to quickly clear the filter for that panel.</div>
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** Use `find-t` or `find-c` to search within a specific list.</div>
 
@@ -253,6 +259,7 @@ Imports GymOps data from a specified JSON file, replacing the current applicatio
 Format: `import FILE_PATH`
 
 * `FILE_PATH` works exactly the same as in the `export` command (both absolute and relative paths are supported).
+* The file must have a `.json` extension.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:** This action overwrites your existing data. Unsaved changes to the current session will be lost, and any data existing in the specified file will take their place.</div>
 
@@ -302,11 +309,16 @@ Adds a new trainer to GymOps.
 
 Format: `add-t n/NAME p/PHONE_NUMBER e/EMAIL`
 
+* **Name length**: `NAME` must be no longer than 50 characters.
+* **Phone uniqueness**: `PHONE_NUMBER` must be strictly unique globally across both trainers and clients.
+
 Examples:
 * `add-t n/John Doe p/98765432 e/johndoe@example.com`
 
 ![add trainer](images/addTrainer.png)
 **Expected outcome:** The new trainer is added to the **Trainers** panel, and a success message is displayed.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** Adding a trainer resets all active filters on both lists and clears any trainer selection.</div>
 
 [⬆ Back to top](#top)
 
@@ -316,11 +328,13 @@ Examples:
 
 Edits the details of an existing trainer in GymOps. Use this command to update a trainer's name, phone number, or email address.
 
-Format: `edit-t INDEX [n/NAME] [p/PHONE] [e/EMAIL]`
+Format: `edit-t INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL]`
 
 * `INDEX` must be a positive integer.
 * At least one optional field must be provided.
 * Existing values will be overwritten by the input values.
+* **Name length**: `NAME` must be no longer than 50 characters.
+* **Phone uniqueness**: `PHONE_NUMBER` must be strictly unique globally across both trainers and clients.
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-t` to confirm the correct trainer index before editing.</div>
 
@@ -354,8 +368,10 @@ Finds trainers whose names contain any of the given keywords. Searches only the 
 
 Format: `find-t KEYWORD [MORE_KEYWORDS]`
 
-* Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
-* Run `list-t` to return to the full trainer list after searching.
+* **Search Rules**: Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
+* **Clear via CLI**: Run `list-t` to return to the full trainer list after searching.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** You can also click the status button at the top of the trainer list panel (labelled **Showing: Filtered**) in the GUI to quickly clear the search filter.</div>
 
 Examples:
 * `find-t John` — returns all trainers with "John" in their name.
@@ -390,6 +406,9 @@ Format: `add-c n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]`
 
 * `TRAINER_INDEX` must refer to a trainer visible in the **current trainer list**.
 * `VALIDITY` is an optional field that must be a valid date in the format `YYYY-MM-DD`. e.g. `v/2028-09-09`. Using a wrong format such as `v/09-09-2028` will show: `Validity should be a valid date in the format YYYY-MM-DD.`
+* The provided validity date must logically not be set in the past.
+* **Name length**: `NAME` must be no longer than 50 characters.
+* **Phone uniqueness**: `PHONE_NUMBER` must be strictly unique globally across both trainers and clients.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the trainer list is filtered (e.g. after a `find-t` command), `TRAINER_INDEX` refers to the filtered results. Run `list-t` first to assign by the full list.</div>
 
@@ -410,12 +429,17 @@ Examples:
 
 Edits the details of an existing client in GymOps. Use this command to update a client's name, phone number, assigned trainer, calorie target, workout focus, remark, or membership validity.
 
-Format: `edit-c INDEX [n/NAME] [p/PHONE] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]`
+Format: `edit-c INDEX [n/NAME] [p/PHONE_NUMBER] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]`
 
 * `INDEX` must be a positive integer.
 * At least one optional field must be provided.
 * Existing values will be overwritten by the input values.
+* **Name length**: `NAME` must be no longer than 50 characters.
+* **Phone uniqueness**: `PHONE_NUMBER` must be strictly unique globally across both trainers and clients.
+* **Clearing Optional Fields**: You can completely wipe an existing optional property (Focus, Remark, or Validity) by providing its parameter prefix without any value (e.g., `f/`, `r/`, `v/`).
 * When editing the trainer assignment, `TRAINER_INDEX` must refer to a valid trainer.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the trainer list is filtered (e.g. after a `find-t` command), `TRAINER_INDEX` refers to the filtered results. Run `list-t` first to assign by the full list.</div>
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-c` to confirm the correct client index before editing.</div>
 
@@ -458,6 +482,8 @@ Format: `list-c [TRAINER_INDEX]`
 * If `TRAINER_INDEX` is omitted, shows all clients and clears any active trainer filter.
 * If `TRAINER_INDEX` is provided, shows only clients assigned to the trainer at that index in the **current trainer list**.
 
+<div markdown="span" class="alert alert-info">:information_source: **Note:** Clicking on a trainer's card in the GUI essentially runs `list-c <trainer_index>`. Therefore, if you currently have an active search filter (e.g. `find-c`), clicking a trainer card will clear your active search and show all clients assigned to that trainer.</div>
+
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** After filtering clients by trainer (via the GUI or by using an index), run `list-c` without an index to return to the full client list.</div>
 
 Examples:
@@ -476,8 +502,11 @@ Finds clients whose names contain any of the given keywords. Searches only the c
 
 Format: `find-c KEYWORD [MORE_KEYWORDS]`
 
-* Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
-* Run `list-c` to return to the full client list after searching.
+* **Search Rules**: Follows the same search rules as [`find`](#finding-persons-find) (case-insensitive, partial match, OR search, keyword character restrictions).
+* **Filtered Scope**: `find-c` restricts its search strictly to the *currently visible* client list. To search all clients, reset the list first using `list`.
+* **Clear via CLI**: Run `list-c` to return to the previously unfiltered client list after your search is done.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** You can also click the status button at the top of the client list panel (labelled **Showing: Filtered**) in the GUI to quickly clear the search filter.</div>
 
 Examples:
 * `find-c Alice` — returns all clients with "Alice" in their name.
@@ -531,6 +560,8 @@ Examples:
 
 If the client has a calorie target set, their card will also show their intake progress.
 
+<div markdown="span" class="alert alert-info">:information_source: **Note:** Daily intake does not reset automatically at midnight. You must manually reset it using `log-cal c/INDEX cal/0` whenever a new tracking cycle starts.</div>
+
 [⬆ Back to top](#top)
 
 ---
@@ -543,6 +574,7 @@ Format: `set-focus c/CLIENT_INDEX f/FOCUS`
 
 * `CLIENT_INDEX` must refer to a client in the **client list**.
 * `FOCUS` must contain only letters (A–Z or a–z), and words may be separated by single spaces. e.g. `Upper Body` is valid.
+* **Clearing Focus**: To completely wipe a client's workout focus, leave the `set-focus` command behind and use `edit-c INDEX f/` instead.
 
 Examples:
 * `set-focus c/1 f/Chest` — sets the 1st client's workout focus to "Chest".
@@ -583,6 +615,7 @@ Format: `set-validity INDEX v/VALIDITY`
 * `VALIDITY` must be a valid date in the format `YYYY-MM-DD`. e.g. `v/2028-09-09`. Using a wrong format such as `v/09-09-2028` will show: `Validity should be a valid date in the format YYYY-MM-DD.`
 * The set validity date must not be in the past.
 * GymOps currently displays the validity date but does not automatically enforce expiry or visually highlight expired memberships.
+* **Clearing Validity**: To completely remove an existing validity date, leave the `set-validity` command behind and use `edit-c INDEX v/` instead.
 
 Examples:
 * `set-validity 1 v/2028-09-09` — sets the 1st client's membership validity to 09 Sep 2028.
@@ -638,6 +671,14 @@ GymOps does not currently support an undo command. Before running destructive co
 
 ---
 
+**Q: Why does my client list remain empty even after I run `list-c 1`?**
+
+If you previously ran a search (like `find-c`) that resulted in zero matches, that search filter remains active. Running `list-c 1` attempts to filter that *already artificially empty* list.
+
+To fix this, click the **Showing: Filtered** button in the GUI or run `list` first to bring back the full list before selecting the trainer.
+
+---
+
 **Q: Why does my calorie intake not reset to zero each day?**
 
 GymOps does not automatically reset daily calorie intake.
@@ -664,9 +705,9 @@ To reset a client's intake total to 0, run `log-cal c/CLIENT_INDEX cal/0`.
 |--------|--------|---------|
 | [**Help**](#viewing-help-help) | `help` | — |
 | [**Add trainer**](#adding-a-trainer-add-t) | `add-t n/NAME p/PHONE_NUMBER e/EMAIL` | `add-t n/John Doe p/98765432 e/johndoe@example.com` |
-| [**Edit trainer**](#editing-a-trainer-edit-t) | `edit-t INDEX [n/NAME] [p/PHONE] [e/EMAIL]` | `edit-t 1 n/Jane Doe e/jane@example.com` |
+| [**Edit trainer**](#editing-a-trainer-edit-t) | `edit-t INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL]` | `edit-t 1 n/Jane Doe e/jane@example.com` |
 | [**Add client**](#adding-a-client-add-c) | `add-c n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]` | `add-c n/Alice Lim p/81234567 t/1 v/2028-09-09` |
-| [**Edit client**](#editing-a-client-edit-c) | `edit-c INDEX [n/NAME] [p/PHONE] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]` | `edit-c 1 n/Alice Tan p/91234567` |
+| [**Edit client**](#editing-a-client-edit-c) | `edit-c INDEX [n/NAME] [p/PHONE_NUMBER] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]` | `edit-c 1 n/Alice Tan p/91234567` |
 | [**Reassign client**](#reassigning-a-client-reassign-c) | `reassign-c CLIENT_INDEX t/TRAINER_INDEX` | `reassign-c 2 t/1` |
 | [**List all**](#listing-all-persons-list) | `list` | — |
 | [**List trainers**](#listing-all-trainers-list-t) | `list-t` | — |

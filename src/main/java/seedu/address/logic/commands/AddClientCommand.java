@@ -30,7 +30,7 @@ public class AddClientCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a new client and assigns them to a trainer.\n"
             + "Parameters: "
             + PREFIX_NAME + "NAME "
-            + PREFIX_PHONE + "PHONE "
+            + PREFIX_PHONE + "PHONE_NUMBER "
             + PREFIX_TRAINER + "TRAINER_INDEX "
             + "[" + PREFIX_VALIDITY + "VALIDITY]\n"
             + "Example: " + COMMAND_WORD + " "
