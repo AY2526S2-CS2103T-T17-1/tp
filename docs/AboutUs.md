@@ -12,7 +12,6 @@ We are a team based in the [School of Computing, National University of Singapor
 <img src="images/adibshifas.png" width="200px">
 
 [[github](https://github.com/AdibShifas)]
-[[portfolio](team/adibshifas.md)]
 
 * Role: Developer
 * Responsibilities: Documentation + Integration
