@@ -21,7 +21,6 @@ import seedu.address.model.person.Phone;
 import seedu.address.model.person.Trainer;
 import seedu.address.storage.JsonAddressBookStorage;
 
-//@@author TheSputnikSpacecraft
 /**
  * Imports GymOps data from a specified JSON file.
  */

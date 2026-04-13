@@ -12,7 +12,6 @@ import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Trainer;
 
-//@@author TheSputnikSpacecraft
 /**
  * Lists clients in the address book to the user.
  * Without an index, all clients are shown and any trainer selection is cleared.

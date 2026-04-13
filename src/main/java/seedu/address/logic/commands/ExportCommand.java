@@ -9,7 +9,6 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.storage.JsonAddressBookStorage;
 
-//@@author TheSputnikSpacecraft
 /**
  * Exports GymOps data to a specified JSON file.
  */
