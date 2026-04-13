@@ -3,10 +3,8 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -15,10 +13,6 @@ import seedu.address.commons.util.JsonUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
-import seedu.address.model.person.Client;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.Phone;
-import seedu.address.model.person.Trainer;
 import seedu.address.storage.JsonAddressBookStorage;
 
 //@@author TheSputnikSpacecraft
@@ -66,9 +60,6 @@ public class ImportCommand extends Command {
 
             model.setAddressBook(addressBookOptional.get());
 
-            // Defensive: ensure the invariant even if storage-side reconciliation changes.
-            removeClientsWithMissingTrainers(model);
-
             String message = String.format(MESSAGE_SUCCESS, filePath.toString());
             if (removedClients > 0) {
                 message += String.format(" (removed %d client(s) with missing trainers)", removedClients);
@@ -99,7 +90,8 @@ public class ImportCommand extends Command {
             if (personNode == null) {
                 continue;
             }
-            if (!isTrainerNode(personNode)) {
+            String type = personNode.path("type").asText("");
+            if (!"trainer".equals(type)) {
                 continue;
             }
             String trainerPhone = personNode.path("phone").asText("");
@@ -113,7 +105,8 @@ public class ImportCommand extends Command {
             if (personNode == null) {
                 continue;
             }
-            if (!isClientNode(personNode)) {
+            String type = personNode.path("type").asText("");
+            if (!"client".equals(type)) {
                 continue;
             }
             String trainerPhone = personNode.path("trainerPhone").asText("");
@@ -121,53 +114,6 @@ public class ImportCommand extends Command {
                 continue;
             }
             if (!trainerPhones.contains(trainerPhone)) {
-                removedClients++;
-            }
-        }
-
-        return removedClients;
-    }
-
-    private static boolean isTrainerNode(JsonNode personNode) {
-        // Align with JsonAdaptedPerson's trainer/client inference for legacy records.
-        JsonNode typeNode = personNode.get("type");
-        String type = typeNode == null ? null : typeNode.asText(null);
-        if ("trainer".equals(type)) {
-            return true;
-        }
-        return type == null && personNode.hasNonNull("email");
-    }
-
-    private static boolean isClientNode(JsonNode personNode) {
-        // Align with JsonAdaptedPerson's trainer/client inference for legacy records.
-        JsonNode typeNode = personNode.get("type");
-        String type = typeNode == null ? null : typeNode.asText(null);
-        if ("client".equals(type)) {
-            return true;
-        }
-        return type == null && personNode.hasNonNull("trainerPhone");
-    }
-
-    /**
-     * Removes any {@link Client} whose {@code trainerPhone} does not match any loaded {@link Trainer}.
-     *
-     * <p>Done at command level so import behavior remains consistent even if storage-side reconciliation changes.
-     */
-    private static int removeClientsWithMissingTrainers(Model model) {
-        Set<Phone> trainerPhones = model.getAddressBook().getPersonList().stream()
-                .filter(Trainer.class::isInstance)
-                .map(Trainer.class::cast)
-                .map(Trainer::getPhone)
-                .collect(Collectors.toSet());
-
-        int removedClients = 0;
-        for (Person person : new ArrayList<>(model.getAddressBook().getPersonList())) {
-            if (!(person instanceof Client)) {
-                continue;
-            }
-            Client client = (Client) person;
-            if (!trainerPhones.contains(client.getTrainerPhone())) {
-                model.deletePerson(client);
                 removedClients++;
             }
         }

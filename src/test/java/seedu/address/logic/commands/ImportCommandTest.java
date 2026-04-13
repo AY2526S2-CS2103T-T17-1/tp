@@ -6,9 +6,6 @@ import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -67,43 +64,6 @@ public class ImportCommandTest {
 
         JsonAddressBookStorage storage = new JsonAddressBookStorage(importPath);
         storage.saveAddressBook(addressBook);
-
-        Model model = new ModelManager();
-
-        AddressBook expectedAddressBook = new AddressBook();
-        expectedAddressBook.addPerson(trainer);
-        expectedAddressBook.addPerson(validClient);
-        Model expectedModel = new ModelManager(expectedAddressBook, new UserPrefs());
-
-        ImportCommand importCommand = new ImportCommand(importPath);
-        String expectedMessage = String.format(ImportCommand.MESSAGE_SUCCESS, importPath.toString())
-                + " (removed 1 client(s) with missing trainers)";
-
-        assertCommandSuccess(importCommand, model, expectedMessage, expectedModel);
-    }
-
-    @Test
-    public void execute_importSuccess_removedCountReportedNoTypeField() throws Exception {
-        Path importPath = testFolder.resolve("importWithRogueClientNoType.json");
-
-        AddressBook addressBook = new AddressBook();
-        Trainer trainer = new Trainer(new Name("Real Trainer"), new Phone("92222222"),
-                new Email("real@trainer.com"), java.util.Set.of());
-        Client validClient = new Client(new Name("Valid Client"), new Phone("90000001"),
-                trainer.getPhone(), trainer.getName(), java.util.Set.of());
-        Client rogueClient = new Client(new Name("Rogue Client"), new Phone("90000000"),
-                new Phone("91111111"), new Name("Nonexistent Trainer"), java.util.Set.of());
-
-        addressBook.addPerson(trainer);
-        addressBook.addPerson(validClient);
-        addressBook.addPerson(rogueClient);
-
-        JsonAddressBookStorage storage = new JsonAddressBookStorage(importPath);
-        storage.saveAddressBook(addressBook);
-
-        // simulate legacy/manual data: remove the explicit "type" field, relying on email/trainerPhone fallback.
-        replaceAll(importPath, "\"type\" : \"trainer\",\n", "");
-        replaceAll(importPath, "\"type\" : \"client\",\n", "");
 
         Model model = new ModelManager();
 
@@ -194,8 +154,4 @@ public class ImportCommandTest {
         assertFalse(importCommand1.equals(importCommand2));
     }
 
-    private static void replaceAll(Path file, String target, String replacement) throws IOException {
-        String content = Files.readString(file, StandardCharsets.UTF_8);
-        Files.writeString(file, content.replace(target, replacement), StandardCharsets.UTF_8);
-    }
 }
