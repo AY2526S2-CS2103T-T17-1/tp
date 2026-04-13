@@ -5,7 +5,7 @@ title: User Guide
 
 <a id="top"></a>
 
-GymOps is a **desktop application for gym managers** to manage trainers and their clients. It is optimised for users who prefer a **Command Line Interface (CLI)** while still offering the benefits of a **Graphical User Interface (GUI)**.
+GymOps is a **desktop application for gym managers** to manage trainers and their clients. It is optimised for users who prefer working via a **Command Line Interface (CLI)** while still offering the benefits of a **Graphical User Interface (GUI)**.
 
 ---
 
@@ -13,7 +13,7 @@ GymOps is a **desktop application for gym managers** to manage trainers and thei
 
 ### Who this guide is for
 
-This guide is written for **gym managers and administrators** who want a fast, keyboard-driven way to manage their gym's roster. GymOps streamlines the daily administrative burden of running a gym by making it incredibly fast to track trainer substitutions, assign clients, manage fitness focus goals, and log daily calorie intake without ever taking your hands off the keyboard.
+This guide is written for **gym managers and administrators** who want a fast, keyboard-driven way to manage their gym's roster. GymOps streamlines the daily administrative burden of running a gym by making it incredibly fast to track trainer substitutions, assign clients, and monitor progress using dedicated **Health Tracking** features (like logging daily calorie intake and setting workout goals) without ever taking your hands off the keyboard.
 
 **We assume you:**
 - Can open and use a terminal or command prompt
@@ -84,6 +84,7 @@ This guide is written for **gym managers and administrators** who want a fast, k
 
 1. Open a terminal, `cd` into the folder containing the `.jar` file, and run:
 
+
    ```
    java -jar GymOps.jar
    ```
@@ -109,13 +110,13 @@ This guide is written for **gym managers and administrators** who want a fast, k
    | 7 | `clear` | Delete all data |
    | 8 | `exit` | Exit the app |
 
-1. Refer to [Features](#features) for the full details of each command.
+1. Refer to [Features](#features) and the [Command Format](#command-format) for the full details.
 
 ---
 
 ## Features
 
-<div markdown="block" class="alert alert-info">
+<div id="command-format" markdown="block" class="alert alert-info">
 
 **:information_source: Notes about the command format:**
 
@@ -182,11 +183,11 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** You can also click the status button at the top of either list panel (labelled **Showing: Filtered**) in the GUI to quickly clear the filter for that panel.</div>
 
-<div markdown="span" class="alert alert-info">:bulb: **Tip:** Use `find-t` or `find-c` to search within a specific list.</div>
+<div markdown="span" class="alert alert-info">:bulb: **Tip:** Use `find-t` to search exclusively for trainers, or `find-c` to search exclusively for clients.</div>
 
 Examples:
-* `find John` — returns `john`, `John Doe`, `Johnny`
-* `find alex david` — returns `Alex Yeoh`, `David Li`, `Alexander`
+* `find John` — returns `john`, `John Doe`, `Johnny`.
+* `find alex david` — returns `Alex Yeoh`, `David Li`, `Alexander`.
 
 ![find](images/find.png)
 
@@ -198,7 +199,7 @@ Examples:
 
 #### Deleting a person: `delete`
 
-Deletes a trainer or client using a typed prefix to specify the list.
+Deletes a trainer or client. Use the prefix `t/` for trainers or `c/` for clients.
 
 Format: `delete t/TRAINER_INDEX` or `delete c/CLIENT_INDEX`
 
@@ -303,6 +304,8 @@ This file is **managed by GymOps** and is **not meant to be edited by hand**.
 
 ### Trainer Management
 
+These commands allow you to manage your roster of trainers, keeping their contact information up to date.
+
 #### Adding a trainer: `add-t`
 
 Adds a new trainer to GymOps.
@@ -398,6 +401,8 @@ Format: `stats`
 
 ### Client Management
 
+These commands help you manage your clients, assign them to trainers, and update their personal details.
+
 #### Adding a client: `add-c`
 
 Adds a new client and assigns them to an existing trainer.
@@ -410,7 +415,7 @@ Format: `add-c n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]`
 * **Name length**: `NAME` must be no longer than 50 characters.
 * **Phone uniqueness**: `PHONE_NUMBER` must be strictly unique globally across both trainers and clients.
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the trainer list is filtered (e.g. after a `find-t` command), `TRAINER_INDEX` refers to the filtered results. Run `list-t` first to assign by the full list.</div>
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** `TRAINER_INDEX` always refers to the index in the *current* trainer list. Run `list-t` first to view all trainers before assigning.</div>
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-t` to confirm the correct trainer index before adding a client.</div>
 
@@ -439,7 +444,7 @@ Format: `edit-c INDEX [n/NAME] [p/PHONE_NUMBER] [t/TRAINER_INDEX] [cal/CALORIE_T
 * **Clearing Optional Fields**: You can completely wipe an existing optional property (Focus, Remark, or Validity) by providing its parameter prefix without any value (e.g., `f/`, `r/`, `v/`).
 * When editing the trainer assignment, `TRAINER_INDEX` must refer to a valid trainer.
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If the trainer list is filtered (e.g. after a `find-t` command), `TRAINER_INDEX` refers to the filtered results. Run `list-t` first to assign by the full list.</div>
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:** `TRAINER_INDEX` always refers to the index in the *current* trainer list. Run `list-t` first to view all trainers before assigning.</div>
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** Run `list-c` to confirm the correct client index before editing.</div>
 
@@ -464,7 +469,7 @@ Format: `reassign-c CLIENT_INDEX t/TRAINER_INDEX`
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:** If either list is filtered, indexes refer to the filtered results. Run `list` first to reassign using the full lists.</div>
 
 Examples:
-* `reassign-c 2 t/1` — reassigns the 2nd client to the 1st trainer.
+* `reassign-c 5 t/2` — reassigns the 5th client to the 2nd trainer.
 
 ![reassign client](images/reassignClient.png)
 **Expected outcome:** The client's assigned trainer is updated while preserving all other data. A success message is displayed.
@@ -482,7 +487,7 @@ Format: `list-c [TRAINER_INDEX]`
 * If `TRAINER_INDEX` is omitted, shows all clients and clears any active trainer filter.
 * If `TRAINER_INDEX` is provided, shows only clients assigned to the trainer at that index in the **current trainer list**.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** Clicking on a trainer's card in the GUI essentially runs `list-c <trainer_index>`. Therefore, if you currently have an active search filter (e.g. `find-c`), clicking a trainer card will clear your active search and show all clients assigned to that trainer.</div>
+<div markdown="span" class="alert alert-info">:information_source: **Note:** Clicking on a trainer's card in the Graphical User Interface (GUI) essentially runs `list-c <trainer_index>`. Therefore, if you currently have an active search filter (e.g. `find-c`), clicking a trainer card will clear your active search and show all clients assigned to that trainer.</div>
 
 <div markdown="span" class="alert alert-info">:bulb: **Tip:** After filtering clients by trainer (via the GUI or by using an index), run `list-c` without an index to return to the full client list.</div>
 
@@ -519,6 +524,8 @@ Examples:
 ---
 
 ### Health Tracking
+
+These commands provide targeted features to monitor and encourage your clients' fitness progression, dietary goals, and membership status.
 
 #### Setting a calorie target: `set-cal`
 
@@ -588,7 +595,7 @@ Examples:
 
 #### Adding a remark: `remark`
 
-Adds a remark to a client. Overwrites any existing remark.
+Adds a remark to a client (e.g., to track injuries, record physical constraints, or note personal milestones). Overwrites any existing remark.
 
 Format: `remark c/CLIENT_INDEX r/REMARK`
 
@@ -708,7 +715,7 @@ To reset a client's intake total to 0, run `log-cal c/CLIENT_INDEX cal/0`.
 | [**Edit trainer**](#editing-a-trainer-edit-t) | `edit-t INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL]` | `edit-t 1 n/Jane Doe e/jane@example.com` |
 | [**Add client**](#adding-a-client-add-c) | `add-c n/NAME p/PHONE_NUMBER t/TRAINER_INDEX [v/VALIDITY]` | `add-c n/Alice Lim p/81234567 t/1 v/2028-09-09` |
 | [**Edit client**](#editing-a-client-edit-c) | `edit-c INDEX [n/NAME] [p/PHONE_NUMBER] [t/TRAINER_INDEX] [cal/CALORIE_TARGET] [f/FOCUS] [r/REMARK] [v/VALIDITY]` | `edit-c 1 n/Alice Tan p/91234567` |
-| [**Reassign client**](#reassigning-a-client-reassign-c) | `reassign-c CLIENT_INDEX t/TRAINER_INDEX` | `reassign-c 2 t/1` |
+| [**Reassign client**](#reassigning-a-client-reassign-c) | `reassign-c CLIENT_INDEX t/TRAINER_INDEX` | `reassign-c 5 t/2` |
 | [**List all**](#listing-all-persons-list) | `list` | — |
 | [**List trainers**](#listing-all-trainers-list-t) | `list-t` | — |
 | [**List clients**](#listing-clients-list-c) | `list-c [TRAINER_INDEX]` | `list-c`, `list-c 1` |
