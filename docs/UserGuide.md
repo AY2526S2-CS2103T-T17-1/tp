@@ -606,8 +606,11 @@ Format: `remark c/CLIENT_INDEX r/REMARK`
 * `REMARK` must not be empty.
 * Remark is a client-specific functionality. It enables trainers to keep track of specific concerns/notes pertaining to a particular client.
 
+<div markdown="span" class="alert alert-info">:information_source: **To remove an existing remark**, use `edit-c` with an empty `r/` prefix: `edit-c CLIENT_INDEX r/`. The `remark` command itself requires a non-empty value and cannot be used for clearing.</div>
+
 Examples:
 * `remark c/1 r/Recovering from ACL Tear` — sets the 1st client's remark to "Recovering from ACL Tear".
+* `edit-c 1 r/` — clears the remark for the 1st client.
 
 ![remark](images/remark.png)
 **Expected outcome:** The client's remark is updated and displayed on their card. A success message is displayed.

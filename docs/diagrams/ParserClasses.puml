@@ -6,7 +6,6 @@ skinparam classBackgroundColor LOGIC_COLOR
 
 Class "{abstract}\nCommand" as Command
 Class XYZCommand
-note right of XYZCommandParser: XYZCommandParser = AddClientCommandParser,\nAddTrainerCommandParser, DeleteCommandParser,\nDeleteClientCommandParser, DeleteTrainerCommandParser,\nFindCommandParser, FindClientsCommandParser,\nFindTrainersCommandParser, RemarkCommandParser,\nSetCalorieTargetCommandParser, LogCalorieIntakeCommandParser,\nSetFocusCommandParser, SetValidityCommandParser,\nReassignClientCommandParser, ListClientsCommandParser,\nExportCommandParser, ImportCommandParser, etc
 
 package "Parser classes"{
 Class "<<interface>>\nParser" as Parser
@@ -36,4 +35,6 @@ XYZCommandParser ..> ParserUtil
 ParserUtil .down.> Prefix
 ArgumentTokenizer .down.> Prefix
 XYZCommand -up-|> Command
+
+note right of XYZCommandParser: XYZCommandParser = AddClientCommandParser,\nAddTrainerCommandParser, DeleteCommandParser,\nEditClientCommandParser, EditTrainerCommandParser,\nFindCommandParser, FindClientsCommandParser,\nFindTrainersCommandParser, RemarkCommandParser,\nSetCalorieTargetCommandParser, LogCalorieIntakeCommandParser,\nSetFocusCommandParser, SetValidityCommandParser,\nReassignClientCommandParser, ListClientsCommandParser,\nExportCommandParser, ImportCommandParser, etc
 @enduml
